@@ -51,5 +51,12 @@
 		"@microsoft/signalr": "^6.0.8",
 		"axios": "^0.27.2",
 		"jsonwebtoken": "^8.5.1"
+	},
+	"auto": {
+		"plugins": [
+			"npm",
+			"released"
+		],
+		"onlyPublishWithReleaseLabel": true
 	}
 }
