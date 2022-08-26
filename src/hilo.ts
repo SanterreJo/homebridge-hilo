@@ -48,6 +48,12 @@ class Hilo implements DynamicPlatformPlugin {
 			PlatformAccessory<HiloAccessoryContext>
 		> = {}
 	) {
+		if (!config.username || !config.password) {
+			this.log.error(
+				"Please provide a username and password in the config.json file"
+			);
+			return;
+		}
 		setConfig(config);
 		setLogger(log);
 		setApi(api);
