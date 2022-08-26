@@ -1,0 +1,55 @@
+{
+	"name": "homebridge-hilo",
+	"version": "1.0.0",
+	"description": "Plugin Homebridge pour la passerelle et les appareils Hilo de Hydro-Québec | Homebridge plugin for Hydro-Québec Hilo bridge and devices",
+	"main": "dist/hilo.js",
+	"engines": {
+		"node": ">=16.0.0",
+		"homebridge": ">1.4.0"
+	},
+	"scripts": {
+		"lint": "eslint src/**.ts --max-warnings=0",
+		"build": "rimraf dist/ && tsc",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"lint-staged": {
+		"**/*": "prettier --write --ignore-unknown"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/SanterreJo/homebridge-hilo.git"
+	},
+	"keywords": [
+		"homebridge",
+		"homebridge-plugin",
+		"hilo",
+		"hydroquebec"
+	],
+	"author": "Jonathan Santerre <jonathan@santerre.dev>",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/SanterreJo/homebridge-hilo/issues"
+	},
+	"homepage": "https://github.com/SanterreJo/homebridge-hilo#readme",
+	"devDependencies": {
+		"@types/jsonwebtoken": "^8.5.9",
+		"@types/node": "^18.7.11",
+		"@typescript-eslint/eslint-plugin": "^5.34.0",
+		"@typescript-eslint/parser": "^5.34.0",
+		"auto": "^10.37.4",
+		"eslint": "^8.22.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-prettier": "^4.2.1",
+		"homebridge": "^1.5.0",
+		"husky": "^8.0.1",
+		"lint-staged": "^13.0.3",
+		"prettier": "2.7.1",
+		"rimraf": "^3.0.2",
+		"typescript": "^4.7.4"
+	},
+	"dependencies": {
+		"@microsoft/signalr": "^6.0.8",
+		"axios": "^0.27.2",
+		"jsonwebtoken": "^8.5.1"
+	}
+}

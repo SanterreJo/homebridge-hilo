@@ -1,0 +1,22 @@
+{
+	"pluginAlias": "Hilo",
+	"pluginType": "platform",
+	"singular": true,
+	"schema": {
+		"type": "object",
+		"properties": {
+			"username": {
+				"title": "Username",
+				"type": "string",
+				"required": true
+			},
+			"password": {
+				"title": "Password",
+				"type": "string",
+				"required": true
+			}
+		}
+	},
+	"form": null,
+	"display": null
+}
