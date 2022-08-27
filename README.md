@@ -33,12 +33,25 @@ ou en ajoutant la configuration suivante à HomeBridge [homebridge](https://gith
 }
 ```
 
+## Appareils pris en charge
+Appareil | Pris en charge?
+---|---
+Thermostat | ✅
+Interrupteur | 🚧 
+Gradateur | ✅ 
+Prise | 🚧 
+Ampoule | 🚧 
+Détecteur de fumée / monoxyde de carbone | 🚧 
+Station météo | 🚫 
+
+Si l'un de vos appareils n'est pas encore pris en charge par le plugin, les contributions (PR) sont les bienvenues. Vous pouvez aussi faire un don ce qui me permettra d'acheter les appareils pas encore pris en charge (🚧) et facilitera le développement.
+
 ---------------------------------
 
 [Homebridge](https://homebridge.io) plugin for [Hilo](https://www.hiloenergie.com/) par [Hydro-Québec](https://www.hydroquebec.com/),
 enabling control of your Hilo devices via HomeKit and the [Apple Home App](https://www.apple.com/ios/home/).
 
-Note: This is not an offial plugin, this plugin is not affiliated with Hilo nor Hydro-Québec.
+Note: This is not an official plugin, this plugin is not affiliated with Hilo nor Hydro-Québec.
 
 ## Installation
 1. Install Homebridge by following
@@ -62,3 +75,16 @@ or by adding the following configuration to [homebridge](https://github.com/home
   ]
 }
 ```
+
+## Supported devices
+Device | Supported?
+---|---
+Thermostat | ✅
+In-wall switch | 🚧 
+In-wall dimmer | ✅ 
+Plug-in switch | 🚧 
+Bulb | 🚧 
+Smoke / CO detector | 🚧 
+Weather station | 🚫 
+
+If one of your device is not yet supported by the plugin, contributions (PR) are welcome. You can also consider donating to the project so I can buy the remaining devices (🚧) and continue development.
