@@ -1,7 +1,7 @@
 {
 	"name": "homebridge-hilo",
 	"version": "1.0.1",
-	"description": "Plugin Homebridge pour la passerelle et les appareils Hilo de Hydro-Québec | Homebridge plugin for Hydro-Québec Hilo bridge and devices",
+	"description": "Plugin Homebridge (non officiel) pour la passerelle et les appareils Hilo de Hydro-Québec | Unofficial Homebridge plugin for Hydro-Québec Hilo bridge and devices",
 	"main": "dist/hilo.js",
 	"engines": {
 		"node": ">=16.0.0",
@@ -58,5 +58,15 @@
 			"released"
 		],
 		"onlyPublishWithReleaseLabel": true
-	}
+	},
+	"funding": [
+		{
+			"type": "buymeacoffee",
+			"url": "https://www.buymeacoffee.com/santerrejo"
+		},
+		{
+			"type": "paypal",
+			"url": "https://paypal.me/santerrejo"
+		}
+	]
 }
