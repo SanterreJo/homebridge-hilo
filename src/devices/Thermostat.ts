@@ -18,11 +18,24 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 		);
 		service
 			.getCharacteristic(this.api.hap.Characteristic.CurrentHeatingCoolingState)
-			.onGet(this.getCurrentHeatingCoolingState.bind(this));
+			.onGet(this.getCurrentHeatingCoolingState.bind(this))
+			.setProps({
+				validValues: [
+					this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF,
+					this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT,
+				],
+				maxValue: this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT,
+			});
 		service
 			.getCharacteristic(this.api.hap.Characteristic.TargetHeatingCoolingState)
 			.onGet(this.getTargetHeatingCoolingState.bind(this))
-			.onSet(this.setTargetHeatingCoolingState.bind(this));
+			.onSet(this.setTargetHeatingCoolingState.bind(this))
+			.setProps({
+				validValues: [
+					this.api.hap.Characteristic.TargetHeatingCoolingState.AUTO,
+				],
+				maxValue: this.api.hap.Characteristic.TargetHeatingCoolingState.AUTO,
+			});
 		service
 			.getCharacteristic(this.api.hap.Characteristic.CurrentTemperature)
 			.onGet(this.getCurrentTemperature.bind(this));
