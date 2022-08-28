@@ -1,5 +1,16 @@
-export const SUPPORTED_DEVICE_TYPES = ["LightDimmer", "Thermostat"] as const;
+export const SUPPORTED_DEVICE_TYPES = [
+	"LightSwitch",
+	"LightDimmer",
+	"ColorBulb",
+	"WhiteBulb",
+	"Thermostat",
+	"Outlet",
+] as const;
 export type DeviceType = typeof SUPPORTED_DEVICE_TYPES[number];
+export type LightType = Extract<
+	DeviceType,
+	"LightSwitch" | "LightDimmer" | "ColorBulb" | "WhiteBulb"
+>;
 
 export interface DeviceValue {
 	deviceId: number;
@@ -89,7 +100,7 @@ export type Device = {
 	supportedParameters: string;
 };
 
-type DeviceValueAttributeMap<T extends Device["type"]> = T extends "LightDimmer"
+type DeviceValueAttributeMap<T extends Device["type"]> = T extends LightType
 	? OnOffDeviceValue | IntensityDeviceValue
 	: T extends "Thermostat"
 	?
@@ -99,6 +110,8 @@ type DeviceValueAttributeMap<T extends Device["type"]> = T extends "LightDimmer"
 			| MaxTempSetPointDeviceValue
 			| MinTempSetPointDeviceValue
 			| HumidityDeviceValue
+	: T extends "Outlet"
+	? OnOffDeviceValue
 	: never;
 
 export type HiloAccessoryContext<T extends Device["type"] = Device["type"]> = {

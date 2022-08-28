@@ -7,19 +7,17 @@ import {
 	PlatformConfig,
 } from "homebridge";
 import * as signalR from "@microsoft/signalr";
-import { HiloDevice } from "./devices/HiloDevice";
-import { LightDimmer } from "./devices/LightDimmer";
 import { setConfig } from "./config";
 import { getLogger, setLogger, signalRLogger } from "./logger";
 import { setApi } from "./api";
 import { automationApi, getWsAccessToken, negociate } from "./hiloApi";
-import { Thermostat } from "./devices/Thermostat";
 import {
 	Device,
 	DeviceValue,
 	HiloAccessoryContext,
 	SUPPORTED_DEVICE_TYPES,
 } from "./devices/types";
+import { initializeHiloDevice } from "./devices";
 
 const PLUGIN_NAME = "homebridge-hilo";
 const PLATFORM_NAME = "Hilo";
@@ -27,16 +25,6 @@ const PLATFORM_NAME = "Hilo";
 export default function (api: API) {
 	api.registerPlatform(PLATFORM_NAME, Hilo);
 }
-
-const initializeHiloDevice: {
-	[T in Device["type"]]: (
-		accessory: PlatformAccessory<HiloAccessoryContext<T>>,
-		api: API
-	) => HiloDevice<T>;
-} = {
-	LightDimmer: (accessory, api) => new LightDimmer(accessory, api),
-	Thermostat: (accessory, api) => new Thermostat(accessory, api),
-};
 
 class Hilo implements DynamicPlatformPlugin {
 	constructor(
