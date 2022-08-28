@@ -34,17 +34,17 @@ ou en ajoutant la configuration suivante à HomeBridge [homebridge](https://gith
 ```
 
 ## Appareils pris en charge
-Appareil | Pris en charge?
----|---
-Thermostat | ✅
-Interrupteur | 🚧 
-Gradateur | ✅ 
-Prise | 🚧 
-Ampoule | 🚧 
-Détecteur de fumée / monoxyde de carbone | 🚧 
-Station météo | 🚫 
+Appareil | Pris en charge? | Notes
+---|---|---
+Thermostat | ✅ |
+Interrupteur | ✅ | Non testé
+Gradateur | ✅ |
+Prise | ✅ | Non testé
+Ampoule | ✅ * | Ne supporte pas les couleurs présentement, non testé
+Détecteur de fumée / monoxyde de carbone | 🚧 |
+Station météo | 🚫 |
 
-Si l'un de vos appareils n'est pas encore pris en charge par le plugin, les contributions (PR) sont les bienvenues. Vous pouvez aussi faire un don ce qui me permettra d'acheter les appareils pas encore pris en charge (🚧) et facilitera le développement.
+Si l'un de vos appareils n'est pas encore pris en charge par le plugin, les contributions (PR) sont les bienvenues. Vous pouvez aussi faire un don ce qui me permettra d'acheter les appareils pas encore pris en charge et facilitera le développement.
 
 ---------------------------------
 
@@ -77,14 +77,14 @@ or by adding the following configuration to [homebridge](https://github.com/home
 ```
 
 ## Supported devices
-Device | Supported?
----|---
-Thermostat | ✅
-In-wall switch | 🚧 
-In-wall dimmer | ✅ 
-Plug-in switch | 🚧 
-Bulb | 🚧 
-Smoke / CO detector | 🚧 
-Weather station | 🚫 
+Device | Supported? | Notes
+---|---|---
+Thermostat | ✅ |
+In-wall switch | ✅ | Not tested
+In-wall dimmer | ✅ | 
+Plug-in switch | ✅ | Not tested
+Bulb | ✅ | Currently does not support colors, not tested
+Smoke / CO detector | 🚧 |
+Weather station | 🚫 |
 
-If one of your device is not yet supported by the plugin, contributions (PR) are welcome. You can also consider donating to the project so I can buy the remaining devices (🚧) and continue development.
+If one of your device is not yet supported by the plugin, contributions (PR) are welcome. You can also consider donating to the project so I can buy the remaining devices and continue development.
