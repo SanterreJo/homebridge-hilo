@@ -48,9 +48,7 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 
 	private async getTargetHeatingCoolingState(): Promise<CharacteristicValue> {
 		this.logger.debug(`Getting ${this.device.name} targetHeatingCoolingState`);
-		return this.values.Heating?.value
-			? this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT
-			: this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF;
+		return this.api.hap.Characteristic.TargetHeatingCoolingState.AUTO;
 	}
 
 	private async setTargetHeatingCoolingState(value: CharacteristicValue) {
