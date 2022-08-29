@@ -1,3 +1,15 @@
+# v1.1.0 (Mon Aug 29 2022)
+
+#### 🚀 Enhancement
+
+- Add support for LightBulb, LightSwitch and Outlet [#4](https://github.com/SanterreJo/homebridge-hilo/pull/4) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.0.2 (Sun Aug 28 2022)
 
 #### 🐛 Bug Fix
