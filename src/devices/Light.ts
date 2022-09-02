@@ -1,3 +1,4 @@
+import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { automationApi } from "../hiloApi";
 import { HiloDevice } from "./HiloDevice";
@@ -45,7 +46,8 @@ export class Light extends HiloDevice<
 			);
 		} catch (error) {
 			this.logger.error(
-				`Failed to set ${this.device.name} ${on ? "on" : "off"}: ${error}`
+				`Failed to set ${this.device.name} ${on ? "on" : "off"}`,
+				axios.isAxiosError(error) ? error.response?.data : error
 			);
 		}
 	}
@@ -67,7 +69,8 @@ export class Light extends HiloDevice<
 			);
 		} catch (error) {
 			this.logger.error(
-				`Failed to set ${this.device.name} brightness to ${brightness}: ${error}`
+				`Failed to set ${this.device.name} brightness to ${brightness}`,
+				axios.isAxiosError(error) ? error.response?.data : error
 			);
 		}
 	}

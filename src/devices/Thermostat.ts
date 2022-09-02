@@ -1,3 +1,4 @@
+import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { automationApi } from "../hiloApi";
 import { HiloDevice } from "./HiloDevice";
@@ -86,7 +87,10 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 				{ TargetTemperature: targetTemperature }
 			);
 		} catch (error) {
-			this.logger.error("Failed to set target temperature", error);
+			this.logger.error(
+				"Failed to set target temperature",
+				axios.isAxiosError(error) ? error.response?.data : error
+			);
 		}
 	}
 

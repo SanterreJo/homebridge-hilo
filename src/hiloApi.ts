@@ -185,4 +185,8 @@ const authInterceptor = async (config: AxiosRequestConfig) => {
 automationApi.interceptors.request.use(authInterceptor);
 hubApi.interceptors.request.use(authInterceptor);
 
-const unableToLogin = (e: unknown) => getLogger().error("Unable to login", e);
+const unableToLogin = (e: unknown) =>
+	getLogger().error(
+		"Unable to login",
+		axios.isAxiosError(e) ? e.response?.data : e
+	);

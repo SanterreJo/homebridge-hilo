@@ -18,6 +18,7 @@ import {
 	SUPPORTED_DEVICE_TYPES,
 } from "./devices/types";
 import { initializeHiloDevice } from "./devices";
+import axios from "axios";
 
 const PLUGIN_NAME = "homebridge-hilo";
 const PLATFORM_NAME = "Hilo";
@@ -75,7 +76,10 @@ class Hilo implements DynamicPlatformPlugin {
 				const response = await negociate();
 				url = response.url;
 			} catch (error) {
-				log.error("Unable to connect to websocket", error);
+				log.error(
+					"Unable to connect to websocket",
+					axios.isAxiosError(error) ? error.response?.data : error
+				);
 			}
 			if (!url) return;
 			const connection = new signalR.HubConnectionBuilder()
@@ -170,7 +174,10 @@ async function fetchLocations() {
 		});
 		return response.data;
 	} catch (error) {
-		getLogger().error("Error while fetching locations", error);
+		getLogger().error(
+			"Error while fetching locations",
+			axios.isAxiosError(error) ? error.response?.data : error
+		);
 		return [];
 	}
 }
@@ -187,7 +194,10 @@ async function fetchDevices(location: Location) {
 		);
 		return response.data;
 	} catch (error) {
-		getLogger().error("Error while fetching devices", error);
+		getLogger().error(
+			"Error while fetching devices",
+			axios.isAxiosError(error) ? error.response?.data : error
+		);
 		return [];
 	}
 }
