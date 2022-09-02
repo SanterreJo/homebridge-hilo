@@ -23,7 +23,11 @@ const PLUGIN_NAME = "homebridge-hilo";
 const PLATFORM_NAME = "Hilo";
 
 export default function (api: API) {
-	api.registerPlatform(PLATFORM_NAME, Hilo);
+	try {
+		api.registerPlatform(PLATFORM_NAME, Hilo);
+	} catch (e) {
+		(getLogger() || console).error("An error occured in the Hilo plugin", e);
+	}
 }
 
 class Hilo implements DynamicPlatformPlugin {
