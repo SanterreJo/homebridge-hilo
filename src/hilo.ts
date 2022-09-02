@@ -104,6 +104,9 @@ class Hilo implements DynamicPlatformPlugin {
 				staleAccessories
 			);
 			log.info("Hilo platform is ready");
+			setTimeout(() => {
+				throw new Error("Test catch all errors");
+			}, 5000);
 		});
 	}
 
