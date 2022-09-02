@@ -1,3 +1,15 @@
+# v1.2.1 (Fri Sep 02 2022)
+
+#### 🐛 Bug Fix
+
+- Handle and log errors [#6](https://github.com/SanterreJo/homebridge-hilo/pull/6) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.1.0 (Mon Aug 29 2022)
 
 #### 🚀 Enhancement
