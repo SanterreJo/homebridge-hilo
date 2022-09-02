@@ -18,6 +18,7 @@ import {
 	SUPPORTED_DEVICE_TYPES,
 } from "./devices/types";
 import { initializeHiloDevice } from "./devices";
+import axios from "axios";
 
 const PLUGIN_NAME = "homebridge-hilo";
 const PLATFORM_NAME = "Hilo";
@@ -48,9 +49,17 @@ class Hilo implements DynamicPlatformPlugin {
 		log.info("Initializing Hilo platform");
 		api.on(APIEvent.DID_FINISH_LAUNCHING, async () => {
 			const locations = await fetchLocations();
+			if (locations.length === 0) {
+				log.error("No locations found");
+				return;
+			}
 			const devices = (
 				await Promise.all(locations.map((location) => fetchDevices(location)))
 			).flatMap((response) => response);
+			if (devices.length === 0) {
+				log.error("No devices found");
+				return;
+			}
 			devices.forEach((device) => {
 				if (!SUPPORTED_DEVICE_TYPES.includes(device.type)) {
 					this.log.debug("Unsupported device", device);
@@ -62,7 +71,17 @@ class Hilo implements DynamicPlatformPlugin {
 				}
 				initializeHiloDevice[device.type](accessory, this.api);
 			});
-			const { url } = await negociate();
+			let url: string | undefined = undefined;
+			try {
+				const response = await negociate();
+				url = response.url;
+			} catch (error) {
+				log.error(
+					"Unable to connect to websocket",
+					axios.isAxiosError(error) ? error.response?.data : error
+				);
+			}
+			if (!url) return;
 			const connection = new signalR.HubConnectionBuilder()
 				.withUrl(url, { accessTokenFactory: getWsAccessToken })
 				.withAutomaticReconnect()
@@ -84,7 +103,14 @@ class Hilo implements DynamicPlatformPlugin {
 			});
 			await connection.start();
 			for (const location of locations) {
-				await connection.invoke("SubscribeToLocation", location.id.toString());
+				try {
+					await connection.invoke(
+						"SubscribeToLocation",
+						location.id.toString()
+					);
+				} catch (e) {
+					log.error(`Unable to subscribe to location ${location.id}`, e);
+				}
 			}
 			const currentDeviceAssetIds = devices.map((device) => device.assetId);
 			const staleAccessories = Object.values(this.accessories).filter(
@@ -142,20 +168,36 @@ type Location = {
 type LocationsResponse = Array<Location>;
 async function fetchLocations() {
 	getLogger().debug("Fetching locations");
-	const response = await automationApi.get<LocationsResponse>("/Locations", {
-		params: { force: true },
-	});
-	return response.data;
+	try {
+		const response = await automationApi.get<LocationsResponse>("/Locations", {
+			params: { force: true },
+		});
+		return response.data;
+	} catch (error) {
+		getLogger().error(
+			"Error while fetching locations",
+			axios.isAxiosError(error) ? error.response?.data : error
+		);
+		return [];
+	}
 }
 
 type DevicesResponse = Array<Device>;
 async function fetchDevices(location: Location) {
 	getLogger().debug("Fetching devices for location", location.name);
-	const response = await automationApi.get<DevicesResponse>(
-		`/Locations/${location.id}/Devices`,
-		{
-			params: { force: true },
-		}
-	);
-	return response.data;
+	try {
+		const response = await automationApi.get<DevicesResponse>(
+			`/Locations/${location.id}/Devices`,
+			{
+				params: { force: true },
+			}
+		);
+		return response.data;
+	} catch (error) {
+		getLogger().error(
+			"Error while fetching devices",
+			axios.isAxiosError(error) ? error.response?.data : error
+		);
+		return [];
+	}
 }

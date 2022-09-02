@@ -1,3 +1,4 @@
+import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { automationApi } from "../hiloApi";
 import { HiloDevice } from "./HiloDevice";
@@ -80,10 +81,17 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 		this.logger.debug(
 			`Setting ${this.device.name} target temparature to ${targetTemperature}`
 		);
-		await automationApi.put(
-			`/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
-			{ TargetTemperature: targetTemperature }
-		);
+		try {
+			await automationApi.put(
+				`/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
+				{ TargetTemperature: targetTemperature }
+			);
+		} catch (error) {
+			this.logger.error(
+				"Failed to set target temperature",
+				axios.isAxiosError(error) ? error.response?.data : error
+			);
+		}
 	}
 
 	private async getCurrentTemperature(): Promise<CharacteristicValue> {
