@@ -80,10 +80,14 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 		this.logger.debug(
 			`Setting ${this.device.name} target temparature to ${targetTemperature}`
 		);
-		await automationApi.put(
-			`/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
-			{ TargetTemperature: targetTemperature }
-		);
+		try {
+			await automationApi.put(
+				`/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
+				{ TargetTemperature: targetTemperature }
+			);
+		} catch (error) {
+			this.logger.error("Failed to set target temperature", error);
+		}
 	}
 
 	private async getCurrentTemperature(): Promise<CharacteristicValue> {

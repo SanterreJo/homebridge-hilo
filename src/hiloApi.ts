@@ -135,7 +135,11 @@ export function setupAutoRefreshToken(expiresIn: number) {
 		try {
 			await refreshTokenRequest();
 		} catch (e) {
-			await login();
+			try {
+				await login();
+			} catch (e) {
+				unableToLogin(e);
+			}
 		}
 	}, expiresIn * 1000 - 1000 * 60 * 5); // 5 minutes before expiration
 }
@@ -153,10 +157,18 @@ const authInterceptor = async (config: AxiosRequestConfig) => {
 			try {
 				await refreshTokenRequest();
 			} catch (e) {
-				await login();
+				try {
+					await login();
+				} catch (e) {
+					unableToLogin(e);
+				}
 			}
 		} else {
-			await login();
+			try {
+				await login();
+			} catch (e) {
+				unableToLogin(e);
+			}
 		}
 	}
 	config = {
@@ -164,7 +176,7 @@ const authInterceptor = async (config: AxiosRequestConfig) => {
 		headers: {
 			...config.headers,
 			"Ocp-Apim-Subscription-Key": "20eeaedcb86945afa3fe792cea89b8bf",
-			Authorization: `Bearer ${accessToken}`,
+			Authorization: accessToken ? `Bearer ${accessToken}` : "",
 		},
 	};
 	return config;
@@ -172,3 +184,5 @@ const authInterceptor = async (config: AxiosRequestConfig) => {
 
 automationApi.interceptors.request.use(authInterceptor);
 hubApi.interceptors.request.use(authInterceptor);
+
+const unableToLogin = (e: unknown) => getLogger().error("Unable to login", e);
