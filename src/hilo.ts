@@ -23,11 +23,7 @@ const PLUGIN_NAME = "homebridge-hilo";
 const PLATFORM_NAME = "Hilo";
 
 export default function (api: API) {
-	try {
-		api.registerPlatform(PLATFORM_NAME, Hilo);
-	} catch (e) {
-		(getLogger() || console).error("An error occured in the Hilo plugin", e);
-	}
+	api.registerPlatform(PLATFORM_NAME, catchAllErrors(Hilo));
 }
 
 class Hilo implements DynamicPlatformPlugin {
@@ -166,3 +162,23 @@ async function fetchDevices(location: Location) {
 	);
 	return response.data;
 }
+
+const catchAllErrors = (klass: typeof Hilo) => {
+	return class extends klass {
+		constructor(
+			log: Logging,
+			config: PlatformConfig,
+			api: API,
+			accessories: Record<string, PlatformAccessory<HiloAccessoryContext>> = {}
+		) {
+			try {
+				super(log, config, api, accessories);
+			} catch (e: any) {
+				(getLogger() || console).error(
+					"An error occured in the Hilo plugin",
+					e
+				);
+			}
+		}
+	};
+};
