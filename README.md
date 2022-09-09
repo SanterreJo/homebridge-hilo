@@ -1,6 +1,6 @@
 # homebridge-hilo
-<!-- [![npm-version](https://badgen.net/npm/v/homebridge-hilo)](https://www.npmjs.com/package/homebridge-hilo) -->
-<!-- [![npm-total-downloads](https://badgen.net/npm/dt/homebridge-hilo)](https://www.npmjs.com/package/homebridge-hilo) -->
+[![npm-version](https://badgen.net/npm/v/homebridge-hilo)](https://www.npmjs.com/package/homebridge-hilo)
+[![npm-total-downloads](https://badgen.net/npm/dt/homebridge-hilo)](https://www.npmjs.com/package/homebridge-hilo)
 
 [![Donate](https://badgen.net/badge/paypal/donate?icon=https://simpleicons.now.sh/paypal/fff)](https://paypal.me/jsanterre)
 [![Donate](https://badgen.net/badge/buymeacoffee/donate?icon=https://simpleicons.now.sh/buymeacoffee/fff)](https://www.buymeacoffee.com/santerrejo)
@@ -46,7 +46,13 @@ Station météo | 🚫 |
 
 Si l'un de vos appareils n'est pas encore pris en charge par le plugin, les contributions (PR) sont les bienvenues. Vous pouvez aussi faire un don ce qui me permettra d'acheter les appareils pas encore pris en charge et facilitera le développement.
 
+
+
 ---------------------------------
+
+
+
+# homebridge-hilo
 
 [Homebridge](https://homebridge.io) plugin for [Hilo](https://www.hiloenergie.com/) par [Hydro-Québec](https://www.hydroquebec.com/),
 enabling control of your Hilo devices via HomeKit and the [Apple Home App](https://www.apple.com/ios/home/).
