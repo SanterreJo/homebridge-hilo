@@ -43,7 +43,12 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 		service
 			.getCharacteristic(this.api.hap.Characteristic.TargetTemperature)
 			.onGet(this.getTargetTemperature.bind(this))
-			.onSet(this.setTargetTemperature.bind(this));
+			.onSet(this.setTargetTemperature.bind(this))
+			.setProps({
+				minValue: 5,
+				minStep: 0.5,
+				maxValue: 30,
+			});
 		service
 			.getCharacteristic(this.api.hap.Characteristic.TemperatureDisplayUnits)
 			.onGet(this.getTemperatureDisplayUnits.bind(this))
