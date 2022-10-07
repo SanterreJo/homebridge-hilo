@@ -1,3 +1,20 @@
+# v1.3.0 (Fri Oct 07 2022)
+
+#### 🚀 Enhancement
+
+- Adjust min and max target temperatures [#10](https://github.com/SanterreJo/homebridge-hilo/pull/10) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### 📝 Documentation
+
+- Add Homebridge verified badge [#8](https://github.com/SanterreJo/homebridge-hilo/pull/8) ([@SanterreJo](https://github.com/SanterreJo))
+- Update readme [#7](https://github.com/SanterreJo/homebridge-hilo/pull/7) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.2.1 (Fri Sep 02 2022)
 
 #### 🐛 Bug Fix
