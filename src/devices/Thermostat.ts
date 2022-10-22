@@ -100,7 +100,11 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 	}
 
 	private async getCurrentTemperature(): Promise<CharacteristicValue> {
-		this.logger.debug(`Getting ${this.device.name} current temperature`);
+		this.logger.debug(
+			`Getting ${this.device.name} current temperature ${JSON.stringify(
+				this.values
+			)}`
+		);
 		return this.values.CurrentTemperature?.value ?? 20;
 	}
 
