@@ -2,7 +2,7 @@ import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { automationApi } from "../hiloApi";
 import { HiloDevice } from "./HiloDevice";
-import { HiloAccessoryContext } from "./types";
+import { DeviceValue, HiloAccessoryContext } from "./types";
 
 export class Thermostat extends HiloDevice<"Thermostat"> {
 	constructor(
@@ -10,14 +10,14 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 		api: API
 	) {
 		super(accessory, api);
-		const service =
+		this.service =
 			accessory.getService(this.api.hap.Service.Thermostat) ||
 			accessory.addService(this.api.hap.Service.Thermostat);
-		service.setCharacteristic(
+		this.service.setCharacteristic(
 			this.api.hap.Characteristic.Name,
 			this.accessory.context.device.name
 		);
-		service
+		this.service
 			.getCharacteristic(this.api.hap.Characteristic.CurrentHeatingCoolingState)
 			.onGet(this.getCurrentHeatingCoolingState.bind(this))
 			.setProps({
@@ -27,7 +27,7 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 				],
 				maxValue: this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT,
 			});
-		service
+		this.service
 			.getCharacteristic(this.api.hap.Characteristic.TargetHeatingCoolingState)
 			.onGet(this.getTargetHeatingCoolingState.bind(this))
 			.onSet(this.setTargetHeatingCoolingState.bind(this))
@@ -37,10 +37,10 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 				],
 				maxValue: this.api.hap.Characteristic.TargetHeatingCoolingState.AUTO,
 			});
-		service
+		this.service
 			.getCharacteristic(this.api.hap.Characteristic.CurrentTemperature)
 			.onGet(this.getCurrentTemperature.bind(this));
-		service
+		this.service
 			.getCharacteristic(this.api.hap.Characteristic.TargetTemperature)
 			.onGet(this.getTargetTemperature.bind(this))
 			.onSet(this.setTargetTemperature.bind(this))
@@ -49,13 +49,35 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 				minStep: 0.5,
 				maxValue: 30,
 			});
-		service
+		this.service
 			.getCharacteristic(this.api.hap.Characteristic.TemperatureDisplayUnits)
 			.onGet(this.getTemperatureDisplayUnits.bind(this))
 			.onSet(this.setTemperatureDisplayUnits.bind(this));
-		service
-			.getCharacteristic(this.api.hap.Characteristic.CurrentRelativeHumidity)
-			.onGet(this.getCurrentRelativeHumidity.bind(this));
+	}
+
+	updateValue(
+		value: HiloAccessoryContext<"Thermostat">["values"][DeviceValue["attribute"]]
+	): void {
+		super.updateValue(value);
+		switch (value?.attribute) {
+			case "CurrentTemperature":
+				this.service
+					?.getCharacteristic(this.api.hap.Characteristic.CurrentTemperature)
+					?.updateValue(value?.value ?? 20);
+				break;
+			case "TargetTemperature":
+				this.service
+					?.getCharacteristic(this.api.hap.Characteristic.TargetTemperature)
+					?.updateValue(value?.value ?? 20);
+				break;
+			case "Heating":
+				this.service
+					?.getCharacteristic(
+						this.api.hap.Characteristic.CurrentHeatingCoolingState
+					)
+					?.updateValue(value?.value ? 1 : 0);
+				break;
+		}
 	}
 
 	private async getCurrentHeatingCoolingState(): Promise<CharacteristicValue> {
@@ -100,7 +122,11 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 	}
 
 	private async getCurrentTemperature(): Promise<CharacteristicValue> {
-		this.logger.debug(`Getting ${this.device.name} current temperature`);
+		this.logger.debug(
+			`Getting ${this.device.name} current temperature ${JSON.stringify(
+				this.values
+			)}`
+		);
 		return this.values.CurrentTemperature?.value ?? 20;
 	}
 

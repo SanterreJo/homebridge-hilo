@@ -2,7 +2,7 @@ import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { automationApi } from "../hiloApi";
 import { HiloDevice } from "./HiloDevice";
-import { HiloAccessoryContext } from "./types";
+import { DeviceValue, HiloAccessoryContext } from "./types";
 
 export class Outlet extends HiloDevice<"Outlet"> {
 	constructor(
@@ -10,17 +10,30 @@ export class Outlet extends HiloDevice<"Outlet"> {
 		api: API
 	) {
 		super(accessory, api);
-		const service =
+		this.service =
 			accessory.getService(this.api.hap.Service.Outlet) ||
 			accessory.addService(this.api.hap.Service.Outlet);
-		service.setCharacteristic(
+		this.service.setCharacteristic(
 			this.api.hap.Characteristic.Name,
 			this.accessory.context.device.name
 		);
-		service
+		this.service
 			.getCharacteristic(this.api.hap.Characteristic.On)
 			.onSet(this.setOn.bind(this))
 			.onGet(this.getOn.bind(this));
+	}
+
+	updateValue(
+		value: HiloAccessoryContext<"Outlet">["values"][DeviceValue["attribute"]]
+	) {
+		super.updateValue(value);
+		switch (value?.attribute) {
+			case "OnOff":
+				this.service
+					?.getCharacteristic(this.api.hap.Characteristic.On)
+					?.updateValue(value.value);
+				break;
+		}
 	}
 
 	private async setOn(value: CharacteristicValue) {
