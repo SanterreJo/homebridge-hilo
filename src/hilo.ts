@@ -19,6 +19,7 @@ import {
 } from "./devices/types";
 import { initializeHiloDevice } from "./devices";
 import axios from "axios";
+import { HiloDevice } from "./devices/HiloDevice";
 
 const PLUGIN_NAME = "homebridge-hilo";
 const PLATFORM_NAME = "Hilo";
@@ -35,7 +36,8 @@ class Hilo implements DynamicPlatformPlugin {
 		private readonly accessories: Record<
 			string,
 			PlatformAccessory<HiloAccessoryContext>
-		> = {}
+		> = {},
+		private readonly pluginAccessories: Record<string, HiloDevice<any>> = {}
 	) {
 		if (!config.username || !config.password) {
 			this.log.error(
@@ -69,7 +71,9 @@ class Hilo implements DynamicPlatformPlugin {
 				if (!accessory) {
 					accessory = this.setupNewAccessory(device);
 				}
-				initializeHiloDevice[device.type](accessory, this.api);
+				this.pluginAccessories[device.id.toString()] = initializeHiloDevice[
+					device.type
+				](accessory, this.api);
 			});
 			let url: string | undefined = undefined;
 			try {
@@ -94,11 +98,13 @@ class Hilo implements DynamicPlatformPlugin {
 				this.log.debug(`DevicesValuesReceived:`, message);
 				message.forEach((value) => {
 					const accessory = this.accessories[value.deviceId.toString()];
-					if (!accessory) {
+					const pluginAccessory =
+						this.pluginAccessories[value.deviceId.toString()];
+					if (!accessory || !pluginAccessory) {
 						this.log.debug(`No accessory for device ${value.deviceId}`);
 						return;
 					}
-					(accessory.context.values[value.attribute] as any) = value;
+					pluginAccessory.updateValue(value as any);
 				});
 			});
 			await connection.start();

@@ -1,8 +1,9 @@
-import { API, Logging, PlatformAccessory } from "homebridge";
+import { API, Logging, PlatformAccessory, Service } from "homebridge";
 import { getLogger } from "../logger";
-import { Device, HiloAccessoryContext } from "./types";
+import { Device, DeviceValue, HiloAccessoryContext } from "./types";
 
 export abstract class HiloDevice<T extends Device["type"]> {
+	protected service: Service | null = null;
 	constructor(
 		protected readonly accessory: PlatformAccessory<HiloAccessoryContext<T>>,
 		protected readonly api: API,
@@ -27,5 +28,12 @@ export abstract class HiloDevice<T extends Device["type"]> {
 
 	get values(): HiloAccessoryContext<T>["values"] {
 		return this.accessory.context.values;
+	}
+
+	updateValue(
+		value: HiloAccessoryContext<T>["values"][DeviceValue["attribute"]]
+	) {
+		if (!value) return;
+		(this.accessory.context.values[value.attribute] as any) = value;
 	}
 }

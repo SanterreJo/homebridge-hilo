@@ -2,7 +2,7 @@ import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { automationApi } from "../hiloApi";
 import { HiloDevice } from "./HiloDevice";
-import { HiloAccessoryContext } from "./types";
+import { DeviceValue, HiloAccessoryContext } from "./types";
 
 export class Light extends HiloDevice<
 	"LightDimmer" | "LightSwitch" | "ColorBulb" | "WhiteBulb"
@@ -17,22 +17,42 @@ export class Light extends HiloDevice<
 		{ canDim = true }: { canDim?: boolean } = { canDim: true }
 	) {
 		super(accessory, api);
-		const service =
+		this.service =
 			accessory.getService(this.api.hap.Service.Lightbulb) ||
 			accessory.addService(this.api.hap.Service.Lightbulb);
-		service.setCharacteristic(
+		this.service.setCharacteristic(
 			this.api.hap.Characteristic.Name,
 			this.accessory.context.device.name
 		);
-		service
+		this.service
 			.getCharacteristic(this.api.hap.Characteristic.On)
 			.onSet(this.setOn.bind(this))
 			.onGet(this.getOn.bind(this));
 		if (canDim) {
-			service
+			this.service
 				.getCharacteristic(this.api.hap.Characteristic.Brightness)
 				.onSet(this.setBrightness.bind(this))
 				.onGet(this.getBrightness.bind(this));
+		}
+	}
+
+	updateValue(
+		value: HiloAccessoryContext<
+			"LightDimmer" | "LightSwitch" | "ColorBulb" | "WhiteBulb"
+		>["values"][DeviceValue["attribute"]]
+	) {
+		super.updateValue(value);
+		switch (value?.attribute) {
+			case "OnOff":
+				this.service
+					?.getCharacteristic(this.api.hap.Characteristic.On)
+					?.updateValue(value.value);
+				break;
+			case "Intensity":
+				this.service
+					?.getCharacteristic(this.api.hap.Characteristic.Brightness)
+					?.updateValue(value.value * 100);
+				break;
 		}
 	}
 
