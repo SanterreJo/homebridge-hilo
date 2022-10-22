@@ -1,3 +1,15 @@
+# v1.4.0 (Sat Oct 22 2022)
+
+#### 🚀 Enhancement
+
+- Fix: devices are not updated and remove humidity capability [#12](https://github.com/SanterreJo/homebridge-hilo/pull/12) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.3.0 (Fri Oct 07 2022)
 
 #### 🚀 Enhancement
