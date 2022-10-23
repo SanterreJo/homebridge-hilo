@@ -107,6 +107,23 @@ class Hilo implements DynamicPlatformPlugin {
 					pluginAccessory.updateValue(value as any);
 				});
 			});
+			let tryingToReconnect = false;
+			connection.onreconnecting(() => {
+				tryingToReconnect = true;
+				this.log.info("Reconnecting to websocket");
+			});
+			connection.onreconnected(() => {
+				tryingToReconnect = false;
+				this.log.info("Reconnected to websocket");
+			});
+			connection.onclose(async () => {
+				this.log.info("Disconnected from websocket");
+				if (tryingToReconnect) {
+					this.log.info("Attempting to reconnect to websocket");
+					await negociate();
+					connection.start();
+				}
+			});
 			await connection.start();
 			for (const location of locations) {
 				try {

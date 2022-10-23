@@ -75,7 +75,11 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 					?.getCharacteristic(
 						this.api.hap.Characteristic.CurrentHeatingCoolingState
 					)
-					?.updateValue(value?.value ? 1 : 0);
+					?.updateValue(
+						value?.value
+							? this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT
+							: this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF
+					);
 				break;
 		}
 	}
@@ -122,11 +126,7 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 	}
 
 	private async getCurrentTemperature(): Promise<CharacteristicValue> {
-		this.logger.debug(
-			`Getting ${this.device.name} current temperature ${JSON.stringify(
-				this.values
-			)}`
-		);
+		this.logger.debug(`Getting ${this.device.name} current temperature`);
 		return this.values.CurrentTemperature?.value ?? 20;
 	}
 
@@ -142,10 +142,5 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 		this.logger.debug(
 			`Setting ${this.device.name} temperature display units to ${value}`
 		);
-	}
-
-	private async getCurrentRelativeHumidity(): Promise<CharacteristicValue> {
-		this.logger.debug(`Getting ${this.device.name} current relative humidty`);
-		return this.values.Humidity?.value ?? 0;
 	}
 }
