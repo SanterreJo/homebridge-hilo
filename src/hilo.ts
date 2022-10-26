@@ -29,6 +29,8 @@ export default function (api: API) {
 }
 
 class Hilo implements DynamicPlatformPlugin {
+	private readonly pluginAccessories: Record<string, HiloDevice<any>> = {};
+	private webSocketRetries = 0;
 	constructor(
 		private readonly log: Logging,
 		private readonly config: PlatformConfig,
@@ -36,8 +38,7 @@ class Hilo implements DynamicPlatformPlugin {
 		private readonly accessories: Record<
 			string,
 			PlatformAccessory<HiloAccessoryContext>
-		> = {},
-		private readonly pluginAccessories: Record<string, HiloDevice<any>> = {}
+		> = {}
 	) {
 		if (!config.username || !config.password) {
 			this.log.error(
@@ -75,64 +76,7 @@ class Hilo implements DynamicPlatformPlugin {
 					device.type
 				](accessory, this.api);
 			});
-			let url: string | undefined = undefined;
-			try {
-				const response = await negociate();
-				url = response.url;
-			} catch (error) {
-				log.error(
-					"Unable to connect to websocket",
-					axios.isAxiosError(error) ? error.response?.data : error
-				);
-			}
-			if (!url) return;
-			const connection = new signalR.HubConnectionBuilder()
-				.withUrl(url, { accessTokenFactory: getWsAccessToken })
-				.withAutomaticReconnect()
-				.configureLogging(signalRLogger)
-				.build();
-			connection.on("Heartbeat", (message) =>
-				this.log.debug(`Heartbeat: ${message}`)
-			);
-			connection.on("DevicesValuesReceived", (message: Array<DeviceValue>) => {
-				this.log.debug(`DevicesValuesReceived:`, message);
-				message.forEach((value) => {
-					const accessory = this.accessories[value.deviceId.toString()];
-					const pluginAccessory =
-						this.pluginAccessories[value.deviceId.toString()];
-					if (!accessory || !pluginAccessory) {
-						this.log.debug(`No accessory for device ${value.deviceId}`);
-						return;
-					}
-					pluginAccessory.updateValue(value as any);
-				});
-			});
-			connection.onreconnecting(() => {
-				this.log.info("Reconnecting to websocket");
-			});
-			connection.onreconnected(() => {
-				this.log.info("Reconnected to websocket");
-			});
-			connection.onclose(() => {
-				this.log.info("Disconnected from websocket");
-				this.log.info("Attempting to reconnect to websocket in 5 seconds");
-				setTimeout(async () => {
-					this.log.info("Reconnection attempt");
-					await negociate();
-					connection.start();
-				}, 5000);
-			});
-			await connection.start();
-			for (const location of locations) {
-				try {
-					await connection.invoke(
-						"SubscribeToLocation",
-						location.id.toString()
-					);
-				} catch (e) {
-					log.error(`Unable to subscribe to location ${location.id}`, e);
-				}
-			}
+			await this.setupWebsocketConnection(locations);
 			const currentDeviceAssetIds = devices.map((device) => device.assetId);
 			const staleAccessories = Object.values(this.accessories).filter(
 				(accessory) =>
@@ -170,6 +114,72 @@ class Hilo implements DynamicPlatformPlugin {
 		]);
 		this.accessories[accessory.context.device.id.toString()] = accessory;
 		return accessory;
+	}
+
+	private async setupWebsocketConnection(locations: Location[]) {
+		let url: string | undefined = undefined;
+		try {
+			const response = await negociate();
+			url = response.url;
+		} catch (error) {
+			this.log.error(
+				"Unable to connect to websocket",
+				axios.isAxiosError(error) ? error.response?.data : error
+			);
+		}
+		if (!url) return;
+		const connection = new signalR.HubConnectionBuilder()
+			.withUrl(url, { accessTokenFactory: getWsAccessToken })
+			.withAutomaticReconnect()
+			.configureLogging(signalRLogger)
+			.build();
+		connection.on("Heartbeat", (message) =>
+			this.log.debug(`Heartbeat: ${message}`)
+		);
+		connection.on("DevicesValuesReceived", (message: Array<DeviceValue>) => {
+			this.log.debug(`DevicesValuesReceived:`, message);
+			message.forEach((value) => {
+				const accessory = this.accessories[value.deviceId.toString()];
+				const pluginAccessory =
+					this.pluginAccessories[value.deviceId.toString()];
+				if (!accessory || !pluginAccessory) {
+					this.log.debug(`No accessory for device ${value.deviceId}`);
+					return;
+				}
+				pluginAccessory.updateValue(value as any);
+			});
+		});
+		connection.onreconnecting(() => {
+			this.log.info("Reconnecting to websocket");
+		});
+		connection.onreconnected(() => {
+			this.log.info("Reconnected to websocket");
+		});
+		connection.onclose(() => {
+			this.log.info("Disconnected from websocket");
+			this.log.info("Attempting to reconnect to websocket in 5 seconds");
+			if (this.webSocketRetries < 5) {
+				setTimeout(async () => {
+					this.webSocketRetries++;
+					this.log.info(`Reconnection attempt ${this.webSocketRetries + 1}`);
+					this.setupWebsocketConnection(locations);
+				}, 5000);
+			} else {
+				this.log.error(
+					`Unable to reconnect to websocket after ${
+						this.webSocketRetries + 1
+					} attempts`
+				);
+			}
+		});
+		await connection.start();
+		for (const location of locations) {
+			try {
+				await connection.invoke("SubscribeToLocation", location.id.toString());
+			} catch (e) {
+				this.log.error(`Unable to subscribe to location ${location.id}`, e);
+			}
+		}
 	}
 }
 
