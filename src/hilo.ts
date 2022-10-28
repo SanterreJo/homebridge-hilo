@@ -157,28 +157,38 @@ class Hilo implements DynamicPlatformPlugin {
 		});
 		connection.onclose(() => {
 			this.log.info("Disconnected from websocket");
-			this.log.info("Attempting to reconnect to websocket in 5 seconds");
-			if (this.webSocketRetries < 5) {
-				setTimeout(async () => {
-					this.webSocketRetries++;
-					this.log.info(`Reconnection attempt ${this.webSocketRetries + 1}`);
-					this.setupWebsocketConnection(locations);
-				}, 5000);
-			} else {
-				this.log.error(
-					`Unable to reconnect to websocket after ${
-						this.webSocketRetries + 1
-					} attempts`
-				);
-			}
+			this.retryWebsocketConnection(locations);
 		});
-		await connection.start();
+		try {
+			await connection.start();
+			this.webSocketRetries = 0;
+		} catch (e) {
+			this.log.error("Unable to start websocket connection", e);
+			this.retryWebsocketConnection(locations);
+		}
 		for (const location of locations) {
 			try {
 				await connection.invoke("SubscribeToLocation", location.id.toString());
 			} catch (e) {
 				this.log.error(`Unable to subscribe to location ${location.id}`, e);
 			}
+		}
+	}
+
+	retryWebsocketConnection(locations: Location[]) {
+		this.log.info("Attempting to reconnect to websocket in 30 seconds");
+		if (this.webSocketRetries < 5) {
+			setTimeout(async () => {
+				this.webSocketRetries++;
+				this.log.info(`Reconnection attempt ${this.webSocketRetries + 1}`);
+				this.setupWebsocketConnection(locations);
+			}, 30000);
+		} else {
+			this.log.error(
+				`Unable to reconnect to websocket after ${
+					this.webSocketRetries + 1
+				} attempts`
+			);
 		}
 	}
 }
