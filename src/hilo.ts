@@ -30,6 +30,7 @@ export default function (api: API) {
 
 class Hilo implements DynamicPlatformPlugin {
 	private readonly pluginAccessories: Record<string, HiloDevice<any>> = {};
+	private locations: Location[] = [];
 	private webSocketRetries = 0;
 	constructor(
 		private readonly log: Logging,
@@ -51,13 +52,15 @@ class Hilo implements DynamicPlatformPlugin {
 		setApi(api);
 		log.info("Initializing Hilo platform");
 		api.on(APIEvent.DID_FINISH_LAUNCHING, async () => {
-			const locations = await fetchLocations();
-			if (locations.length === 0) {
+			this.locations = await fetchLocations();
+			if (this.locations.length === 0) {
 				log.error("No locations found");
 				return;
 			}
 			const devices = (
-				await Promise.all(locations.map((location) => fetchDevices(location)))
+				await Promise.all(
+					this.locations.map((location) => fetchDevices(location))
+				)
 			).flatMap((response) => response);
 			if (devices.length === 0) {
 				log.error("No devices found");
@@ -76,7 +79,7 @@ class Hilo implements DynamicPlatformPlugin {
 					device.type
 				](accessory, this.api);
 			});
-			await this.setupWebsocketConnection(locations);
+			await this.setupWebsocketConnection();
 			const currentDeviceAssetIds = devices.map((device) => device.assetId);
 			const staleAccessories = Object.values(this.accessories).filter(
 				(accessory) =>
@@ -116,7 +119,7 @@ class Hilo implements DynamicPlatformPlugin {
 		return accessory;
 	}
 
-	private async setupWebsocketConnection(locations: Location[]) {
+	private async setupWebsocketConnection() {
 		let url: string | undefined = undefined;
 		try {
 			const response = await negociate();
@@ -157,16 +160,17 @@ class Hilo implements DynamicPlatformPlugin {
 		});
 		connection.onclose(() => {
 			this.log.info("Disconnected from websocket");
-			this.retryWebsocketConnection(locations);
+			this.retryWebsocketConnection();
 		});
 		try {
 			await connection.start();
 			this.webSocketRetries = 0;
+			this.log.info("Connected to websocket");
 		} catch (e) {
 			this.log.error("Unable to start websocket connection", e);
-			this.retryWebsocketConnection(locations);
+			this.retryWebsocketConnection();
 		}
-		for (const location of locations) {
+		for (const location of this.locations) {
 			try {
 				await connection.invoke("SubscribeToLocation", location.id.toString());
 			} catch (e) {
@@ -175,19 +179,17 @@ class Hilo implements DynamicPlatformPlugin {
 		}
 	}
 
-	retryWebsocketConnection(locations: Location[]) {
+	retryWebsocketConnection() {
 		this.log.info("Attempting to reconnect to websocket in 30 seconds");
 		if (this.webSocketRetries < 5) {
 			setTimeout(async () => {
 				this.webSocketRetries++;
-				this.log.info(`Reconnection attempt ${this.webSocketRetries + 1}`);
-				this.setupWebsocketConnection(locations);
+				this.log.info(`Reconnection attempt ${this.webSocketRetries}`);
+				this.setupWebsocketConnection();
 			}, 30000);
 		} else {
 			this.log.error(
-				`Unable to reconnect to websocket after ${
-					this.webSocketRetries + 1
-				} attempts`
+				`Unable to reconnect to websocket after ${this.webSocketRetries} attempts`
 			);
 		}
 	}
