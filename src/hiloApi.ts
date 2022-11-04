@@ -105,7 +105,7 @@ type NegotiateResponse = {
 	url: string;
 	negociateVersion: number;
 };
-export async function negociate() {
+export async function negotiate() {
 	getLogger().debug("Negotiating websocket connection");
 	const response = await hubApi.post<NegotiateResponse>(
 		"/DeviceHub/negotiate",
@@ -120,7 +120,7 @@ export async function negociate() {
 	const decoded = decode(wsAccessToken) as any;
 	setTimeout(async () => {
 		getLogger().debug("Refreshing websocket token");
-		const response = await negociate();
+		const response = await negotiate();
 		wsAccessToken = response.accessToken;
 	}, decoded.exp * 1000 - Date.now() - 1000 * 60 * 5); // 5 minutes before expiration
 	return { accessToken: response.data.accessToken, url: response.data.url };

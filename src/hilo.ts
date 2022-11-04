@@ -10,7 +10,7 @@ import * as signalR from "@microsoft/signalr";
 import { setConfig } from "./config";
 import { getLogger, setLogger, signalRLogger } from "./logger";
 import { setApi } from "./api";
-import { automationApi, getWsAccessToken, negociate } from "./hiloApi";
+import { automationApi, getWsAccessToken, negotiate } from "./hiloApi";
 import {
 	Device,
 	DeviceValue,
@@ -122,13 +122,14 @@ class Hilo implements DynamicPlatformPlugin {
 	private async setupWebsocketConnection() {
 		let url: string | undefined = undefined;
 		try {
-			const response = await negociate();
+			const response = await negotiate();
 			url = response.url;
 		} catch (error) {
 			this.log.error(
 				"Unable to connect to websocket",
 				axios.isAxiosError(error) ? error.response?.data : error
 			);
+			this.retryWebsocketConnection();
 		}
 		if (!url) return;
 		const connection = new signalR.HubConnectionBuilder()
@@ -180,13 +181,14 @@ class Hilo implements DynamicPlatformPlugin {
 	}
 
 	retryWebsocketConnection() {
-		this.log.info("Attempting to reconnect to websocket in 30 seconds");
+		const backoff = 2 ** this.webSocketRetries * 30_000;
+		this.log.info(`Attempting to reconnect to websocket in ${backoff} seconds`);
 		if (this.webSocketRetries < 5) {
 			setTimeout(async () => {
 				this.webSocketRetries++;
 				this.log.info(`Reconnection attempt ${this.webSocketRetries}`);
 				this.setupWebsocketConnection();
-			}, 30000);
+			}, backoff);
 		} else {
 			this.log.error(
 				`Unable to reconnect to websocket after ${this.webSocketRetries} attempts`
