@@ -134,7 +134,6 @@ class Hilo implements DynamicPlatformPlugin {
 		if (!url) return;
 		const connection = new signalR.HubConnectionBuilder()
 			.withUrl(url, { accessTokenFactory: getWsAccessToken })
-			.withAutomaticReconnect()
 			.configureLogging(signalRLogger)
 			.build();
 		connection.on("Heartbeat", (message) =>
