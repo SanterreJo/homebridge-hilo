@@ -10,7 +10,7 @@ import * as signalR from "@microsoft/signalr";
 import { setConfig } from "./config";
 import { getLogger, setLogger, signalRLogger } from "./logger";
 import { setApi } from "./api";
-import { automationApi, getWsAccessToken, negociate } from "./hiloApi";
+import { automationApi, getWsAccessToken, negotiate } from "./hiloApi";
 import {
 	Device,
 	DeviceValue,
@@ -29,6 +29,9 @@ export default function (api: API) {
 }
 
 class Hilo implements DynamicPlatformPlugin {
+	private readonly pluginAccessories: Record<string, HiloDevice<any>> = {};
+	private locations: Location[] = [];
+	private webSocketRetries = 0;
 	constructor(
 		private readonly log: Logging,
 		private readonly config: PlatformConfig,
@@ -36,8 +39,7 @@ class Hilo implements DynamicPlatformPlugin {
 		private readonly accessories: Record<
 			string,
 			PlatformAccessory<HiloAccessoryContext>
-		> = {},
-		private readonly pluginAccessories: Record<string, HiloDevice<any>> = {}
+		> = {}
 	) {
 		if (!config.username || !config.password) {
 			this.log.error(
@@ -50,13 +52,15 @@ class Hilo implements DynamicPlatformPlugin {
 		setApi(api);
 		log.info("Initializing Hilo platform");
 		api.on(APIEvent.DID_FINISH_LAUNCHING, async () => {
-			const locations = await fetchLocations();
-			if (locations.length === 0) {
+			this.locations = await fetchLocations();
+			if (this.locations.length === 0) {
 				log.error("No locations found");
 				return;
 			}
 			const devices = (
-				await Promise.all(locations.map((location) => fetchDevices(location)))
+				await Promise.all(
+					this.locations.map((location) => fetchDevices(location))
+				)
 			).flatMap((response) => response);
 			if (devices.length === 0) {
 				log.error("No devices found");
@@ -75,49 +79,7 @@ class Hilo implements DynamicPlatformPlugin {
 					device.type
 				](accessory, this.api);
 			});
-			let url: string | undefined = undefined;
-			try {
-				const response = await negociate();
-				url = response.url;
-			} catch (error) {
-				log.error(
-					"Unable to connect to websocket",
-					axios.isAxiosError(error) ? error.response?.data : error
-				);
-			}
-			if (!url) return;
-			const connection = new signalR.HubConnectionBuilder()
-				.withUrl(url, { accessTokenFactory: getWsAccessToken })
-				.withAutomaticReconnect()
-				.configureLogging(signalRLogger)
-				.build();
-			connection.on("Heartbeat", (message) =>
-				this.log.debug(`Heartbeat: ${message}`)
-			);
-			connection.on("DevicesValuesReceived", (message: Array<DeviceValue>) => {
-				this.log.debug(`DevicesValuesReceived:`, message);
-				message.forEach((value) => {
-					const accessory = this.accessories[value.deviceId.toString()];
-					const pluginAccessory =
-						this.pluginAccessories[value.deviceId.toString()];
-					if (!accessory || !pluginAccessory) {
-						this.log.debug(`No accessory for device ${value.deviceId}`);
-						return;
-					}
-					pluginAccessory.updateValue(value as any);
-				});
-			});
-			await connection.start();
-			for (const location of locations) {
-				try {
-					await connection.invoke(
-						"SubscribeToLocation",
-						location.id.toString()
-					);
-				} catch (e) {
-					log.error(`Unable to subscribe to location ${location.id}`, e);
-				}
-			}
+			await this.setupWebsocketConnection();
 			const currentDeviceAssetIds = devices.map((device) => device.assetId);
 			const staleAccessories = Object.values(this.accessories).filter(
 				(accessory) =>
@@ -155,6 +117,84 @@ class Hilo implements DynamicPlatformPlugin {
 		]);
 		this.accessories[accessory.context.device.id.toString()] = accessory;
 		return accessory;
+	}
+
+	private async setupWebsocketConnection() {
+		let url: string | undefined = undefined;
+		try {
+			const response = await negotiate();
+			url = response.url;
+		} catch (error) {
+			this.log.error(
+				"Unable to connect to websocket",
+				axios.isAxiosError(error) ? error.response?.data : error
+			);
+			this.retryWebsocketConnection();
+		}
+		if (!url) return;
+		const connection = new signalR.HubConnectionBuilder()
+			.withUrl(url, { accessTokenFactory: getWsAccessToken })
+			.configureLogging(signalRLogger)
+			.build();
+		connection.on("Heartbeat", (message) =>
+			this.log.debug(`Heartbeat: ${message}`)
+		);
+		connection.on("DevicesValuesReceived", (message: Array<DeviceValue>) => {
+			this.log.debug(`DevicesValuesReceived:`, message);
+			message.forEach((value) => {
+				const accessory = this.accessories[value.deviceId.toString()];
+				const pluginAccessory =
+					this.pluginAccessories[value.deviceId.toString()];
+				if (!accessory || !pluginAccessory) {
+					this.log.debug(`No accessory for device ${value.deviceId}`);
+					return;
+				}
+				pluginAccessory.updateValue(value as any);
+			});
+		});
+		connection.onreconnecting(() => {
+			this.log.info("Reconnecting to websocket");
+		});
+		connection.onreconnected(() => {
+			this.log.info("Reconnected to websocket");
+		});
+		connection.onclose(() => {
+			this.log.info("Disconnected from websocket");
+			this.retryWebsocketConnection();
+		});
+		try {
+			await connection.start();
+			this.webSocketRetries = 0;
+			this.log.info("Connected to websocket");
+		} catch (e) {
+			this.log.error("Unable to start websocket connection", e);
+			this.retryWebsocketConnection();
+		}
+		for (const location of this.locations) {
+			try {
+				await connection.invoke("SubscribeToLocation", location.id.toString());
+			} catch (e) {
+				this.log.error(`Unable to subscribe to location ${location.id}`, e);
+			}
+		}
+	}
+
+	retryWebsocketConnection() {
+		const backoff = 2 ** this.webSocketRetries * 30_000;
+		this.log.info(
+			`Attempting to reconnect to websocket in ${backoff / 1000} seconds`
+		);
+		if (this.webSocketRetries < 5) {
+			setTimeout(async () => {
+				this.webSocketRetries++;
+				this.log.info(`Reconnection attempt ${this.webSocketRetries}`);
+				this.setupWebsocketConnection();
+			}, backoff);
+		} else {
+			this.log.error(
+				`Unable to reconnect to websocket after ${this.webSocketRetries} attempts`
+			);
+		}
 	}
 }
 
