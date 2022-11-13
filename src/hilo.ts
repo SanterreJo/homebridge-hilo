@@ -181,7 +181,9 @@ class Hilo implements DynamicPlatformPlugin {
 
 	retryWebsocketConnection() {
 		const backoff = 2 ** this.webSocketRetries * 30_000;
-		this.log.info(`Attempting to reconnect to websocket in ${backoff} seconds`);
+		this.log.info(
+			`Attempting to reconnect to websocket in ${backoff / 1000} seconds`
+		);
 		if (this.webSocketRetries < 5) {
 			setTimeout(async () => {
 				this.webSocketRetries++;
