@@ -1,3 +1,15 @@
+# v1.4.1 (Sun Nov 13 2022)
+
+#### 🐛 Bug Fix
+
+- Handle Hilo server disconnection, reconnect with exponential backoff [#14](https://github.com/SanterreJo/homebridge-hilo/pull/14) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.4.0 (Sat Oct 22 2022)
 
 #### 🚀 Enhancement
