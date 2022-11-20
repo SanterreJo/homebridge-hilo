@@ -22,14 +22,17 @@ Pour que le plugin soit fonctionnel, il doit avoir accès à votre compte Hilo
 Vous pouvez fournir votre nom d'utilisateur / mot de passe lors du processus d'installation fournit par [Homebridge Config UI X (RECOMMANDÉ)](https://github.com/oznu/homebridge-config-ui-x),
 ou en ajoutant la configuration suivante à HomeBridge [homebridge](https://github.com/homebridge/homebridge/wiki/Homebridge-Config-JSON-Explained)
 
+Ce plugin fonctionne avec Allia par Stelpro, utilisez `"vendor": "allia"` dans la configuration
+
 ```json
 {
   "platforms": [
     {
         "platform": "Hilo",
         "username": "monemail@exemple.com",
-        "password": "***************"
-    },
+        "password": "***************",
+        "vendor": "hilo" // Pour Allia par Stelpro use "allia"
+    }
   ]
 }
 ```
@@ -41,7 +44,7 @@ Thermostat | ✅ |
 Interrupteur | ✅ | Non testé
 Gradateur | ✅ |
 Prise | ✅ | Non testé
-Ampoule | ✅ * | Ne supporte pas les couleurs présentement, non testé
+Ampoule | ✅ * | Ne supporte pas les couleurs présentement
 Détecteur de fumée / monoxyde de carbone | 🚧 |
 Station météo | 🚫 |
 
@@ -71,14 +74,17 @@ For the plugin to work, it needs access to your Hilo account
 You can provide your username/password via the installation process provided by [Homebridge Config UI X (RECOMMENDED)](https://github.com/oznu/homebridge-config-ui-x),
 or by adding the following configuration to [homebridge](https://github.com/homebridge/homebridge/wiki/Homebridge-Config-JSON-Explained)
 
+This plugin works with Allia by Stelpro, you can make it work by using `"vendor": "allia"` in the config.
+
 ```json
 {
   "platforms": [
     {
         "platform": "Hilo",
         "username": "myemail@example.com",
-        "password": "***************"
-    },
+        "password": "***************",
+        "vendor": "hilo" // For Allia by Stelpro use "allia"
+    }
   ]
 }
 ```
@@ -90,7 +96,7 @@ Thermostat | ✅ |
 In-wall switch | ✅ | Not tested
 In-wall dimmer | ✅ | 
 Plug-in switch | ✅ | Not tested
-Bulb | ✅ | Currently does not support colors, not tested
+Bulb | ✅ | Currently does not support colors
 Smoke / CO detector | 🚧 |
 Weather station | 🚫 |
 
