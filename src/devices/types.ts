@@ -5,6 +5,7 @@ export const SUPPORTED_DEVICE_TYPES = [
 	"WhiteBulb",
 	"Thermostat",
 	"Outlet",
+	"Challenge",
 ] as const;
 export type DeviceType = typeof SUPPORTED_DEVICE_TYPES[number];
 export type LightType = Extract<
@@ -24,7 +25,8 @@ export interface DeviceValue {
 		| "Heating"
 		| "MaxTempSetPoint"
 		| "MinTempSetPoint"
-		| "Humidity";
+		| "Humidity"
+		| "Challenge";
 	value: unknown;
 	valueType: unknown;
 }
@@ -77,27 +79,20 @@ interface HumidityDeviceValue extends DeviceValue {
 	valueType: "Percentage";
 }
 
+interface ChallengeDeviceValue extends DeviceValue {
+	attribute: "Challenge";
+	value: boolean;
+	valueType: "Boolean";
+}
+
 export type Device = {
 	id: number;
 	assetId: string;
 	identifier: string;
-	gatewayId: string;
-	gatewayExternalId: string;
 	name: string;
 	type: DeviceType;
-	groupId: null;
-	category: string;
-	icon: null;
-	loadConnected: null;
-	modelNumber: string;
 	locationId: number;
-	parameters: null;
-	externalGroup: string;
-	provider: number;
-	providerData: null;
-	supportedAttributes: string;
-	settableAttributes: string;
-	supportedParameters: string;
+	modelNumber: string;
 };
 
 type DeviceValueAttributeMap<T extends Device["type"]> = T extends LightType
@@ -112,6 +107,8 @@ type DeviceValueAttributeMap<T extends Device["type"]> = T extends LightType
 			| HumidityDeviceValue
 	: T extends "Outlet"
 	? OnOffDeviceValue
+	: T extends "Challenge"
+	? ChallengeDeviceValue
 	: never;
 
 export type HiloAccessoryContext<T extends Device["type"] = Device["type"]> = {

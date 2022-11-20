@@ -66,6 +66,20 @@ class Hilo implements DynamicPlatformPlugin {
 				log.error("No devices found");
 				return;
 			}
+			if (config.vendor === "hilo") {
+				// Add Hilo Challenge sensor for each location
+				this.locations.forEach((location) => {
+					devices.push({
+						assetId: `hilo-challenge-${location.id}`,
+						id: location.id,
+						name: `Hilo Challenge ${location.name}`,
+						type: "Challenge",
+						locationId: location.id,
+						modelNumber: "Hilo Challenge",
+						identifier: `hilo-challenge-${location.id}`,
+					});
+				});
+			}
 			devices.forEach((device) => {
 				if (!SUPPORTED_DEVICE_TYPES.includes(device.type)) {
 					this.log.debug("Unsupported device", device);
