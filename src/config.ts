@@ -7,8 +7,14 @@ export type HiloConfig = PlatformConfig & {
 	vendor: Vendor;
 };
 
+const defaultConfig: Partial<HiloConfig> = {
+	username: "",
+	password: "",
+	vendor: "hilo",
+};
+
 let _config: HiloConfig;
 export const setConfig = (config: HiloConfig) => {
-	_config = config;
+	_config = { ...defaultConfig, ...config };
 };
 export const getConfig = () => _config;
