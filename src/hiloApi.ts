@@ -1,11 +1,21 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { decode } from "jsonwebtoken";
-import { getConfig } from "./config";
+import { getConfig, Vendor } from "./config";
 import { getLogger } from "./logger";
 
 let accessToken: string | undefined;
 let wsAccessToken: string | undefined;
 let refreshToken: string | undefined;
+
+const clientIds: Record<Vendor, string> = {
+	hilo: "9870f087-25f8-43b6-9cad-d4b74ce512e1",
+	allia: "a00802c5-2c33-4a90-a3ce-90b9ad14fccd",
+};
+
+const authServers: Record<Vendor, string> = {
+	hilo: "https://hilodirectoryb2c.b2clogin.com/hilodirectoryb2c.onmicrosoft.com",
+	allia: "https://Stelproprod01.b2clogin.com/Stelproprod01.onmicrosoft.com",
+};
 
 const renewTokens = ({
 	newRefreshToken,
@@ -32,19 +42,18 @@ type TokenResponse = {
 async function login() {
 	getLogger().debug("Logging in");
 	const config = getConfig();
+	const clientId = clientIds[config.vendor];
+	const authServer = authServers[config.vendor];
 	const logger = getLogger();
 	const data = new URLSearchParams();
 	data.append("grant_type", "password");
 	data.append("username", config.username);
 	data.append("password", config.password);
-	data.append("client_id", "9870f087-25f8-43b6-9cad-d4b74ce512e1");
-	data.append(
-		"scope",
-		"openid 9870f087-25f8-43b6-9cad-d4b74ce512e1 offline_access"
-	);
+	data.append("client_id", clientId);
+	data.append("scope", `openid ${clientId} offline_access`);
 	data.append("response_type", "token");
 	const response = await axios.post<TokenResponse>(
-		"https://hilodirectoryb2c.b2clogin.com/hilodirectoryb2c.onmicrosoft.com/oauth2/v2.0/token",
+		`${authServer}/oauth2/v2.0/token`,
 		data,
 		{
 			params: { p: "B2C_1A_B2C_1_PasswordFlow" },
@@ -80,13 +89,16 @@ type RefreshTokenResponse = {
 };
 async function refreshTokenRequest() {
 	getLogger().debug("Refreshing token");
+	const config = getConfig();
+	const clientId = clientIds[config.vendor];
+	const authServer = authServers[config.vendor];
 	const data = new URLSearchParams();
 	data.append("grant_type", "refresh_token");
-	data.append("client_id", "9870f087-25f8-43b6-9cad-d4b74ce512e1");
+	data.append("client_id", clientId);
 	data.append("response_type", "token");
 	data.append("refresh_token", refreshToken!);
 	const response = await axios.post<RefreshTokenResponse>(
-		"https://hilodirectoryb2c.b2clogin.com/hilodirectoryb2c.onmicrosoft.com/oauth2/v2.0/token",
+		`${authServer}/oauth2/v2.0/token`,
 		data,
 		{
 			params: { p: "B2C_1A_B2C_1_PasswordFlow" },

@@ -7,7 +7,7 @@ import {
 	PlatformConfig,
 } from "homebridge";
 import * as signalR from "@microsoft/signalr";
-import { setConfig } from "./config";
+import { HiloConfig, setConfig } from "./config";
 import { getLogger, setLogger, signalRLogger } from "./logger";
 import { setApi } from "./api";
 import { automationApi, getWsAccessToken, negotiate } from "./hiloApi";
@@ -47,7 +47,7 @@ class Hilo implements DynamicPlatformPlugin {
 			);
 			return;
 		}
-		setConfig(config);
+		setConfig(config as HiloConfig);
 		setLogger(log);
 		setApi(api);
 		log.info("Initializing Hilo platform");
