@@ -1,3 +1,15 @@
+# v1.5.0 (Mon Nov 21 2022)
+
+#### 🚀 Enhancement
+
+- Add support for Allia by Stelpro [#18](https://github.com/SanterreJo/homebridge-hilo/pull/18) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.4.1 (Sun Nov 13 2022)
 
 #### 🐛 Bug Fix
