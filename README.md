@@ -37,6 +37,9 @@ Ce plugin fonctionne avec Allia par Stelpro, utilisez `"vendor": "allia"` dans l
 }
 ```
 
+## Défi Hilo
+Un capteur de contact vous permet de déterminer si un défi est actif ou non. Cela peut être utile pour déterminer si vos automatisations doivent être mis en pause.
+
 ## Appareils pris en charge
 Appareil | Pris en charge? | Notes
 ---|---|---
@@ -88,6 +91,9 @@ This plugin works with Allia by Stelpro, you can make it work by using `"vendor"
   ]
 }
 ```
+
+## Hilo Events (Challenges)
+A contact sensor allows you to determine whether a challenge is active or not. This can be useful in determining if your automations should be paused.
 
 ## Supported devices
 Device | Supported? | Notes

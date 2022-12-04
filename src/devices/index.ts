@@ -1,4 +1,5 @@
 import { API, PlatformAccessory } from "homebridge";
+import { HiloChallengeSensor } from "./HiloChallengeSensor";
 import { HiloDevice } from "./HiloDevice";
 import { Light } from "./Light";
 import { Outlet } from "./Outlet";
@@ -17,4 +18,5 @@ export const initializeHiloDevice: {
 	ColorBulb: (accessory, api) => new Light(accessory, api),
 	Thermostat: (accessory, api) => new Thermostat(accessory, api),
 	Outlet: (accessory, api) => new Outlet(accessory, api),
+	Challenge: (accessory, api) => new HiloChallengeSensor(accessory, api),
 };
