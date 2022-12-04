@@ -39,7 +39,8 @@ export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 			.onGet(this.getContactSensorState.bind(this));
 		setInterval(async () => {
 			this.updateChallengeStatus();
-		}, /* 30 minutes */ 30 * 60 * 1000);
+		}, /* 1 hour */ 60 * 60 * 1000);
+		this.updateChallengeStatus();
 	}
 
 	updateValue(
@@ -99,16 +100,28 @@ export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 			return;
 		}
 		this.challenges[challenge.id] = [];
+		const startsIn =
+			new Date(challenge.phases.preheatStartDateUTC).getTime() -
+			new Date().getTime();
+		const endsIn =
+			new Date(challenge.phases.recoveryEndDateUTC).getTime() -
+			new Date().getTime();
 		this.challenges[challenge.id].push(
-			setTimeout(() => {
-				this.updateChallengeValue(true);
-			}, new Date(challenge.phases.preheatStartDateUTC).getTime() - new Date().getTime())
+			setTimeout(
+				() => {
+					this.updateChallengeValue(true);
+				},
+				startsIn < 0 ? 0 : startsIn
+			)
 		);
 		this.challenges[challenge.id].push(
-			setTimeout(() => {
-				this.updateChallengeValue(false);
-				delete this.challenges[challenge.id];
-			}, new Date(challenge.phases.recoveryEndDateUTC).getTime() - new Date().getTime())
+			setTimeout(
+				() => {
+					this.updateChallengeValue(false);
+					delete this.challenges[challenge.id];
+				},
+				endsIn < 0 ? 0 : endsIn
+			)
 		);
 	}
 
