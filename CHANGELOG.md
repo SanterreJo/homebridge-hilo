@@ -1,3 +1,15 @@
+# v1.5.1 (Fri Jan 13 2023)
+
+#### 🐛 Bug Fix
+
+- Hilo challenge sensor support [#23](https://github.com/SanterreJo/homebridge-hilo/pull/23) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.5.0 (Mon Nov 21 2022)
 
 #### 🚀 Enhancement
