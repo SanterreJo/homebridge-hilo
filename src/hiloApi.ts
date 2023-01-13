@@ -159,6 +159,9 @@ export function setupAutoRefreshToken(expiresIn: number) {
 export const automationApi = axios.create({
 	baseURL: "https://apim.hiloenergie.com/Automation/v1/api",
 });
+export const eventsApi = axios.create({
+	baseURL: "https://apim.hiloenergie.com/GDService/v1/api",
+});
 export const hubApi = axios.create({
 	baseURL: "https://automation.hiloenergie.com",
 });
@@ -195,6 +198,7 @@ const authInterceptor = async (config: AxiosRequestConfig) => {
 };
 
 automationApi.interceptors.request.use(authInterceptor);
+eventsApi.interceptors.request.use(authInterceptor);
 hubApi.interceptors.request.use(authInterceptor);
 
 const unableToLogin = (e: unknown) =>

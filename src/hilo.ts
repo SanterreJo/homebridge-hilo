@@ -7,7 +7,7 @@ import {
 	PlatformConfig,
 } from "homebridge";
 import * as signalR from "@microsoft/signalr";
-import { HiloConfig, setConfig } from "./config";
+import { getConfig, HiloConfig, setConfig } from "./config";
 import { getLogger, setLogger, signalRLogger } from "./logger";
 import { setApi } from "./api";
 import { automationApi, getWsAccessToken, negotiate } from "./hiloApi";
@@ -41,13 +41,14 @@ class Hilo implements DynamicPlatformPlugin {
 			PlatformAccessory<HiloAccessoryContext>
 		> = {}
 	) {
-		if (!config.username || !config.password) {
+		setConfig(config as HiloConfig);
+		this.config = getConfig();
+		if (!this.config.username || !this.config.password) {
 			this.log.error(
 				"Please provide a username and password in the config.json file"
 			);
 			return;
 		}
-		setConfig(config as HiloConfig);
 		setLogger(log);
 		setApi(api);
 		log.info("Initializing Hilo platform");
@@ -65,6 +66,23 @@ class Hilo implements DynamicPlatformPlugin {
 			if (devices.length === 0) {
 				log.error("No devices found");
 				return;
+			}
+			if (
+				this.config.vendor === "hilo" &&
+				this.config.noChallengeSensor !== true
+			) {
+				// Add Hilo Challenge sensor for each location
+				this.locations.forEach((location) => {
+					devices.push({
+						assetId: `hilo-challenge-${location.id}`,
+						id: location.id,
+						name: `Hilo Challenge ${location.name}`,
+						type: "Challenge",
+						locationId: location.id,
+						modelNumber: "Hilo Challenge",
+						identifier: `hilo-challenge-${location.id}`,
+					});
+				});
 			}
 			devices.forEach((device) => {
 				if (!SUPPORTED_DEVICE_TYPES.includes(device.type)) {
