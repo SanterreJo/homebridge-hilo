@@ -2,7 +2,7 @@
 
 #### 🚀 Enhancement
 
-- Fix bump 1.6.0 [#24](https://github.com/SanterreJo/homebridge-hilo/pull/24) ([@SanterreJo](https://github.com/SanterreJo))
+- Hilo challenge sensor support [#23](https://github.com/SanterreJo/homebridge-hilo/pull/23) ([@SanterreJo](https://github.com/SanterreJo))
 
 #### Authors: 1
 
