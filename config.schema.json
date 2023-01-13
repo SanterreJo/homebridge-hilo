@@ -24,6 +24,12 @@
 					{ "title": "Allia by Stelpro", "enum": ["allia"] }
 				],
 				"required": true
+			},
+			"noChallengeSensor": {
+				"title": "No Challenge Sensor",
+				"type": "boolean",
+				"default": false,
+				"required": true
 			}
 		}
 	},

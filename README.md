@@ -31,7 +31,8 @@ Ce plugin fonctionne avec Allia par Stelpro, utilisez `"vendor": "allia"` dans l
         "platform": "Hilo",
         "username": "monemail@exemple.com",
         "password": "***************",
-        "vendor": "hilo" // Pour Allia par Stelpro use "allia"
+        "vendor": "hilo",
+        "noChallengeSensor": false
     }
   ]
 }
@@ -86,7 +87,8 @@ This plugin works with Allia by Stelpro, you can make it work by using `"vendor"
         "platform": "Hilo",
         "username": "myemail@example.com",
         "password": "***************",
-        "vendor": "hilo" // For Allia by Stelpro use "allia"
+        "vendor": "hilo",
+        "noChallengeSensor": false
     }
   ]
 }
