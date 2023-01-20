@@ -20,6 +20,25 @@ type Challenge = {
 };
 type EventsResponse = Array<Challenge>;
 
+const phases: Record<
+	string,
+	| { start: keyof Challenge["phases"]; end: keyof Challenge["phases"] }
+	| undefined
+> = {
+	preheat: {
+		start: "preheatStartDateUTC",
+		end: "preheatEndDateUTC",
+	},
+	reduction: {
+		start: "reductionStartDateUTC",
+		end: "reductionEndDateUTC",
+	},
+	recovery: {
+		start: "recoveryStartDateUTC",
+		end: "recoveryEndDateUTC",
+	},
+};
+
 export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 	private challenges: Record<number, NodeJS.Timeout[]> = {};
 	constructor(
@@ -100,12 +119,17 @@ export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 			return;
 		}
 		this.challenges[challenge.id] = [];
-		const startsIn =
-			new Date(challenge.phases.preheatStartDateUTC).getTime() -
-			new Date().getTime();
-		const endsIn =
-			new Date(challenge.phases.recoveryEndDateUTC).getTime() -
-			new Date().getTime();
+		const devicePhase = this.device.assetId.split("-")[0];
+		const startPhase = phases[devicePhase]?.start;
+		const endPhase = phases[devicePhase]?.end;
+		if (!startPhase || !endPhase) {
+			this.logger.error(
+				`Could not find phase for device ${this.device.assetId}`
+			);
+			return;
+		}
+		const startsIn = new Date(startPhase).getTime() - new Date().getTime();
+		const endsIn = new Date(endPhase).getTime() - new Date().getTime();
 		this.challenges[challenge.id].push(
 			setTimeout(
 				() => {

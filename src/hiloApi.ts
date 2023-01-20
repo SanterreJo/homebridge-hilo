@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
+import { setupCache } from "axios-cache-interceptor";
 import { decode } from "jsonwebtoken";
 import { getConfig, Vendor } from "./config";
 import { getLogger } from "./logger";
@@ -166,6 +167,8 @@ export const hubApi = axios.create({
 	baseURL: "https://automation.hiloenergie.com",
 });
 
+setupCache(eventsApi);
+
 const authInterceptor = async (config: AxiosRequestConfig) => {
 	if (!accessToken) {
 		if (refreshToken) {
@@ -186,14 +189,14 @@ const authInterceptor = async (config: AxiosRequestConfig) => {
 			}
 		}
 	}
-	config = {
-		...config,
-		headers: {
-			...config.headers,
-			"Ocp-Apim-Subscription-Key": "20eeaedcb86945afa3fe792cea89b8bf",
-			Authorization: accessToken ? `Bearer ${accessToken}` : "",
-		},
-	};
+	config.headers.set(
+		"Ocp-Apim-Subscription-Key",
+		"20eeaedcb86945afa3fe792cea89b8bf"
+	);
+	config.headers.set(
+		"Authorization",
+		accessToken ? `Bearer ${accessToken}` : ""
+	);
 	return config;
 };
 
