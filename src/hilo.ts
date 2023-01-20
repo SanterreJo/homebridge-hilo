@@ -73,15 +73,7 @@ class Hilo implements DynamicPlatformPlugin {
 			) {
 				// Add Hilo Challenge sensor for each location
 				this.locations.forEach((location) => {
-					devices.push({
-						assetId: `hilo-challenge-${location.id}`,
-						id: location.id,
-						name: `Hilo Challenge ${location.name}`,
-						type: "Challenge",
-						locationId: location.id,
-						modelNumber: "Hilo Challenge",
-						identifier: `hilo-challenge-${location.id}`,
-					});
+					devices.push(...getHiloChallengeDevices(location));
 				});
 			}
 			devices.forEach((device) => {
@@ -265,3 +257,33 @@ async function fetchDevices(location: Location) {
 		return [];
 	}
 }
+
+const getHiloChallengeDevices = (location: Location): Device[] => [
+	{
+		assetId: `preheat-hilo-challenge-${location.id}`,
+		id: location.id + 100,
+		name: `Preheat - Hilo Challenge ${location.name}`,
+		type: "Challenge",
+		locationId: location.id,
+		modelNumber: "Hilo Challenge",
+		identifier: `preheat-hilo-challenge-${location.id}`,
+	},
+	{
+		assetId: `reduction-hilo-challenge-${location.id}`,
+		id: location.id + 101,
+		name: `Reduction - Hilo Challenge ${location.name}`,
+		type: "Challenge",
+		locationId: location.id,
+		modelNumber: "Hilo Challenge",
+		identifier: `reduction-hilo-challenge-${location.id}`,
+	},
+	{
+		assetId: `recovery-hilo-challenge-${location.id}`,
+		id: location.id + 102,
+		name: `Recovery - Hilo Challenge ${location.name}`,
+		type: "Challenge",
+		locationId: location.id,
+		modelNumber: "Hilo Challenge",
+		identifier: `recovery-hilo-challenge-${location.id}`,
+	},
+];
