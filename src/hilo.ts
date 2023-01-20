@@ -261,7 +261,7 @@ async function fetchDevices(location: Location) {
 const getHiloChallengeDevices = (location: Location): Device[] => [
 	{
 		assetId: `preheat-hilo-challenge-${location.id}`,
-		id: location.id,
+		id: location.id + 0,
 		name: `Preheat - Hilo Challenge ${location.name}`,
 		type: "Challenge",
 		locationId: location.id,
@@ -270,7 +270,7 @@ const getHiloChallengeDevices = (location: Location): Device[] => [
 	},
 	{
 		assetId: `reduction-hilo-challenge-${location.id}`,
-		id: location.id,
+		id: location.id + 1,
 		name: `Reduction - Hilo Challenge ${location.name}`,
 		type: "Challenge",
 		locationId: location.id,
@@ -279,7 +279,7 @@ const getHiloChallengeDevices = (location: Location): Device[] => [
 	},
 	{
 		assetId: `recovery-hilo-challenge-${location.id}`,
-		id: location.id,
+		id: location.id + 2,
 		name: `Recovery - Hilo Challenge ${location.name}`,
 		type: "Challenge",
 		locationId: location.id,
