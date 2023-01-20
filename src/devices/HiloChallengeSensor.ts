@@ -128,8 +128,10 @@ export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 			);
 			return;
 		}
-		const startsIn = new Date(startPhase).getTime() - new Date().getTime();
-		const endsIn = new Date(endPhase).getTime() - new Date().getTime();
+		const startsIn =
+			new Date(challenge.phases[startPhase]).getTime() - new Date().getTime();
+		const endsIn =
+			new Date(challenge.phases[endPhase]).getTime() - new Date().getTime();
 		this.challenges[challenge.id].push(
 			setTimeout(
 				() => {
