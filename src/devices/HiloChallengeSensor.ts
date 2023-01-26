@@ -1,24 +1,6 @@
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
-import { eventsApi } from "../hiloApi";
 import { HiloDevice } from "./HiloDevice";
-import { DeviceValue, HiloAccessoryContext } from "./types";
-
-type Challenge = {
-	progress: string;
-	isParticipating: boolean;
-	isConfigurable: boolean;
-	id: number;
-	period: "am" | "pm";
-	phases: {
-		preheatStartDateUTC: string;
-		preheatEndDateUTC: string;
-		reductionStartDateUTC: string;
-		reductionEndDateUTC: string;
-		recoveryStartDateUTC: string;
-		recoveryEndDateUTC: string;
-	};
-};
-type EventsResponse = Array<Challenge>;
+import { Challenge, DeviceValue, HiloAccessoryContext } from "./types";
 
 const phases: Record<
 	string,
@@ -56,10 +38,6 @@ export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 		this.service
 			.getCharacteristic(this.api.hap.Characteristic.ContactSensorState)
 			.onGet(this.getContactSensorState.bind(this));
-		setInterval(async () => {
-			this.updateChallengeStatus();
-		}, /* 1 hour */ 60 * 60 * 1000);
-		this.updateChallengeStatus();
 	}
 
 	updateValue(
@@ -81,25 +59,16 @@ export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 		return activeChallenge;
 	}
 
-	private async updateChallengeStatus() {
-		try {
-			const response = await eventsApi.get<EventsResponse>(
-				`/Locations/${this.device.locationId}/Events`,
-				{ params: { active: true } }
-			);
-			const challenges = response.data;
-			challenges.forEach((challenge) => {
-				challenge.isParticipating
-					? this.participating(challenge)
-					: this.notParticipating(challenge);
-			});
-			if (
-				challenges.filter((challenge) => challenge.isParticipating).length === 0
-			) {
-				this.updateChallengeValue(false);
-			}
-		} catch (error) {
-			this.logger.error("Could not retrieve Hilo Challenges", error);
+	async updateChallengeStatus(challenges: Challenge[]) {
+		challenges.forEach((challenge) => {
+			challenge.isParticipating
+				? this.participating(challenge)
+				: this.notParticipating(challenge);
+		});
+		if (
+			challenges.filter((challenge) => challenge.isParticipating).length === 0
+		) {
+			this.updateChallengeValue(false);
 		}
 	}
 
@@ -132,23 +101,26 @@ export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 			new Date(challenge.phases[startPhase]).getTime() - new Date().getTime();
 		const endsIn =
 			new Date(challenge.phases[endPhase]).getTime() - new Date().getTime();
-		this.challenges[challenge.id].push(
-			setTimeout(
-				() => {
+		if (startsIn >= 0) {
+			this.challenges[challenge.id].push(
+				setTimeout(() => {
 					this.updateChallengeValue(true);
-				},
-				startsIn < 0 ? 0 : startsIn
-			)
-		);
-		this.challenges[challenge.id].push(
-			setTimeout(
-				() => {
+				}, startsIn)
+			);
+		} else if (startsIn < 0 && endsIn > 0) {
+			this.updateChallengeValue(true);
+		}
+		if (endsIn >= 0) {
+			this.challenges[challenge.id].push(
+				setTimeout(() => {
 					this.updateChallengeValue(false);
 					delete this.challenges[challenge.id];
-				},
-				endsIn < 0 ? 0 : endsIn
-			)
-		);
+				}, endsIn)
+			);
+		} else {
+			this.updateChallengeValue(false);
+			delete this.challenges[challenge.id];
+		}
 	}
 
 	private notParticipating(challenge: Challenge) {

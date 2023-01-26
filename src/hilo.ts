@@ -10,16 +10,23 @@ import * as signalR from "@microsoft/signalr";
 import { getConfig, HiloConfig, setConfig } from "./config";
 import { getLogger, setLogger, signalRLogger } from "./logger";
 import { setApi } from "./api";
-import { automationApi, getWsAccessToken, negotiate } from "./hiloApi";
+import {
+	automationApi,
+	eventsApi,
+	getWsAccessToken,
+	negotiate,
+} from "./hiloApi";
 import {
 	Device,
 	DeviceValue,
+	EventsResponse,
 	HiloAccessoryContext,
 	SUPPORTED_DEVICE_TYPES,
 } from "./devices/types";
 import { initializeHiloDevice } from "./devices";
 import axios from "axios";
 import { HiloDevice } from "./devices/HiloDevice";
+import { HiloChallengeSensor } from "./devices/HiloChallengeSensor";
 
 const PLUGIN_NAME = "homebridge-hilo";
 const PLATFORM_NAME = "Hilo";
@@ -85,9 +92,11 @@ class Hilo implements DynamicPlatformPlugin {
 				if (!accessory) {
 					accessory = this.setupNewAccessory(device);
 				}
-				this.pluginAccessories[device.id.toString()] = initializeHiloDevice[
-					device.type
-				](accessory, this.api);
+				const pluginAccessory = initializeHiloDevice[device.type](
+					accessory,
+					this.api
+				);
+				this.pluginAccessories[device.id.toString()] = pluginAccessory;
 			});
 			await this.setupWebsocketConnection();
 			const currentDeviceAssetIds = devices.map((device) => device.assetId);
@@ -103,6 +112,12 @@ class Hilo implements DynamicPlatformPlugin {
 				PLATFORM_NAME,
 				staleAccessories
 			);
+			this.locations.forEach((location) => {
+				setInterval(async () => {
+					this.updateChallenges(location);
+				}, /* 1 hour */ 60 * 60 * 1000);
+				this.updateChallenges(location);
+			});
 			log.info("Hilo platform is ready");
 		});
 	}
@@ -204,6 +219,34 @@ class Hilo implements DynamicPlatformPlugin {
 			this.log.error(
 				`Unable to reconnect to websocket after ${this.webSocketRetries} attempts`
 			);
+		}
+	}
+
+	private async updateChallenges(location: Location) {
+		if (
+			this.config.vendor !== "hilo" ||
+			this.config.noChallengeSensor === true
+		) {
+			return;
+		}
+		try {
+			const response = await eventsApi.get<EventsResponse>(
+				`/Locations/${location.id}/Events`,
+				{ params: { active: true } }
+			);
+			const challenges = response.data;
+			const locationChallengeDevices = Object.values(
+				this.pluginAccessories
+			).filter(
+				(device) =>
+					device.device.locationId === location.id &&
+					device.device.type === "Challenge"
+			) as HiloChallengeSensor[];
+			locationChallengeDevices.forEach((device) =>
+				device.updateChallengeStatus(challenges)
+			);
+		} catch (error) {
+			this.log.error("Could not retrieve Hilo Challenges", error);
 		}
 	}
 }

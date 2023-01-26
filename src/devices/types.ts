@@ -111,6 +111,23 @@ type DeviceValueAttributeMap<T extends Device["type"]> = T extends LightType
 	? ChallengeDeviceValue
 	: never;
 
+export type Challenge = {
+	progress: string;
+	isParticipating: boolean;
+	isConfigurable: boolean;
+	id: number;
+	period: "am" | "pm";
+	phases: {
+		preheatStartDateUTC: string;
+		preheatEndDateUTC: string;
+		reductionStartDateUTC: string;
+		reductionEndDateUTC: string;
+		recoveryStartDateUTC: string;
+		recoveryEndDateUTC: string;
+	};
+};
+export type EventsResponse = Array<Challenge>;
+
 export type HiloAccessoryContext<T extends Device["type"] = Device["type"]> = {
 	values: Partial<{
 		[P in DeviceValue["attribute"]]: Extract<
