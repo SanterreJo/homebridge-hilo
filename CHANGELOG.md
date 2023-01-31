@@ -1,3 +1,19 @@
+# v1.7.0 (Tue Jan 31 2023)
+
+#### 🚀 Enhancement
+
+- Add challenge phases sensors for more granularity (#27) [#28](https://github.com/SanterreJo/homebridge-hilo/pull/28) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### 📝 Documentation
+
+- Fix changelog [#25](https://github.com/SanterreJo/homebridge-hilo/pull/25) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.6.0 (Fri Jan 13 2023)
 
 #### 🚀 Enhancement
