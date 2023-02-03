@@ -14,7 +14,7 @@ const defaultConfig: Partial<HiloConfig> = {
 	password: "",
 	vendor: "hilo",
 	noChallengeSensor: false,
-	plannedHours: 5,
+	plannedHours: 2,
 };
 
 let _config: HiloConfig;
