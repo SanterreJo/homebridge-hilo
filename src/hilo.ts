@@ -329,4 +329,22 @@ const getHiloChallengeDevices = (location: Location): Device[] => [
 		modelNumber: "Hilo Challenge",
 		identifier: `recovery-hilo-challenge-${location.id}`,
 	},
+	{
+		assetId: `plannedAM-hilo-challenge-${location.id}`,
+		id: location.id + 103,
+		name: `Planned AM - Hilo Challenge ${location.name}`,
+		type: "Challenge",
+		locationId: location.id,
+		modelNumber: "Hilo Challenge",
+		identifier: `plannedAM-hilo-challenge-${location.id}`,
+	},
+	{
+		assetId: `plannedPM-hilo-challenge-${location.id}`,
+		id: location.id + 104,
+		name: `Planned PM - Hilo Challenge ${location.name}`,
+		type: "Challenge",
+		locationId: location.id,
+		modelNumber: "Hilo Challenge",
+		identifier: `plannedPM-hilo-challenge-${location.id}`,
+	},
 ];

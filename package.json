@@ -50,6 +50,7 @@
 	"dependencies": {
 		"@microsoft/signalr": "^6.0.8",
 		"axios": "^0.27.2",
+		"date-fns": "^2.29.3",
 		"jsonwebtoken": "^8.5.1"
 	},
 	"auto": {
