@@ -30,6 +30,14 @@
 				"type": "boolean",
 				"default": false,
 				"required": true
+			},
+			"plannedHours": {
+				"title": "Trigger planned challenge sensor X hours before preheat phase",
+				"type": "number",
+				"default": 2,
+				"minimum": 1,
+				"maximum": 12,
+				"required": false
 			}
 		}
 	},

@@ -6,6 +6,7 @@ export type HiloConfig = PlatformConfig & {
 	password: string;
 	vendor: Vendor;
 	noChallengeSensor: boolean;
+	plannedHours: number;
 };
 
 const defaultConfig: Partial<HiloConfig> = {
@@ -13,6 +14,7 @@ const defaultConfig: Partial<HiloConfig> = {
 	password: "",
 	vendor: "hilo",
 	noChallengeSensor: false,
+	plannedHours: 2,
 };
 
 let _config: HiloConfig;

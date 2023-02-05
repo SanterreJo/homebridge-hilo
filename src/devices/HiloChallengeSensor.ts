@@ -1,25 +1,49 @@
+import subHours from "date-fns/subHours";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
+import { getConfig, HiloConfig } from "../config";
 import { HiloDevice } from "./HiloDevice";
 import { Challenge, DeviceValue, HiloAccessoryContext } from "./types";
 
-const phases: Record<
-	string,
-	| { start: keyof Challenge["phases"]; end: keyof Challenge["phases"] }
-	| undefined
-> = {
+const phases: (
+	challenge: Challenge,
+	config: HiloConfig
+) => Record<string, { start: Date; end: Date } | undefined> = (
+	challenge,
+	config
+) => ({
 	preheat: {
-		start: "preheatStartDateUTC",
-		end: "preheatEndDateUTC",
+		start: new Date(challenge.phases.preheatStartDateUTC),
+		end: new Date(challenge.phases.preheatEndDateUTC),
 	},
 	reduction: {
-		start: "reductionStartDateUTC",
-		end: "reductionEndDateUTC",
+		start: new Date(challenge.phases.reductionStartDateUTC),
+		end: new Date(challenge.phases.reductionEndDateUTC),
 	},
 	recovery: {
-		start: "recoveryStartDateUTC",
-		end: "recoveryEndDateUTC",
+		start: new Date(challenge.phases.recoveryStartDateUTC),
+		end: new Date(challenge.phases.recoveryEndDateUTC),
 	},
-};
+	plannedAM:
+		challenge.period === "am"
+			? {
+					start: subHours(
+						new Date(challenge.phases.preheatStartDateUTC),
+						config.plannedHours
+					),
+					end: new Date(challenge.phases.preheatStartDateUTC),
+			  }
+			: undefined,
+	plannedPM:
+		challenge.period === "pm"
+			? {
+					start: subHours(
+						new Date(challenge.phases.preheatStartDateUTC),
+						config.plannedHours
+					),
+					end: new Date(challenge.phases.preheatStartDateUTC),
+			  }
+			: undefined,
+});
 
 export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 	private challenges: Record<number, NodeJS.Timeout[]> = {};
@@ -89,18 +113,17 @@ export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 		}
 		this.challenges[challenge.id] = [];
 		const devicePhase = this.device.assetId.split("-")[0];
-		const startPhase = phases[devicePhase]?.start;
-		const endPhase = phases[devicePhase]?.end;
+		const phase = phases(challenge, getConfig())[devicePhase];
+		const startPhase = phase?.start;
+		const endPhase = phase?.end;
 		if (!startPhase || !endPhase) {
-			this.logger.error(
-				`Could not find phase for device ${this.device.assetId}`
+			this.logger.debug(
+				`Could not find phase or period does not match device for device ${this.device.assetId}`
 			);
 			return;
 		}
-		const startsIn =
-			new Date(challenge.phases[startPhase]).getTime() - new Date().getTime();
-		const endsIn =
-			new Date(challenge.phases[endPhase]).getTime() - new Date().getTime();
+		const startsIn = startPhase.getTime() - new Date().getTime();
+		const endsIn = endPhase.getTime() - new Date().getTime();
 		if (startsIn >= 0) {
 			this.challenges[challenge.id].push(
 				setTimeout(() => {
