@@ -1,3 +1,15 @@
+# v1.8.0 (Sun Feb 05 2023)
+
+#### 🚀 Enhancement
+
+- Add contact sensors for planned challenges [#30](https://github.com/SanterreJo/homebridge-hilo/pull/30) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.7.0 (Tue Jan 31 2023)
 
 #### 🚀 Enhancement
