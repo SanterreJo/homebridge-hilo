@@ -1,3 +1,15 @@
+# v1.8.1 (Sun Oct 29 2023)
+
+#### 🐛 Bug Fix
+
+- Handle new websocket channels [#33](https://github.com/SanterreJo/homebridge-hilo/pull/33) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.8.0 (Sun Feb 05 2023)
 
 #### 🚀 Enhancement
