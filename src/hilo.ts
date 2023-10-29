@@ -177,6 +177,12 @@ class Hilo implements DynamicPlatformPlugin {
 				pluginAccessory.updateValue(value as any);
 			});
 		});
+		connection.on("GatewayValuesReceived", (message: any) => {
+			this.log.debug(`GatewayValuesReceived:`, message);
+		});
+		connection.on("DeviceListInitialValuesReceived", (message: any) => {
+			this.log.debug(`DeviceListInitialValuesReceived`, message);
+		});
 		connection.onreconnecting(() => {
 			this.log.info("Reconnecting to websocket");
 		});
