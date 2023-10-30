@@ -33,6 +33,7 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 			.onSet(this.setTargetHeatingCoolingState.bind(this))
 			.setProps({
 				validValues: [
+					this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF,
 					this.api.hap.Characteristic.TargetHeatingCoolingState.HEAT,
 				],
 				maxValue: this.api.hap.Characteristic.TargetHeatingCoolingState.HEAT,
