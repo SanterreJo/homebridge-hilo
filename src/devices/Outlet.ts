@@ -1,8 +1,8 @@
 import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
-import { automationApi } from "../hiloApi";
 import { HiloDevice } from "./HiloDevice";
 import { DeviceValue, HiloAccessoryContext } from "./types";
+import { api } from "../hiloApi";
 
 export class Outlet extends HiloDevice<"Outlet"> {
 	constructor(
@@ -40,7 +40,7 @@ export class Outlet extends HiloDevice<"Outlet"> {
 		const on = value as boolean;
 		this.logger.debug(`Setting ${this.device.name} ${on ? "on" : "off"}`);
 		try {
-			await automationApi.put(
+			await api.put(
 				`/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
 				{ OnOff: on }
 			);
