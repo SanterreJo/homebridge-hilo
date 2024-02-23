@@ -52,8 +52,7 @@ Ampoule | ✅ * | Ne supporte pas les couleurs présentement
 Détecteur de fumée / monoxyde de carbone | 🚧 |
 Station météo | 🚫 |
 
-Si l'un de vos appareils n'est pas encore pris en charge par le plugin, les contributions (PR) sont les bienvenues. Vous pouvez aussi faire un don ce qui me permettra d'acheter les appareils pas encore pris en charge et facilitera le développement.
-
+Si l'un de vos appareils n'est pas encore pris en charge par le plugin, les contributions (PR) sont les bienvenues.
 
 
 ---------------------------------
@@ -108,4 +107,4 @@ Bulb | ✅ | Currently does not support colors
 Smoke / CO detector | 🚧 |
 Weather station | 🚫 |
 
-If one of your device is not yet supported by the plugin, contributions (PR) are welcome. You can also consider donating to the project so I can buy the remaining devices and continue development.
+If one of your device is not yet supported by the plugin, contributions (PR) are welcome.
