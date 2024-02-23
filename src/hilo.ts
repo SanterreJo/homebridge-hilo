@@ -39,6 +39,7 @@ class Hilo implements DynamicPlatformPlugin {
 	private readonly pluginAccessories: Record<string, HiloDevice<any>> = {};
 	private locations: Location[] = [];
 	private webSocketRetries = 0;
+	private wsConnection: signalR.HubConnection | null = null;
 	constructor(
 		private readonly log: Logging,
 		private readonly config: PlatformConfig,
@@ -115,7 +116,7 @@ class Hilo implements DynamicPlatformPlugin {
 			this.locations.forEach((location) => {
 				setInterval(async () => {
 					this.updateChallenges(location);
-				}, /* 1 hour */ 60 * 60 * 1000);
+				}, /* 4 hours */ 4 * 60 * 60 * 1000);
 				this.updateChallenges(location);
 			});
 			log.info("Hilo platform is ready");
@@ -157,45 +158,47 @@ class Hilo implements DynamicPlatformPlugin {
 			this.retryWebsocketConnection();
 		}
 		if (!url) return;
-		const connection = new signalR.HubConnectionBuilder()
+		this.wsConnection = new signalR.HubConnectionBuilder()
 			.withUrl(url, { accessTokenFactory: getWsAccessToken })
 			.configureLogging(signalRLogger)
 			.build();
-		connection.on("Heartbeat", (message) =>
+		this.wsConnection.on("Heartbeat", (message) =>
 			this.log.debug(`Heartbeat: ${message}`)
 		);
-		connection.on("DevicesValuesReceived", (message: Array<DeviceValue>) => {
-			this.log.debug(`DevicesValuesReceived:`, message);
-			message.forEach((value) => {
-				const accessory = this.accessories[value.deviceId.toString()];
-				const pluginAccessory =
-					this.pluginAccessories[value.deviceId.toString()];
-				if (!accessory || !pluginAccessory) {
-					this.log.debug(`No accessory for device ${value.deviceId}`);
-					return;
-				}
-				pluginAccessory.updateValue(value as any);
-			});
-		});
-		connection.on("GatewayValuesReceived", (message: any) => {
+		this.wsConnection.on(
+			"DevicesValuesReceived",
+			(message: Array<DeviceValue>) => {
+				this.log.debug(`DevicesValuesReceived:`, message);
+				message.forEach((value) => {
+					const accessory = this.accessories[value.deviceId.toString()];
+					const pluginAccessory =
+						this.pluginAccessories[value.deviceId.toString()];
+					if (!accessory || !pluginAccessory) {
+						this.log.debug(`No accessory for device ${value.deviceId}`);
+						return;
+					}
+					pluginAccessory.updateValue(value as any);
+				});
+			}
+		);
+		this.wsConnection.on("GatewayValuesReceived", (message: any) => {
 			this.log.debug(`GatewayValuesReceived:`, message);
 		});
-		connection.on("DeviceListInitialValuesReceived", (message: any) => {
+		this.wsConnection.on("DeviceListInitialValuesReceived", (message: any) => {
 			this.log.debug(`DeviceListInitialValuesReceived`, message);
 		});
-		connection.onreconnecting(() => {
+		this.wsConnection.onreconnecting(() => {
 			this.log.info("Reconnecting to websocket");
 		});
-		connection.onreconnected(() => {
+		this.wsConnection.onreconnected(() => {
 			this.log.info("Reconnected to websocket");
 		});
-		connection.onclose(() => {
+		this.wsConnection.onclose(() => {
 			this.log.info("Disconnected from websocket");
 			this.retryWebsocketConnection();
 		});
 		try {
-			await connection.start();
-			this.webSocketRetries = 0;
+			await this.wsConnection.start();
 			this.log.info("Connected to websocket");
 		} catch (e) {
 			this.log.error("Unable to start websocket connection", e);
@@ -203,11 +206,16 @@ class Hilo implements DynamicPlatformPlugin {
 		}
 		for (const location of this.locations) {
 			try {
-				await connection.invoke("SubscribeToLocation", location.id.toString());
+				await this.wsConnection.invoke(
+					"SubscribeToLocation",
+					location.id.toString()
+				);
 			} catch (e) {
 				this.log.error(`Unable to subscribe to location ${location.id}`, e);
+				this.retryWebsocketConnection();
 			}
 		}
+		this.webSocketRetries = 0;
 	}
 
 	retryWebsocketConnection() {
@@ -219,12 +227,21 @@ class Hilo implements DynamicPlatformPlugin {
 			setTimeout(async () => {
 				this.webSocketRetries++;
 				this.log.info(`Reconnection attempt ${this.webSocketRetries}`);
+				this.stopWebsocket();
 				this.setupWebsocketConnection();
 			}, backoff);
 		} else {
 			this.log.error(
 				`Unable to reconnect to websocket after ${this.webSocketRetries} attempts`
 			);
+		}
+	}
+
+	stopWebsocket() {
+		try {
+			this.wsConnection?.stop();
+		} catch (e) {
+			this.log.error(`Unable to stop wsConnection`, e);
 		}
 	}
 
