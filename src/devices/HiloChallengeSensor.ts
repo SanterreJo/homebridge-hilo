@@ -11,6 +11,10 @@ const phases: (
 	challenge,
 	config
 ) => ({
+	inProgress: {
+		start: new Date(challenge.phases.preheatStartDateUTC),
+		end: new Date(challenge.phases.recoveryEndDateUTC),
+	},
 	preheat: {
 		start: new Date(challenge.phases.preheatStartDateUTC),
 		end: new Date(challenge.phases.preheatEndDateUTC),
