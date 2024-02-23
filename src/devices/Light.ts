@@ -2,7 +2,7 @@ import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { HiloDevice } from "./HiloDevice";
 import { DeviceValue, HiloAccessoryContext } from "./types";
-import { api } from "../hiloApi";
+import { hiloApi } from "../hiloApi";
 
 export class Light extends HiloDevice<
 	"LightDimmer" | "LightSwitch" | "ColorBulb" | "WhiteBulb"
@@ -60,7 +60,7 @@ export class Light extends HiloDevice<
 		const on = value as boolean;
 		this.logger.debug(`Setting ${this.device.name} ${on ? "on" : "off"}`);
 		try {
-			await api.put(
+			await hiloApi.put(
 				`/Automation/v1/api/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
 				{ OnOff: on }
 			);
@@ -83,8 +83,8 @@ export class Light extends HiloDevice<
 			`Setting ${this.device.name} brightness to ${brightness}`
 		);
 		try {
-			await api.put(
-				`/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
+			await hiloApi.put(
+				`/Automation/v1/api/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
 				{ Intensity: brightness / 100 }
 			);
 		} catch (error) {
