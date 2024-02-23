@@ -10,12 +10,7 @@ import * as signalR from "@microsoft/signalr";
 import { getConfig, HiloConfig, setConfig } from "./config";
 import { getLogger, setLogger, signalRLogger } from "./logger";
 import { setApi } from "./api";
-import {
-	automationApi,
-	eventsApi,
-	getWsAccessToken,
-	negotiate,
-} from "./hiloApi";
+import { getWsAccessToken, hiloApi, negotiate } from "./hiloApi";
 import {
 	Device,
 	DeviceValue,
@@ -253,8 +248,8 @@ class Hilo implements DynamicPlatformPlugin {
 			return;
 		}
 		try {
-			const response = await eventsApi.get<EventsResponse>(
-				`/Locations/${location.id}/Events`,
+			const response = await hiloApi.get<EventsResponse>(
+				`/GDService/v1/api/Locations/${location.id}/Events`,
 				{ params: { active: true } }
 			);
 			const challenges = response.data;
@@ -291,9 +286,12 @@ type LocationsResponse = Array<Location>;
 async function fetchLocations() {
 	getLogger().debug("Fetching locations");
 	try {
-		const response = await automationApi.get<LocationsResponse>("/Locations", {
-			params: { force: true },
-		});
+		const response = await hiloApi.get<LocationsResponse>(
+			"/Automation/v1/api/Locations",
+			{
+				params: { force: true },
+			}
+		);
 		return response.data;
 	} catch (error) {
 		getLogger().error(
@@ -308,8 +306,8 @@ type DevicesResponse = Array<Device>;
 async function fetchDevices(location: Location) {
 	getLogger().debug("Fetching devices for location", location.name);
 	try {
-		const response = await automationApi.get<DevicesResponse>(
-			`/Locations/${location.id}/Devices`,
+		const response = await hiloApi.get<DevicesResponse>(
+			`/Automation/v1/api/Locations/${location.id}/Devices`,
 			{
 				params: { force: true },
 			}
