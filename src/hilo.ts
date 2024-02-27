@@ -151,6 +151,7 @@ class Hilo implements DynamicPlatformPlugin {
 				axios.isAxiosError(error) ? error.response?.data : error
 			);
 			this.retryWebsocketConnection();
+			return;
 		}
 		if (!url) return;
 		this.wsConnection = new signalR.HubConnectionBuilder()
@@ -208,6 +209,7 @@ class Hilo implements DynamicPlatformPlugin {
 				);
 			} catch (e) {
 				this.log.error(`Unable to subscribe to location ${location.id}`, e);
+				this.stopWebsocket();
 				this.retryWebsocketConnection();
 				return;
 			}
@@ -216,22 +218,21 @@ class Hilo implements DynamicPlatformPlugin {
 	}
 
 	retryWebsocketConnection() {
+		if (this.webSocketRetries > 8) {
+			this.log.error(
+				`Unable to reconnect to websocket after ${this.webSocketRetries} attempts`
+			);
+			return;
+		}
 		const backoff = 2 ** this.webSocketRetries * 30_000;
 		this.log.info(
 			`Attempting to reconnect to websocket in ${backoff / 1000} seconds`
 		);
-		if (this.webSocketRetries < 8) {
-			setTimeout(async () => {
-				this.webSocketRetries++;
-				this.log.info(`Reconnection attempt ${this.webSocketRetries}`);
-				this.stopWebsocket();
-				this.setupWebsocketConnection();
-			}, backoff);
-		} else {
-			this.log.error(
-				`Unable to reconnect to websocket after ${this.webSocketRetries} attempts`
-			);
-		}
+		setTimeout(async () => {
+			this.webSocketRetries++;
+			this.log.info(`Reconnection attempt ${this.webSocketRetries}`);
+			this.setupWebsocketConnection();
+		}, backoff);
 	}
 
 	stopWebsocket() {
