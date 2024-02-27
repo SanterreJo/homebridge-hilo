@@ -198,6 +198,7 @@ class Hilo implements DynamicPlatformPlugin {
 		} catch (e) {
 			this.log.error("Unable to start websocket connection", e);
 			this.retryWebsocketConnection();
+			return;
 		}
 		for (const location of this.locations) {
 			try {
@@ -208,6 +209,7 @@ class Hilo implements DynamicPlatformPlugin {
 			} catch (e) {
 				this.log.error(`Unable to subscribe to location ${location.id}`, e);
 				this.retryWebsocketConnection();
+				return;
 			}
 		}
 		this.webSocketRetries = 0;
@@ -218,7 +220,7 @@ class Hilo implements DynamicPlatformPlugin {
 		this.log.info(
 			`Attempting to reconnect to websocket in ${backoff / 1000} seconds`
 		);
-		if (this.webSocketRetries < 5) {
+		if (this.webSocketRetries < 8) {
 			setTimeout(async () => {
 				this.webSocketRetries++;
 				this.log.info(`Reconnection attempt ${this.webSocketRetries}`);
