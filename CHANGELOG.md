@@ -1,3 +1,15 @@
+# v1.9.1 (Thu Feb 29 2024)
+
+#### ⚠️ Pushed to `main`
+
+- Update CHANGELOG.md ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.9.0 (Thu Feb 29 2024)
 
 #### 🚀 Enhancement
