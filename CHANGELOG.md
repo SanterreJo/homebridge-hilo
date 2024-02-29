@@ -1,3 +1,15 @@
+# v1.9.0 (Thu Feb 29 2024)
+
+#### 🚀 Enhancement
+
+- fix release [#46](https://github.com/SanterreJo/homebridge-hilo/pull/46) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.8.1 (Sun Oct 29 2023)
 
 #### 🐛 Bug Fix
