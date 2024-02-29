@@ -1,8 +1,8 @@
 import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
-import { automationApi } from "../hiloApi";
 import { HiloDevice } from "./HiloDevice";
 import { DeviceValue, HiloAccessoryContext } from "./types";
+import { hiloApi } from "../hiloApi";
 
 export class Thermostat extends HiloDevice<"Thermostat"> {
 	constructor(
@@ -113,8 +113,8 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 			`Setting ${this.device.name} target temparature to ${targetTemperature}`
 		);
 		try {
-			await automationApi.put(
-				`/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
+			await hiloApi.put(
+				`/Automation/v1/api/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
 				{ TargetTemperature: targetTemperature }
 			);
 		} catch (error) {

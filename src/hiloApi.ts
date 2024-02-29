@@ -119,7 +119,7 @@ type NegotiateResponse = {
 };
 export async function negotiate() {
 	getLogger().debug("Negotiating websocket connection");
-	const response = await hubApi.post<NegotiateResponse>(
+	const response = await hiloApi.post<NegotiateResponse>(
 		"/DeviceHub/negotiate",
 		{},
 		{
@@ -156,14 +156,8 @@ export function setupAutoRefreshToken(expiresIn: number) {
 	}, expiresIn * 1000 - 1000 * 60 * 5); // 5 minutes before expiration
 }
 
-export const automationApi = axios.create({
-	baseURL: "https://apim.hiloenergie.com/Automation/v1/api",
-});
-export const eventsApi = axios.create({
-	baseURL: "https://apim.hiloenergie.com/GDService/v1/api",
-});
-export const hubApi = axios.create({
-	baseURL: "https://automation.hiloenergie.com",
+export const hiloApi = axios.create({
+	baseURL: "https://api.hiloenergie.com",
 });
 
 const authInterceptor = async (config: AxiosRequestConfig) => {
@@ -197,9 +191,7 @@ const authInterceptor = async (config: AxiosRequestConfig) => {
 	return config;
 };
 
-automationApi.interceptors.request.use(authInterceptor);
-eventsApi.interceptors.request.use(authInterceptor);
-hubApi.interceptors.request.use(authInterceptor);
+hiloApi.interceptors.request.use(authInterceptor);
 
 const unableToLogin = (e: unknown) =>
 	getLogger().error(
