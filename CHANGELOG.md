@@ -1,8 +1,10 @@
 # v1.9.0 (Thu Feb 29 2024)
 
 #### 🚀 Enhancement
-
-- fix release [#46](https://github.com/SanterreJo/homebridge-hilo/pull/46) ([@SanterreJo](https://github.com/SanterreJo))
+- Use new hilo api #45 (@SanterreJo)
+- Fix Capteur pour toute la période de défi #39 - Ajout d'un capteur pour la durée du défi #42 (@SanterreJo)
+#### 🐛 Bug Fix
+- Fix Problème de connexion au serveur Hilo - Localisation #41 - Retry on failed location connection #43 (@SanterreJo)
 
 #### Authors: 1
 
