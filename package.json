@@ -1,6 +1,6 @@
 {
 	"name": "homebridge-hilo",
-	"version": "1.8.1",
+	"version": "1.8.2",
 	"description": "Plugin Homebridge (non officiel) pour la passerelle et les appareils Hilo de Hydro-Québec | Unofficial Homebridge plugin for Hydro-Québec Hilo bridge and devices",
 	"main": "dist/hilo.js",
 	"engines": {
