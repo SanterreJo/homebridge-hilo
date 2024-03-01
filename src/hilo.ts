@@ -70,10 +70,7 @@ class Hilo implements DynamicPlatformPlugin {
 				log.error("No devices found");
 				return;
 			}
-			if (
-				this.config.vendor === "hilo" &&
-				this.config.noChallengeSensor !== true
-			) {
+			if (this.config.noChallengeSensor !== true) {
 				// Add Hilo Challenge sensor for each location
 				this.locations.forEach((location) => {
 					devices.push(...getHiloChallengeDevices(location));
@@ -244,10 +241,7 @@ class Hilo implements DynamicPlatformPlugin {
 	}
 
 	private async updateChallenges(location: Location) {
-		if (
-			this.config.vendor !== "hilo" ||
-			this.config.noChallengeSensor === true
-		) {
+		if (this.config.noChallengeSensor === true) {
 			return;
 		}
 		try {
