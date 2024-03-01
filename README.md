@@ -22,8 +22,6 @@ Pour que le plugin soit fonctionnel, il doit avoir accès à votre compte Hilo
 Vous pouvez fournir votre nom d'utilisateur / mot de passe lors du processus d'installation fournit par [Homebridge Config UI X (RECOMMANDÉ)](https://github.com/oznu/homebridge-config-ui-x),
 ou en ajoutant la configuration suivante à HomeBridge [homebridge](https://github.com/homebridge/homebridge/wiki/Homebridge-Config-JSON-Explained)
 
-Ce plugin fonctionne avec Allia par Stelpro, utilisez `"vendor": "allia"` dans la configuration
-
 ```json
 {
   "platforms": [
@@ -31,7 +29,6 @@ Ce plugin fonctionne avec Allia par Stelpro, utilisez `"vendor": "allia"` dans l
         "platform": "Hilo",
         "username": "monemail@exemple.com",
         "password": "***************",
-        "vendor": "hilo",
         "noChallengeSensor": false
     }
   ]
@@ -77,8 +74,6 @@ For the plugin to work, it needs access to your Hilo account
 You can provide your username/password via the installation process provided by [Homebridge Config UI X (RECOMMENDED)](https://github.com/oznu/homebridge-config-ui-x),
 or by adding the following configuration to [homebridge](https://github.com/homebridge/homebridge/wiki/Homebridge-Config-JSON-Explained)
 
-This plugin works with Allia by Stelpro, you can make it work by using `"vendor": "allia"` in the config.
-
 ```json
 {
   "platforms": [
@@ -86,7 +81,6 @@ This plugin works with Allia by Stelpro, you can make it work by using `"vendor"
         "platform": "Hilo",
         "username": "myemail@example.com",
         "password": "***************",
-        "vendor": "hilo",
         "noChallengeSensor": false
     }
   ]

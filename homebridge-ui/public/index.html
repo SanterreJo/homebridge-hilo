@@ -1,0 +1,36 @@
+<div class="card">
+	<button type="button" class="btn btn-primary" onclick="initiateAuth()">
+		Login with Hilo
+	</button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@badgateway/oauth2-client@2.3.0"></script>
+<script>
+	async function initiateAuth() {
+		const client = new OAuth2Client({
+			server: "https://connexion.hiloenergie.com",
+			clientId: "9870f087-25f8-43b6-9cad-d4b74ce512e1",
+		});
+		const codeVerifier = await generateCodeVerifier();
+
+		// In a browser this might work as follows:
+		document.location = await client.authorizationCode.getAuthorizeUri({
+			redirectUri: document.location.origin + "/auth/callback",
+			codeVerifier,
+			scope: [
+				"openid",
+				"9870f087-25f8-43b6-9cad-d4b74ce512e1",
+				"offline_access",
+			],
+		});
+
+		const oauth2Token = await client.authorizationCode.getTokenFromCodeRedirect(
+			document.location,
+			{
+				redirectUri: document.location.origin + "/auth/callback",
+				codeVerifier,
+			}
+		);
+
+		console.log(oauth2Token);
+	}
+</script>

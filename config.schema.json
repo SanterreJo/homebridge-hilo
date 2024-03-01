@@ -2,6 +2,7 @@
 	"pluginAlias": "Hilo",
 	"pluginType": "platform",
 	"singular": true,
+	"customUi": true,
 	"schema": {
 		"type": "object",
 		"properties": {
@@ -13,16 +14,6 @@
 			"password": {
 				"title": "Password",
 				"type": "string",
-				"required": true
-			},
-			"vendor": {
-				"title": "Vendor",
-				"type": "string",
-				"default": "hilo",
-				"oneOf": [
-					{ "title": "Hilo", "enum": ["hilo"] },
-					{ "title": "Allia by Stelpro", "enum": ["allia"] }
-				],
 				"required": true
 			},
 			"noChallengeSensor": {

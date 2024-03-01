@@ -1,10 +1,8 @@
 import { PlatformConfig } from "homebridge";
 
-export type Vendor = "hilo" | "allia";
 export type HiloConfig = PlatformConfig & {
 	username: string;
 	password: string;
-	vendor: Vendor;
 	noChallengeSensor: boolean;
 	plannedHours: number;
 };
@@ -12,7 +10,6 @@ export type HiloConfig = PlatformConfig & {
 const defaultConfig: Partial<HiloConfig> = {
 	username: "",
 	password: "",
-	vendor: "hilo",
 	noChallengeSensor: false,
 	plannedHours: 2,
 };
