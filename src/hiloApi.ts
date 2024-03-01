@@ -1,21 +1,16 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { decode } from "jsonwebtoken";
-import { getConfig, Vendor } from "./config";
+import { getConfig } from "./config";
 import { getLogger } from "./logger";
 
 let accessToken: string | undefined;
 let wsAccessToken: string | undefined;
 let refreshToken: string | undefined;
 
-const clientIds: Record<Vendor, string> = {
-	hilo: "9870f087-25f8-43b6-9cad-d4b74ce512e1",
-	allia: "a00802c5-2c33-4a90-a3ce-90b9ad14fccd",
-};
+const clientId = "9870f087-25f8-43b6-9cad-d4b74ce512e1";
 
-const authServers: Record<Vendor, string> = {
-	hilo: "https://hilodirectoryb2c.b2clogin.com/hilodirectoryb2c.onmicrosoft.com",
-	allia: "https://Stelproprod01.b2clogin.com/Stelproprod01.onmicrosoft.com",
-};
+const authServer =
+	"https://hilodirectoryb2c.b2clogin.com/hilodirectoryb2c.onmicrosoft.com";
 
 const renewTokens = ({
 	newRefreshToken,
@@ -42,8 +37,6 @@ type TokenResponse = {
 async function login() {
 	getLogger().debug("Logging in");
 	const config = getConfig();
-	const clientId = clientIds[config.vendor];
-	const authServer = authServers[config.vendor];
 	const logger = getLogger();
 	const data = new URLSearchParams();
 	data.append("grant_type", "password");
@@ -89,9 +82,6 @@ type RefreshTokenResponse = {
 };
 async function refreshTokenRequest() {
 	getLogger().debug("Refreshing token");
-	const config = getConfig();
-	const clientId = clientIds[config.vendor];
-	const authServer = authServers[config.vendor];
 	const data = new URLSearchParams();
 	data.append("grant_type", "refresh_token");
 	data.append("client_id", clientId);
