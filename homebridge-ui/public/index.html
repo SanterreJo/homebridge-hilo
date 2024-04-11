@@ -31,6 +31,14 @@
 		window.open(href, "_blank");
 		const { accessToken, refreshToken, expiresIn, refreshTokenExpiresIn } = await callback;
 		const pluginConfigBlocks = await homebridge.getPluginConfig();
-		console.log(pluginConfigBlocks);
+		pluginConfigBlocks = pluginConfigBlocks.map((block) => {
+			block.accessToken = accessToken;
+			block.refreshToken = refreshToken;
+			block.expiresIn = expiresIn;
+			block.refreshTokenExpiresIn = refreshTokenExpiresIn;
+			return block;
+		});
+		await homebridge.setPluginConfig(pluginConfigBlocks);
+		console.log(await homebridge.getPluginConfig());
 	}
 </script>
