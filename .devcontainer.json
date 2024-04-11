@@ -1,5 +1,5 @@
 {
-	"image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:16-bullseye",
+	"image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:20-bookworm",
 	"mounts": [
 		"source=homebridge-hilo-extensions,target=/root/.vscode-server/extensions,type=volume"
 	],

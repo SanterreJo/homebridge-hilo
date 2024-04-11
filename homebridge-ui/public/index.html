@@ -3,34 +3,28 @@
 		Login with Hilo
 	</button>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@badgateway/oauth2-client@2.3.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@badgateway/oauth2-client@2.3.0/browser/oauth2-client.min.js"></script>
 <script>
 	async function initiateAuth() {
-		const client = new OAuth2Client({
+		const state = Math.random().toString(36).substring(7);
+		const client = new OAuth2Client.OAuth2Client({
 			server: "https://connexion.hiloenergie.com",
-			clientId: "9870f087-25f8-43b6-9cad-d4b74ce512e1",
+			clientId: "1ca9f585-4a55-4085-8e30-9746a65fa561",
+			tokenEndpoint: "/HiloDirectoryB2C.onmicrosoft.com/B2C_1A_SIGN_IN/oauth2/v2.0/token",
+			authorizationEndpoint:
+				"/HiloDirectoryB2C.onmicrosoft.com/B2C_1A_SIGN_IN/oauth2/v2.0/authorize",
 		});
-		const codeVerifier = await generateCodeVerifier();
+		const codeVerifier = await OAuth2Client.generateCodeVerifier();
 
-		// In a browser this might work as follows:
 		document.location = await client.authorizationCode.getAuthorizeUri({
-			redirectUri: document.location.origin + "/auth/callback",
+			redirectUri: "https://my.home-assistant.io/redirect/oauth",
 			codeVerifier,
+			state,
 			scope: [
 				"openid",
-				"9870f087-25f8-43b6-9cad-d4b74ce512e1",
+				"https://HiloDirectoryB2C.onmicrosoft.com/hiloapis/user_impersonation",
 				"offline_access",
-			],
+			]
 		});
-
-		const oauth2Token = await client.authorizationCode.getTokenFromCodeRedirect(
-			document.location,
-			{
-				redirectUri: document.location.origin + "/auth/callback",
-				codeVerifier,
-			}
-		);
-
-		console.log(oauth2Token);
 	}
 </script>
