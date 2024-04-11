@@ -1,15 +1,21 @@
 const { HomebridgePluginUiServer } = require("@homebridge/plugin-ui-utils");
+const express = require("express");
+
+const port = 8880;
 
 class UiServer extends HomebridgePluginUiServer {
 	constructor() {
 		super();
-		this.onRequest("/callback", this.handleCallback.bind(this));
-		this.ready();
-	}
+		const app = express();
+		app.get("/", (req, res) => {
+			console.log(req.params);
+			res.sendStatus(200);
+		});
 
-	async handleCallback(payload) {
-		console.log(payload);
-		return { hello: "world" };
+		app.listen(port, () => {
+			console.log(`Auth server listening on port ${port}`);
+		});
+		this.ready();
 	}
 }
 

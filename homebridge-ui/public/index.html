@@ -16,7 +16,7 @@
 		});
 		const codeVerifier = await OAuth2Client.generateCodeVerifier();
 
-		document.location = await client.authorizationCode.getAuthorizeUri({
+		href = await client.authorizationCode.getAuthorizeUri({
 			redirectUri: "https://my.home-assistant.io/redirect/oauth",
 			codeVerifier,
 			state,
@@ -26,5 +26,6 @@
 				"offline_access",
 			]
 		});
+		window.open(href, "_blank");
 	}
 </script>
