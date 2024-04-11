@@ -35,7 +35,6 @@ class UiServer extends HomebridgePluginUiServer {
 					}
 				);
 				const body = await tokenResponse.json();
-				console.log(body);
 				const accessToken = body.access_token;
 				const refreshToken = body.refresh_token;
 				const expiresIn = body.expires_in;

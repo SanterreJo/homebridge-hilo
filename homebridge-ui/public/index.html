@@ -29,7 +29,8 @@
 			]
 		});
 		window.open(href, "_blank");
-		const response = await callback;
-		console.log(response);
+		const { accessToken, refreshToken, expiresIn, refreshTokenExpiresIn } = await callback;
+		const pluginConfigBlocks = await homebridge.getPluginConfig();
+		console.log(pluginConfigBlocks);
 	}
 </script>
