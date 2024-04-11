@@ -11,7 +11,7 @@ class UiServer extends HomebridgePluginUiServer {
 			console.log(`Auth server listening on port ${port}`);
 		});
 		this.onRequest("/callback", this.handleCallback.bind(this));
-		this.this.ready();
+		this.ready();
 	}
 
 	async handleCallback({ codeVerifier }) {
@@ -33,7 +33,9 @@ class UiServer extends HomebridgePluginUiServer {
 					}),
 				}
 			);
-			console.log(tokenResponse);
+			const body = await tokenResponse.json();
+			console.log(body);
+			const accessToken = body.access_token;
 			res.send("Success - you can now close this window");
 		});
 	}
