@@ -16,6 +16,8 @@
 		});
 		const codeVerifier = await OAuth2Client.generateCodeVerifier();
 
+		await homebridge.request('/callback', { codeVerifier });
+
 		href = await client.authorizationCode.getAuthorizeUri({
 			redirectUri: "https://my.home-assistant.io/redirect/oauth",
 			codeVerifier,
