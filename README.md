@@ -1,3 +1,8 @@
+⚠️ Hilo a retiré la méthode de connexion par nom d'utilisateur et mot de passe à partir du 10 avril 2024. Le plugin ne fonctionnera plus jusqu'à ce qu'une nouvelle version soit publiée ⚠️
+
+⚠️ Hilo deprecated the username/password login method as of April 10th 2024. The plugin will no longer work until a new version is released ⚠️
+
+
 # homebridge-hilo
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 [![npm-version](https://badgen.net/npm/v/homebridge-hilo)](https://www.npmjs.com/package/homebridge-hilo)
