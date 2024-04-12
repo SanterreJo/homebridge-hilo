@@ -39,7 +39,7 @@ async function login() {
 	getLogger().debug("Logging in");
 	const config = getConfig();
 	const newRefreshToken = config.refreshToken;
-	renewTokens({
+	await renewTokens({
 		newRefreshToken,
 	});
 }
