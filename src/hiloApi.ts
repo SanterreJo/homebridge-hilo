@@ -9,8 +9,7 @@ let refreshToken: string | undefined;
 
 const clientId = "9870f087-25f8-43b6-9cad-d4b74ce512e1";
 
-const authServer =
-	"https://hilodirectoryb2c.b2clogin.com/hilodirectoryb2c.onmicrosoft.com";
+const authServer = "https://connexion.hiloenergie.com";
 
 const renewTokens = ({
 	newRefreshToken,
@@ -26,44 +25,16 @@ const renewTokens = ({
 	setupAutoRefreshToken(expiresIn);
 };
 
-type TokenResponse = {
-	access_token: string;
-	token_type: "Bearer";
-	expires_in: number;
-	refresh_token: string;
-	id_token: string;
-};
-
 async function login() {
 	getLogger().debug("Logging in");
 	const config = getConfig();
-	const logger = getLogger();
-	const data = new URLSearchParams();
-	data.append("grant_type", "password");
-	data.append("username", config.username);
-	data.append("password", config.password);
-	data.append("client_id", clientId);
-	data.append("scope", `openid ${clientId} offline_access`);
-	data.append("response_type", "token");
-	const response = await axios.post<TokenResponse>(
-		`${authServer}/oauth2/v2.0/token`,
-		data,
-		{
-			params: { p: "B2C_1A_B2C_1_PasswordFlow" },
-		}
-	);
-	if (response.status !== 200) {
-		const message = `Could not login. Status: ${response.status} ${
-			response.statusText
-		}. Data: ${JSON.stringify(response.data)}`;
-		logger(message);
-		throw new Error(message);
-	}
-
+	const newAccessToken = config.accessToken;
+	const newRefreshToken = config.refreshToken;
+	const expiresIn = config.expiresIn;
 	renewTokens({
-		newAccessToken: response.data.access_token,
-		newRefreshToken: response.data.refresh_token,
-		expiresIn: response.data.expires_in,
+		newAccessToken,
+		newRefreshToken,
+		expiresIn,
 	});
 }
 
@@ -88,11 +59,8 @@ async function refreshTokenRequest() {
 	data.append("response_type", "token");
 	data.append("refresh_token", refreshToken!);
 	const response = await axios.post<RefreshTokenResponse>(
-		`${authServer}/oauth2/v2.0/token`,
-		data,
-		{
-			params: { p: "B2C_1A_B2C_1_PasswordFlow" },
-		}
+		`${authServer}/HiloDirectoryB2C.onmicrosoft.com/B2C_1A_SIGN_IN/oauth2/v2.0/token`,
+		data
 	);
 
 	renewTokens({
