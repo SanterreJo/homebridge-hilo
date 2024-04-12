@@ -13,7 +13,7 @@ const clientId = "1ca9f585-4a55-4085-8e30-9746a65fa561";
 
 const authServer = "https://connexion.hiloenergie.com";
 
-const renewTokens = ({
+const renewTokens = async ({
 	newRefreshToken,
 	newAccessToken,
 	expiresIn,
@@ -32,7 +32,7 @@ const renewTokens = ({
 
 	accessToken = newAccessToken;
 	refreshToken = newRefreshToken;
-	setupAutoRefreshToken(expiresIn);
+	await setupAutoRefreshToken(expiresIn);
 };
 
 async function login() {
@@ -62,14 +62,18 @@ async function refreshTokenRequest() {
 	const data = new URLSearchParams();
 	data.append("grant_type", "refresh_token");
 	data.append("client_id", clientId);
-	data.append("response_type", "token");
 	data.append("refresh_token", refreshToken!);
+	data.append(
+		"scope",
+		"openid https://HiloDirectoryB2C.onmicrosoft.com/hiloapis/user_impersonation offline_access"
+	);
+	data.append("redirect_uri", "https://my.home-assistant.io/redirect/oauth");
 	const response = await axios.post<RefreshTokenResponse>(
 		`${authServer}/HiloDirectoryB2C.onmicrosoft.com/B2C_1A_SIGN_IN/oauth2/v2.0/token?p=b2c_1a_sign_in`,
 		data
 	);
 
-	renewTokens({
+	await renewTokens({
 		newAccessToken: response.data.access_token,
 		newRefreshToken: response.data.refresh_token,
 		expiresIn: response.data.expires_in,
