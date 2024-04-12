@@ -4,4 +4,4 @@ let _api: API;
 export const setApi = (api: API) => {
 	_api = api;
 };
-export const getapi = () => _api;
+export const getApi = () => _api;

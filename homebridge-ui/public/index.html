@@ -38,11 +38,14 @@
 			]
 		});
 		window.open(href, "_blank");
-		
-		const { refreshToken } = await callback;
+		const { refreshToken, expiresIn, refreshTokenExpiresIn } = await callback;
+		let pluginConfigBlocks = await homebridge.getPluginConfig();
+		pluginConfigBlocks = pluginConfigBlocks.map((block) => {
+			block.refreshToken = refreshToken;
+			return block;
+		});
+		await homebridge.updatePluginConfig(pluginConfigBlocks);
+		await homebridge.savePluginConfig();
 		homebridge.toast.success("Successfully authenticated with Hilo");
-
-		const refreshTokenInput = document.querySelector('input[name="refreshToken"]');
-		refreshTokenInput.value = refreshToken;
 	}
 </script>

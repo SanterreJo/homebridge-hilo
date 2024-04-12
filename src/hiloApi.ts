@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { decode } from "jsonwebtoken";
 import { getConfig } from "./config";
 import { getLogger } from "./logger";
+import { getApi } from "./api";
 
 let accessToken: string | undefined;
 let wsAccessToken: string | undefined;
@@ -20,6 +21,7 @@ const renewTokens = ({
 	newAccessToken: string;
 	expiresIn: number;
 }) => {
+	console.log(getApi().user.configPath());
 	accessToken = newAccessToken;
 	refreshToken = newRefreshToken;
 	setupAutoRefreshToken(expiresIn);
