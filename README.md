@@ -25,6 +25,15 @@ Pour que le plugin soit fonctionnel, il doit avoir accès à votre compte Hilo
 
 Vous devrez vous connecter à votre compte Hilo lors du processus d'installation fournit par [Homebridge Config UI X (REQUIS)](https://github.com/oznu/homebridge-config-ui-x)
 
+### Dans la page de configuration du plugin
+
+1. Vous devrez connaître l'adresse IP ou le nom de domaine que vous utilisez pour vous connecter à homebridge. Habituellement, ce sera l'adresse dans votre navigateur
+1. Cliquez sur le bouton "Login with Hilo" pour démarrer le processus d'authentification
+1. Connectez-vous à votre compte hilo
+1. Entrez l'adresse ip ou le nom de domaine que vous avez pris à l'étape 1 et ajoutez le port 8880 à la fin. Exemples: http://192.1680.10:8880 http://homebridge.local:8880
+1. Cliquez sur le bouton "Save", puis cliquez sur le bouton "Link account"
+1. Vous pouvez sauvegarder votre configuration et redémarrer votre serveur homebridge
+
 ```json
 {
   "platforms": [
@@ -75,6 +84,15 @@ For the plugin to work, it needs access to your Hilo account
 
 You will need to login to your Hilo account during the installation process provided by [Homebridge Config UI X (REQUIRED)](https://github.com/oznu/homebridge-config-ui-x),
 or by adding the following configuration to [homebridge](https://github.com/homebridge/homebridge/wiki/Homebridge-Config-JSON-Explained)
+
+### In the plugin configuration page
+
+1. You will need to know the IP address or the domain name you use to connect to homebridge. Usually it will be theaddress in your browser
+1. Click on the "Login with Hilo" button to start the authentication process
+1. Login to your hilo account
+1. Enter the ip address or domain name you took not at step 1 and add the port 8880 at the end. Examples: http://192.1680.10:8880 http://homebridge.local:8880
+1. Click on the "Save" button, then click on the "Link account" button
+1. You can save your config and restart your homebridge server
 
 ```json
 {
