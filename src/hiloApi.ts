@@ -39,11 +39,6 @@ async function login() {
 	getLogger().debug("Logging in");
 	const config = getConfig();
 	const newRefreshToken = config.refreshToken;
-	if (refreshToken === newRefreshToken) {
-		throw new Error(
-			"Unable to login. Please try to refresh your login credentials by using the 'Login with Hilo' button in the plugin configuration in homebridge UI"
-		);
-	}
 	renewTokens({
 		newRefreshToken,
 	});
@@ -115,11 +110,7 @@ export async function setupAutoRefreshToken(expiresIn: number | undefined) {
 		try {
 			await refreshTokenRequest();
 		} catch (e) {
-			try {
-				await login();
-			} catch (e) {
-				unableToLogin(e);
-			}
+			unableToLogin(e);
 		}
 	} else {
 		getLogger().debug("Setting up auto refresh token");
