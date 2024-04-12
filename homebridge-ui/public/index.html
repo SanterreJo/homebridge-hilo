@@ -3,9 +3,8 @@
 		<li>You will need to know the IP address or the domain name you use to connect to homebridge. Usually it will be the address in your browser</li>
 		<li>Click on the button below to start the authentication process</li>
 		<li>Login to your hilo account</li>
-		<li>Click on the "Authorize" button</li>
 		<li>Enter the ip address or domain name you took not at step 1 and add the port 8880 at the end. Examples: http://192.168.0.10:8880 http://homebridge.local:8880</li>
-		<li>Click on the "Link account" button</li>
+		<li>Click on the "Save" button, then click on the "Link account" button</li>
 		<li>You can save your config and restart your homebridge server</li>
 	</ol>
 	<button type="button" class="btn btn-primary" onclick="initiateAuth()">
@@ -39,17 +38,11 @@
 			]
 		});
 		window.open(href, "_blank");
-		const { accessToken, refreshToken, expiresIn, refreshTokenExpiresIn } = await callback;
-		let pluginConfigBlocks = await homebridge.getPluginConfig();
-		pluginConfigBlocks = pluginConfigBlocks.map((block) => {
-			block.accessToken = accessToken;
-			block.refreshToken = refreshToken;
-			block.expiresIn = expiresIn;
-			block.refreshTokenExpiresIn = refreshTokenExpiresIn;
-			return block;
-		});
-		await homebridge.updatePluginConfig(pluginConfigBlocks);
-		await homebridge.savePluginConfig();
+		
+		const { refreshToken } = await callback;
 		homebridge.toast.success("Successfully authenticated with Hilo");
+
+		const refreshTokenInput = document.querySelector('input[name="refreshToken"]');
+		refreshTokenInput.value = refreshToken;
 	}
 </script>

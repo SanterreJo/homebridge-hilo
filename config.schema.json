@@ -6,16 +6,6 @@
 	"schema": {
 		"type": "object",
 		"properties": {
-			"username": {
-				"title": "Username",
-				"type": "string",
-				"required": true
-			},
-			"password": {
-				"title": "Password",
-				"type": "string",
-				"required": true
-			},
 			"noChallengeSensor": {
 				"title": "No Challenge Sensor",
 				"type": "boolean",
@@ -29,6 +19,11 @@
 				"minimum": 1,
 				"maximum": 12,
 				"required": false
+			},
+			"refreshToken": {
+				"title": "Refresh Token - This field is automatically populated by the 'Login with Hilo' button",
+				"type": "string",
+				"required": true
 			}
 		}
 	},

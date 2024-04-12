@@ -35,16 +35,10 @@ class UiServer extends HomebridgePluginUiServer {
 					}
 				);
 				const body = await tokenResponse.json();
-				const accessToken = body.access_token;
 				const refreshToken = body.refresh_token;
-				const expiresIn = body.expires_in;
-				const refreshTokenExpiresIn = body.refresh_token_expires_in;
 				res.send("Success - you can now close this window");
 				resolve({
-					accessToken,
 					refreshToken,
-					expiresIn,
-					refreshTokenExpiresIn,
 				});
 			});
 		});
