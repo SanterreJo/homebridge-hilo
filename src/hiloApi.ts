@@ -65,7 +65,7 @@ async function refreshTokenRequest() {
 	data.append("response_type", "token");
 	data.append("refresh_token", refreshToken!);
 	const response = await axios.post<RefreshTokenResponse>(
-		`${authServer}/HiloDirectoryB2C.onmicrosoft.com/B2C_1A_SIGN_IN/oauth2/v2.0/token`,
+		`${authServer}/HiloDirectoryB2C.onmicrosoft.com/B2C_1A_SIGN_IN/oauth2/v2.0/token?p=b2c_1a_sign_in`,
 		data
 	);
 
