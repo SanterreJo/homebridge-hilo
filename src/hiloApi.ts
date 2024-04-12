@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
+import fs from "fs";
 import { decode } from "jsonwebtoken";
 import { getConfig } from "./config";
 import { getLogger } from "./logger";
@@ -18,10 +19,17 @@ const renewTokens = ({
 	expiresIn,
 }: {
 	newRefreshToken: string;
-	newAccessToken: string;
-	expiresIn: number;
+	newAccessToken?: string;
+	expiresIn?: number;
 }) => {
-	console.log(getApi().user.configPath());
+	const configPath = getApi().user.configPath();
+	const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+	const hilo = config.platforms.find(
+		(p: { platform: string }) => p.platform === "Hilo"
+	);
+	hilo.refreshToken = newRefreshToken;
+	fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
+
 	accessToken = newAccessToken;
 	refreshToken = newRefreshToken;
 	setupAutoRefreshToken(expiresIn);
@@ -33,6 +41,11 @@ async function login() {
 	const newAccessToken = config.accessToken;
 	const newRefreshToken = config.refreshToken;
 	const expiresIn = config.expiresIn;
+	if (refreshToken === newRefreshToken) {
+		throw new Error(
+			"Unable to login. Please try to refresh your login credentials by using the 'Login with Hilo' button in the plugin configuration in homebridge UI"
+		);
+	}
 	renewTokens({
 		newAccessToken,
 		newRefreshToken,
@@ -100,10 +113,9 @@ export async function negotiate() {
 
 export const getWsAccessToken = () => wsAccessToken || "";
 
-export function setupAutoRefreshToken(expiresIn: number) {
-	getLogger().debug("Setting up auto refresh token");
-	setTimeout(async () => {
-		getLogger().debug("Refreshing token automatically");
+export async function setupAutoRefreshToken(expiresIn: number | undefined) {
+	if (!expiresIn) {
+		getLogger().debug("Refreshing token");
 		try {
 			await refreshTokenRequest();
 		} catch (e) {
@@ -113,7 +125,21 @@ export function setupAutoRefreshToken(expiresIn: number) {
 				unableToLogin(e);
 			}
 		}
-	}, expiresIn * 1000 - 1000 * 60 * 5); // 5 minutes before expiration
+	} else {
+		getLogger().debug("Setting up auto refresh token");
+		setTimeout(async () => {
+			getLogger().debug("Refreshing token automatically");
+			try {
+				await refreshTokenRequest();
+			} catch (e) {
+				try {
+					await login();
+				} catch (e) {
+					unableToLogin(e);
+				}
+			}
+		}, expiresIn * 1000 - 1000 * 60 * 5); // 5 minutes before expiration
+	}
 }
 
 export const hiloApi = axios.create({
