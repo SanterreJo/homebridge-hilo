@@ -1,7 +1,6 @@
-⚠️ Hilo a retiré la méthode de connexion par nom d'utilisateur et mot de passe à partir du 10 avril 2024. Le plugin ne fonctionnera plus jusqu'à ce qu'une nouvelle version soit publiée ⚠️
+⚠️ Hilo a retiré la méthode de connexion par nom d'utilisateur et mot de passe à partir du 10 avril 2024. Les versions 1.X.X ne fonctionnent plus. Veuillez installer la version 2.0.0 ou supérieur ⚠️
 
-⚠️ Hilo deprecated the username/password login method as of April 10th 2024. The plugin will no longer work until a new version is released ⚠️
-
+⚠️ Hilo deprecated the username/password login method as of April 10th 2024. Versions 1.X.X no longer work. You must install version 2.0.0 or higher. ⚠️
 
 # homebridge-hilo
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
@@ -19,22 +18,20 @@ Note: Ceci n'est pas un plugin officiel, le plugin n'est pas affilié avec Hilo 
 ## Installation
 1. Installer Homebridge en suivant
    [les instructions](https://github.com/homebridge/homebridge/wiki).
-2. Installer le plugin en utilisant [Homebridge Config UI X (RECOMMANDÉ)](https://github.com/oznu/homebridge-config-ui-x), ou en exécutant `npm install -g homebridge-hilo`.
+2. Installer le plugin en utilisant [Homebridge Config UI X (REQUIS)](https://github.com/oznu/homebridge-config-ui-x), ou en exécutant `npm install -g homebridge-hilo`.
 
 ## Configuration
 Pour que le plugin soit fonctionnel, il doit avoir accès à votre compte Hilo
 
-Vous pouvez fournir votre nom d'utilisateur / mot de passe lors du processus d'installation fournit par [Homebridge Config UI X (RECOMMANDÉ)](https://github.com/oznu/homebridge-config-ui-x),
-ou en ajoutant la configuration suivante à HomeBridge [homebridge](https://github.com/homebridge/homebridge/wiki/Homebridge-Config-JSON-Explained)
+Vous devrez vous connecter à votre compte Hilo lors du processus d'installation fournit par [Homebridge Config UI X (REQUIS)](https://github.com/oznu/homebridge-config-ui-x)
 
 ```json
 {
   "platforms": [
     {
         "platform": "Hilo",
-        "username": "monemail@exemple.com",
-        "password": "***************",
-        "noChallengeSensor": false
+        "noChallengeSensor": false,
+        "plannedHours": 2
     }
   ]
 }
@@ -71,12 +68,12 @@ Note: This is not an official plugin, this plugin is not affiliated with Hilo no
 ## Installation
 1. Install Homebridge by following
    [the instructions](https://github.com/homebridge/homebridge/wiki).
-2. Install this plugin using [Homebridge Config UI X (RECOMMENDED)](https://github.com/oznu/homebridge-config-ui-x), or by running `npm install -g homebridge-hilo`.
+2. Install this plugin using [Homebridge Config UI X (REQUIRED)](https://github.com/oznu/homebridge-config-ui-x), or by running `npm install -g homebridge-hilo`.
 
 ## Configuration
 For the plugin to work, it needs access to your Hilo account
 
-You can provide your username/password via the installation process provided by [Homebridge Config UI X (RECOMMENDED)](https://github.com/oznu/homebridge-config-ui-x),
+You will need to login to your Hilo account during the installation process provided by [Homebridge Config UI X (REQUIRED)](https://github.com/oznu/homebridge-config-ui-x),
 or by adding the following configuration to [homebridge](https://github.com/homebridge/homebridge/wiki/Homebridge-Config-JSON-Explained)
 
 ```json
@@ -84,9 +81,8 @@ or by adding the following configuration to [homebridge](https://github.com/home
   "platforms": [
     {
         "platform": "Hilo",
-        "username": "myemail@example.com",
-        "password": "***************",
-        "noChallengeSensor": false
+        "noChallengeSensor": false,
+        "plannedHours": 2
     }
   ]
 }

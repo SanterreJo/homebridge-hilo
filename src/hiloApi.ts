@@ -155,9 +155,6 @@ const unableToLogin = (e: unknown) => {
 	const logger = getLogger();
 	logger.error("Unable to login", axios.isAxiosError(e) ? e.response?.data : e);
 	logger.error(
-		"Hilo deprecated the username/password login method as of April 10th 2024. The plugin will no longer work until a new version is released"
-	);
-	logger.error(
-		"Hilo a retiré la méthode de connexion par nom d'utilisateur et mot de passe à partir du 10 avril 2024. Le plugin ne fonctionnera plus jusqu'à ce qu'une nouvelle version soit publiée"
+		"You can try to refresh your login credentials by using the 'Login with Hilo' button in the plugin configuration in homebridge UI"
 	);
 };

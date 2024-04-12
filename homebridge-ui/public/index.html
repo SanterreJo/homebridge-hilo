@@ -1,10 +1,20 @@
 <div class="card">
+	<ol>
+		<li>You will need to know the IP address or the domain name you use to connect to homebridge. Usually it will be the address in your browser</li>
+		<li>Click on the button below to start the authentication process</li>
+		<li>Login to your hilo account</li>
+		<li>Click on the "Authorize" button</li>
+		<li>Enter the ip address or domain name you took not at step 1 and add the port 8880 at the end. Examples: http://192.168.0.10:8880 http://homebridge.local:8880</li>
+		<li>Click on the "Link account" button</li>
+		<li>You can save your config and restart your homebridge server</li>
+	</ol>
 	<button type="button" class="btn btn-primary" onclick="initiateAuth()">
 		Login with Hilo
 	</button>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@badgateway/oauth2-client@2.3.0/browser/oauth2-client.min.js"></script>
 <script>
+	homebridge.showSchemaForm();
 	async function initiateAuth() {
 		const state = Math.random().toString(36).substring(7);
 		const client = new OAuth2Client.OAuth2Client({
@@ -39,5 +49,7 @@
 			return block;
 		});
 		await homebridge.updatePluginConfig(pluginConfigBlocks);
+		await homebridge.savePluginConfig();
+		homebridge.toast.success("Successfully authenticated with Hilo");
 	}
 </script>

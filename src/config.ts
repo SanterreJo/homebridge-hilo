@@ -1,15 +1,11 @@
 import { PlatformConfig } from "homebridge";
 
 export type HiloConfig = PlatformConfig & {
-	username: string;
-	password: string;
 	noChallengeSensor: boolean;
 	plannedHours: number;
 };
 
 const defaultConfig: Partial<HiloConfig> = {
-	username: "",
-	password: "",
 	noChallengeSensor: false,
 	plannedHours: 2,
 };
