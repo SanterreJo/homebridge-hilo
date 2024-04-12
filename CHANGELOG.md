@@ -1,3 +1,15 @@
+# v1.9.2 (Fri Apr 12 2024)
+
+#### 🐛 Bug Fix
+
+- Update doc for deprecated auth [#49](https://github.com/SanterreJo/homebridge-hilo/pull/49) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.9.1 (Thu Feb 29 2024)
 
 #### ⚠️ Pushed to `main`
