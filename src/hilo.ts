@@ -46,10 +46,8 @@ class Hilo implements DynamicPlatformPlugin {
 	) {
 		setConfig(config as HiloConfig);
 		this.config = getConfig();
-		if (!this.config.username || !this.config.password) {
-			this.log.error(
-				"Please provide a username and password in the config.json file"
-			);
+		if (!this.config.accessToken) {
+			this.log.error("Please login with hilo in the plugin configuration page");
 			return;
 		}
 		setLogger(log);

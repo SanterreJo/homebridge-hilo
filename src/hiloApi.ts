@@ -7,7 +7,7 @@ let accessToken: string | undefined;
 let wsAccessToken: string | undefined;
 let refreshToken: string | undefined;
 
-const clientId = "9870f087-25f8-43b6-9cad-d4b74ce512e1";
+const clientId = "1ca9f585-4a55-4085-8e30-9746a65fa561";
 
 const authServer = "https://connexion.hiloenergie.com";
 
