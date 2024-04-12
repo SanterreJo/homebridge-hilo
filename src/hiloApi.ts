@@ -38,18 +38,14 @@ const renewTokens = ({
 async function login() {
 	getLogger().debug("Logging in");
 	const config = getConfig();
-	const newAccessToken = config.accessToken;
 	const newRefreshToken = config.refreshToken;
-	const expiresIn = config.expiresIn;
 	if (refreshToken === newRefreshToken) {
 		throw new Error(
 			"Unable to login. Please try to refresh your login credentials by using the 'Login with Hilo' button in the plugin configuration in homebridge UI"
 		);
 	}
 	renewTokens({
-		newAccessToken,
 		newRefreshToken,
-		expiresIn,
 	});
 }
 
