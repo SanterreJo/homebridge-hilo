@@ -17,7 +17,7 @@
 		const { authorizationURL } = await homebridge.request('/autorizationUrl');
 		const callback = homebridge.request('/callback');
 
-		window.open(authorizationUrl, "_blank");
+		window.open(authorizationURL, "_blank");
 
 		const { accessToken, refreshToken, expiresIn } = await callback;
 		let pluginConfigBlocks = await homebridge.getPluginConfig();
