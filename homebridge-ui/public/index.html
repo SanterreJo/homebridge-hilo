@@ -14,7 +14,7 @@
 <script>
 	homebridge.showSchemaForm();
 	async function initiateAuth() {
-		const { authorizationUrl } = await homebridge.request('/autorizationUrl');
+		const { authorizationURL } = await homebridge.request('/autorizationUrl');
 		const callback = homebridge.request('/callback');
 
 		window.open(authorizationUrl, "_blank");
