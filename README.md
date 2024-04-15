@@ -31,6 +31,7 @@ Vous devrez vous connecter à votre compte Hilo lors du processus d'installation
 1. Cliquez sur le bouton "Login with Hilo" pour démarrer le processus d'authentification
 1. Connectez-vous à votre compte hilo
 1. Entrez l'adresse ip ou le nom de domaine que vous avez pris à l'étape 1 et ajoutez le port 8880 à la fin. Exemples: http://192.1680.10:8880 http://homebridge.local:8880
+    * Attention: Selon la façon dont vous avez configuré votre serveur homebridge, vous devrez vous assurer que le port 8880 est acheminé jusqu'à votre serveur homebridge. Par exemple pour une configuration docker il faudra ajouter `-p 8880:8880` à votre commande docker. Si vous utilisez un reverse proxy, vous devrez ajouter le port 8880 à votre configuration
 1. Cliquez sur le bouton "Save", puis cliquez sur le bouton "Link account"
 1. Vous pouvez sauvegarder votre configuration et redémarrer votre serveur homebridge
 
@@ -91,6 +92,7 @@ or by adding the following configuration to [homebridge](https://github.com/home
 1. Click on the "Login with Hilo" button to start the authentication process
 1. Login to your hilo account
 1. Enter the ip address or domain name you took not at step 1 and add the port 8880 at the end. Examples: http://192.1680.10:8880 http://homebridge.local:8880
+    * Note: Depending on how you have configured your homebridge server, you will need to ensure that port 8880 is routed to your homebridge server. For example for a docker configuration you will need to add `-p 8880:8880` to your docker command. If you are using a reverse proxy, you will need to add port 8880 to your configuration
 1. Click on the "Save" button, then click on the "Link account" button
 1. You can save your config and restart your homebridge server
 
