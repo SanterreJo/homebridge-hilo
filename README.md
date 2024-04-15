@@ -35,18 +35,6 @@ Vous devrez vous connecter à votre compte Hilo lors du processus d'installation
 1. Cliquez sur le bouton "Save", puis cliquez sur le bouton "Link account"
 1. Vous pouvez sauvegarder votre configuration et redémarrer votre serveur homebridge
 
-```json
-{
-  "platforms": [
-    {
-        "platform": "Hilo",
-        "noChallengeSensor": false,
-        "plannedHours": 2
-    }
-  ]
-}
-```
-
 ## Défi Hilo
 Un capteur de contact vous permet de déterminer si un défi est actif ou non. Cela peut être utile pour déterminer si vos automatisations doivent être mis en pause.
 
@@ -65,7 +53,6 @@ Si l'un de vos appareils n'est pas encore pris en charge par le plugin, les cont
 
 
 ---------------------------------
-
 
 
 # homebridge-hilo
@@ -95,18 +82,6 @@ or by adding the following configuration to [homebridge](https://github.com/home
     * Note: Depending on how you have configured your homebridge server, you will need to ensure that port 8880 is routed to your homebridge server. For example for a docker configuration you will need to add `-p 8880:8880` to your docker command. If you are using a reverse proxy, you will need to add port 8880 to your configuration
 1. Click on the "Save" button, then click on the "Link account" button
 1. You can save your config and restart your homebridge server
-
-```json
-{
-  "platforms": [
-    {
-        "platform": "Hilo",
-        "noChallengeSensor": false,
-        "plannedHours": 2
-    }
-  ]
-}
-```
 
 ## Hilo Events (Challenges)
 A contact sensor allows you to determine whether a challenge is active or not. This can be useful in determining if your automations should be paused.
