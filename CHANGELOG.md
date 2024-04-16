@@ -1,3 +1,15 @@
+# v2.0.0 (Tue Apr 16 2024)
+
+#### 💥 Breaking Change
+
+- New auth [#48](https://github.com/SanterreJo/homebridge-hilo/pull/48) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.9.2 (Fri Apr 12 2024)
 
 #### 🐛 Bug Fix
