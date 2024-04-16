@@ -1,76 +1,46 @@
 import axios, { AxiosRequestConfig } from "axios";
+import fs from "fs";
 import { decode } from "jsonwebtoken";
-import { getConfig, Vendor } from "./config";
+import { getConfig } from "./config";
 import { getLogger } from "./logger";
+import { getApi } from "./api";
 
 let accessToken: string | undefined;
 let wsAccessToken: string | undefined;
 let refreshToken: string | undefined;
 
-const clientIds: Record<Vendor, string> = {
-	hilo: "9870f087-25f8-43b6-9cad-d4b74ce512e1",
-	allia: "a00802c5-2c33-4a90-a3ce-90b9ad14fccd",
-};
+const clientId = "1ca9f585-4a55-4085-8e30-9746a65fa561";
 
-const authServers: Record<Vendor, string> = {
-	hilo: "https://hilodirectoryb2c.b2clogin.com/hilodirectoryb2c.onmicrosoft.com",
-	allia: "https://Stelproprod01.b2clogin.com/Stelproprod01.onmicrosoft.com",
-};
+const authServer = "https://connexion.hiloenergie.com";
 
-const renewTokens = ({
+const renewTokens = async ({
 	newRefreshToken,
 	newAccessToken,
 	expiresIn,
 }: {
 	newRefreshToken: string;
-	newAccessToken: string;
-	expiresIn: number;
+	newAccessToken?: string;
+	expiresIn?: number;
 }) => {
+	const configPath = getApi().user.configPath();
+	const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+	const hilo = config.platforms.find(
+		(p: { platform: string }) => p.platform === "Hilo"
+	);
+	hilo.refreshToken = newRefreshToken;
+	fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
+
 	accessToken = newAccessToken;
 	refreshToken = newRefreshToken;
-	setupAutoRefreshToken(expiresIn);
-};
-
-type TokenResponse = {
-	access_token: string;
-	token_type: "Bearer";
-	expires_in: number;
-	refresh_token: string;
-	id_token: string;
+	await setupAutoRefreshToken(expiresIn);
 };
 
 async function login() {
 	getLogger().debug("Logging in");
 	const config = getConfig();
-	const clientId = clientIds[config.vendor];
-	const authServer = authServers[config.vendor];
-	const logger = getLogger();
-	const data = new URLSearchParams();
-	data.append("grant_type", "password");
-	data.append("username", config.username);
-	data.append("password", config.password);
-	data.append("client_id", clientId);
-	data.append("scope", `openid ${clientId} offline_access`);
-	data.append("response_type", "token");
-	const response = await axios.post<TokenResponse>(
-		`${authServer}/oauth2/v2.0/token`,
-		data,
-		{
-			params: { p: "B2C_1A_B2C_1_PasswordFlow" },
-		}
-	);
-	if (response.status !== 200) {
-		const message = `Could not login. Status: ${response.status} ${
-			response.statusText
-		}. Data: ${JSON.stringify(response.data)}`;
-		logger(message);
-		throw new Error(message);
-	}
-
-	renewTokens({
-		newAccessToken: response.data.access_token,
-		newRefreshToken: response.data.refresh_token,
-		expiresIn: response.data.expires_in,
+	const newRefreshToken = config.refreshToken;
+	await renewTokens({
+		newRefreshToken,
 	});
 }
 
@@ -89,23 +59,21 @@ type RefreshTokenResponse = {
 };
 async function refreshTokenRequest() {
 	getLogger().debug("Refreshing token");
-	const config = getConfig();
-	const clientId = clientIds[config.vendor];
-	const authServer = authServers[config.vendor];
 	const data = new URLSearchParams();
 	data.append("grant_type", "refresh_token");
 	data.append("client_id", clientId);
-	data.append("response_type", "token");
 	data.append("refresh_token", refreshToken!);
+	data.append(
+		"scope",
+		"openid https://HiloDirectoryB2C.onmicrosoft.com/hiloapis/user_impersonation offline_access"
+	);
+	data.append("redirect_uri", "https://my.home-assistant.io/redirect/oauth");
 	const response = await axios.post<RefreshTokenResponse>(
-		`${authServer}/oauth2/v2.0/token`,
-		data,
-		{
-			params: { p: "B2C_1A_B2C_1_PasswordFlow" },
-		}
+		`${authServer}/HiloDirectoryB2C.onmicrosoft.com/B2C_1A_SIGN_IN/oauth2/v2.0/token?p=b2c_1a_sign_in`,
+		data
 	);
 
-	renewTokens({
+	await renewTokens({
 		newAccessToken: response.data.access_token,
 		newRefreshToken: response.data.refresh_token,
 		expiresIn: response.data.expires_in,
@@ -140,20 +108,29 @@ export async function negotiate() {
 
 export const getWsAccessToken = () => wsAccessToken || "";
 
-export function setupAutoRefreshToken(expiresIn: number) {
-	getLogger().debug("Setting up auto refresh token");
-	setTimeout(async () => {
-		getLogger().debug("Refreshing token automatically");
+export async function setupAutoRefreshToken(expiresIn: number | undefined) {
+	if (!expiresIn) {
+		getLogger().debug("Refreshing token");
 		try {
 			await refreshTokenRequest();
 		} catch (e) {
-			try {
-				await login();
-			} catch (e) {
-				unableToLogin(e);
-			}
+			unableToLogin(e);
 		}
-	}, expiresIn * 1000 - 1000 * 60 * 5); // 5 minutes before expiration
+	} else {
+		getLogger().debug("Setting up auto refresh token");
+		setTimeout(async () => {
+			getLogger().debug("Refreshing token automatically");
+			try {
+				await refreshTokenRequest();
+			} catch (e) {
+				try {
+					await login();
+				} catch (e) {
+					unableToLogin(e);
+				}
+			}
+		}, expiresIn * 1000 - 1000 * 60 * 5); // 5 minutes before expiration
+	}
 }
 
 export const hiloApi = axios.create({
@@ -197,9 +174,6 @@ const unableToLogin = (e: unknown) => {
 	const logger = getLogger();
 	logger.error("Unable to login", axios.isAxiosError(e) ? e.response?.data : e);
 	logger.error(
-		"Hilo deprecated the username/password login method as of April 10th 2024. The plugin will no longer work until a new version is released"
-	);
-	logger.error(
-		"Hilo a retiré la méthode de connexion par nom d'utilisateur et mot de passe à partir du 10 avril 2024. Le plugin ne fonctionnera plus jusqu'à ce qu'une nouvelle version soit publiée"
+		"You can try to refresh your login credentials by using the 'Login with Hilo' button in the plugin configuration in homebridge UI"
 	);
 };

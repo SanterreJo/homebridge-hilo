@@ -46,10 +46,8 @@ class Hilo implements DynamicPlatformPlugin {
 	) {
 		setConfig(config as HiloConfig);
 		this.config = getConfig();
-		if (!this.config.username || !this.config.password) {
-			this.log.error(
-				"Please provide a username and password in the config.json file"
-			);
+		if (!this.config.refreshToken) {
+			this.log.error("Please login with hilo in the plugin configuration page");
 			return;
 		}
 		setLogger(log);
@@ -70,10 +68,7 @@ class Hilo implements DynamicPlatformPlugin {
 				log.error("No devices found");
 				return;
 			}
-			if (
-				this.config.vendor === "hilo" &&
-				this.config.noChallengeSensor !== true
-			) {
+			if (this.config.noChallengeSensor !== true) {
 				// Add Hilo Challenge sensor for each location
 				this.locations.forEach((location) => {
 					devices.push(...getHiloChallengeDevices(location));
@@ -244,10 +239,7 @@ class Hilo implements DynamicPlatformPlugin {
 	}
 
 	private async updateChallenges(location: Location) {
-		if (
-			this.config.vendor !== "hilo" ||
-			this.config.noChallengeSensor === true
-		) {
+		if (this.config.noChallengeSensor === true) {
 			return;
 		}
 		try {

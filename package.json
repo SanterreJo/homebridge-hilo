@@ -48,9 +48,11 @@
 		"typescript": "^4.7.4"
 	},
 	"dependencies": {
+		"@homebridge/plugin-ui-utils": "^1.0.3",
 		"@microsoft/signalr": "^6.0.8",
 		"axios": "^0.27.2",
 		"date-fns": "^2.29.3",
+		"express": "^4.19.2",
 		"jsonwebtoken": "^8.5.1"
 	},
 	"auto": {
