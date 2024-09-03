@@ -1,3 +1,15 @@
+# v2.0.1 (Tue Sep 03 2024)
+
+#### 🐛 Bug Fix
+
+- Fix initial config setup on new installs [#54](https://github.com/SanterreJo/homebridge-hilo/pull/54) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v2.0.0 (Tue Apr 16 2024)
 
 #### 💥 Breaking Change
