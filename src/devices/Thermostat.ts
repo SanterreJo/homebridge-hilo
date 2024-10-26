@@ -22,6 +22,7 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 			.onGet(this.getCurrentHeatingCoolingState.bind(this))
 			.setProps({
 				validValues: [
+					this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF,
 					this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT,
 				],
 				maxValue: this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT,
@@ -75,7 +76,9 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 						this.api.hap.Characteristic.CurrentHeatingCoolingState
 					)
 					?.updateValue(
-						this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT
+						value?.value
+							? this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT
+							: this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF
 					);
 				break;
 		}
@@ -83,7 +86,9 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 
 	private async getCurrentHeatingCoolingState(): Promise<CharacteristicValue> {
 		this.logger.debug(`Getting ${this.device.name} currentHeatingCoolingState`);
-		return this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT;
+		return this.values.Heating?.value
+			? this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT
+			: this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF;
 	}
 
 	private async getTargetHeatingCoolingState(): Promise<CharacteristicValue> {
