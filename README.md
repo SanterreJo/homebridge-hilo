@@ -18,7 +18,7 @@ Note: Ceci n'est pas un plugin officiel, le plugin n'est pas affilié avec Hilo 
 ## Installation
 1. Installer Homebridge en suivant
    [les instructions](https://github.com/homebridge/homebridge/wiki).
-2. Installer le plugin en utilisant [Homebridge Config UI X (REQUIS)](https://github.com/oznu/homebridge-config-ui-x), ou en exécutant `npm install -g homebridge-hilo`.
+2. Installer le plugin en utilisant [Homebridge Config UI X (REQUIS)](https://github.com/oznu/homebridge-config-ui-x).
 
 ## Configuration
 Pour que le plugin soit fonctionnel, il doit avoir accès à votre compte Hilo
@@ -65,7 +65,7 @@ Note: This is not an official plugin, this plugin is not affiliated with Hilo no
 ## Installation
 1. Install Homebridge by following
    [the instructions](https://github.com/homebridge/homebridge/wiki).
-2. Install this plugin using [Homebridge Config UI X (REQUIRED)](https://github.com/oznu/homebridge-config-ui-x), or by running `npm install -g homebridge-hilo`.
+2. Install this plugin using [Homebridge Config UI X (REQUIRED)](https://github.com/oznu/homebridge-config-ui-x).
 
 ## Configuration
 For the plugin to work, it needs access to your Hilo account
