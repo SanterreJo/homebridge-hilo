@@ -22,7 +22,6 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 			.onGet(this.getCurrentHeatingCoolingState.bind(this))
 			.setProps({
 				validValues: [
-					this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF,
 					this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT,
 				],
 				maxValue: this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT,
@@ -33,9 +32,9 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 			.onSet(this.setTargetHeatingCoolingState.bind(this))
 			.setProps({
 				validValues: [
-					this.api.hap.Characteristic.TargetHeatingCoolingState.AUTO,
+					this.api.hap.Characteristic.TargetHeatingCoolingState.HEAT,
 				],
-				maxValue: this.api.hap.Characteristic.TargetHeatingCoolingState.AUTO,
+				maxValue: this.api.hap.Characteristic.TargetHeatingCoolingState.HEAT,
 			});
 		this.service
 			.getCharacteristic(this.api.hap.Characteristic.CurrentTemperature)
@@ -76,9 +75,7 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 						this.api.hap.Characteristic.CurrentHeatingCoolingState
 					)
 					?.updateValue(
-						value?.value
-							? this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT
-							: this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF
+						this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT
 					);
 				break;
 		}
@@ -86,14 +83,12 @@ export class Thermostat extends HiloDevice<"Thermostat"> {
 
 	private async getCurrentHeatingCoolingState(): Promise<CharacteristicValue> {
 		this.logger.debug(`Getting ${this.device.name} currentHeatingCoolingState`);
-		return this.values.Heating?.value
-			? this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT
-			: this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF;
+		return this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT;
 	}
 
 	private async getTargetHeatingCoolingState(): Promise<CharacteristicValue> {
 		this.logger.debug(`Getting ${this.device.name} targetHeatingCoolingState`);
-		return this.api.hap.Characteristic.TargetHeatingCoolingState.AUTO;
+		return this.api.hap.Characteristic.TargetHeatingCoolingState.HEAT;
 	}
 
 	private async setTargetHeatingCoolingState(value: CharacteristicValue) {
