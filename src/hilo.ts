@@ -123,7 +123,7 @@ class Hilo implements DynamicPlatformPlugin {
 	): PlatformAccessory<HiloAccessoryContext> {
 		const uuid = this.api.hap.uuid.generate(device.assetId);
 		const accessory = new this.api.platformAccessory<HiloAccessoryContext>(
-			cleanupDeviceName(device.name),
+			device.name.trim(),
 			uuid
 		);
 		accessory.context.device = device;
@@ -373,7 +373,3 @@ const getHiloChallengeDevices = (location: Location): Device[] => [
 		identifier: `inProgress-hilo-challenge-${location.id}`,
 	},
 ];
-
-function cleanupDeviceName(name: string): string {
-	return name.replace(/[^a-zA-Z0-9'\s]/g, " ").trim();
-}
