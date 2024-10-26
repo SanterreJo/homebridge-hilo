@@ -23,7 +23,7 @@ import axios from "axios";
 import { HiloDevice } from "./devices/HiloDevice";
 import { HiloChallengeSensor } from "./devices/HiloChallengeSensor";
 
-const PLUGIN_NAME = "homebridge-hilo";
+const PLUGIN_NAME = "homebridge hilo";
 const PLATFORM_NAME = "Hilo";
 
 export default function (api: API) {
