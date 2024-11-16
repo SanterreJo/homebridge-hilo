@@ -108,8 +108,10 @@ export async function negotiate() {
 
 export const getWsAccessToken = () => wsAccessToken || "";
 
-export async function setupAutoRefreshToken(expiresIn: number | undefined) {
-	if (!expiresIn) {
+export async function setupAutoRefreshToken(
+	expiresInSeconds: number | undefined
+) {
+	if (!expiresInSeconds) {
 		getLogger().debug("Refreshing token");
 		try {
 			await refreshTokenRequest();
@@ -129,7 +131,7 @@ export async function setupAutoRefreshToken(expiresIn: number | undefined) {
 					unableToLogin(e);
 				}
 			}
-		}, expiresIn * 1000 - 1000 * 60 * 5); // 5 minutes before expiration
+		}, expiresInSeconds / 60 - 5); // 5 minutes before expiration
 	}
 }
 
