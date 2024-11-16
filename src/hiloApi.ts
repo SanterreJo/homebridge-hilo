@@ -131,7 +131,7 @@ export async function setupAutoRefreshToken(
 					unableToLogin(e);
 				}
 			}
-		}, expiresInSeconds / 60 - 5); // 5 minutes before expiration
+		}, (expiresInSeconds - 5 * 60) * 1000); // 5 minutes before expiration
 	}
 }
 
