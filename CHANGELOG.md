@@ -1,3 +1,25 @@
+# v3.0.0 (Sat Dec 07 2024)
+
+### Release Notes
+
+#### Homebridge 2.0 compat ([#57](https://github.com/SanterreJo/homebridge-hilo/pull/57))
+
+* BREAKING: Les thermostats fonctionnent maintenant en mode HEAT plutôt que AUTO fixes #36 
+* Compatibilité avec homebridge 2.0
+* Les instructions dans la configuration sont maintenant affiché en français aussi
+
+---
+
+#### 💥 Breaking Change
+
+- Homebridge 2.0 compat [#57](https://github.com/SanterreJo/homebridge-hilo/pull/57) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v2.0.1 (Tue Sep 03 2024)
 
 #### 🐛 Bug Fix
