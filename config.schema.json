@@ -7,13 +7,13 @@
 		"type": "object",
 		"properties": {
 			"noChallengeSensor": {
-				"title": "No Challenge Sensor",
+				"title": "Désactiver les capteurs de défis Hilo / No Challenge Sensor",
 				"type": "boolean",
 				"default": false,
 				"required": true
 			},
 			"plannedHours": {
-				"title": "Trigger planned challenge sensor X hours before preheat phase",
+				"title": "Activer le capteur d'un défi planifié X heures avant la phase de préchauffage / Trigger planned challenge sensor X hours before preheat phase",
 				"type": "number",
 				"default": 2,
 				"minimum": 1,
@@ -21,7 +21,7 @@
 				"required": false
 			},
 			"refreshToken": {
-				"title": "Refresh Token - This field is automatically populated by the 'Login with Hilo' button",
+				"title": "Jetons d'authentification - Ce champ est automatiquement généré à partir du bouton 'Se connecter avec Hilo' / Refresh Token - This field is automatically populated by the 'Login with Hilo' button",
 				"type": "string",
 				"required": true
 			}

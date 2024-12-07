@@ -23,7 +23,7 @@ import axios from "axios";
 import { HiloDevice } from "./devices/HiloDevice";
 import { HiloChallengeSensor } from "./devices/HiloChallengeSensor";
 
-const PLUGIN_NAME = "homebridge-hilo";
+const PLUGIN_NAME = "homebridge hilo";
 const PLATFORM_NAME = "Hilo";
 
 export default function (api: API) {
@@ -123,7 +123,7 @@ class Hilo implements DynamicPlatformPlugin {
 	): PlatformAccessory<HiloAccessoryContext> {
 		const uuid = this.api.hap.uuid.generate(device.assetId);
 		const accessory = new this.api.platformAccessory<HiloAccessoryContext>(
-			device.name,
+			device.name.trim(),
 			uuid
 		);
 		accessory.context.device = device;
@@ -321,7 +321,7 @@ const getHiloChallengeDevices = (location: Location): Device[] => [
 	{
 		assetId: `preheat-hilo-challenge-${location.id}`,
 		id: location.id + 100,
-		name: `Preheat - Hilo Challenge ${location.name}`,
+		name: `Preheat Hilo Challenge ${location.name}`,
 		type: "Challenge",
 		locationId: location.id,
 		modelNumber: "Hilo Challenge",
@@ -330,7 +330,7 @@ const getHiloChallengeDevices = (location: Location): Device[] => [
 	{
 		assetId: `reduction-hilo-challenge-${location.id}`,
 		id: location.id + 101,
-		name: `Reduction - Hilo Challenge ${location.name}`,
+		name: `Reduction Hilo Challenge ${location.name}`,
 		type: "Challenge",
 		locationId: location.id,
 		modelNumber: "Hilo Challenge",
@@ -339,7 +339,7 @@ const getHiloChallengeDevices = (location: Location): Device[] => [
 	{
 		assetId: `recovery-hilo-challenge-${location.id}`,
 		id: location.id + 102,
-		name: `Recovery - Hilo Challenge ${location.name}`,
+		name: `Recovery Hilo Challenge ${location.name}`,
 		type: "Challenge",
 		locationId: location.id,
 		modelNumber: "Hilo Challenge",
@@ -348,7 +348,7 @@ const getHiloChallengeDevices = (location: Location): Device[] => [
 	{
 		assetId: `plannedAM-hilo-challenge-${location.id}`,
 		id: location.id + 103,
-		name: `Planned AM - Hilo Challenge ${location.name}`,
+		name: `Planned AM Hilo Challenge ${location.name}`,
 		type: "Challenge",
 		locationId: location.id,
 		modelNumber: "Hilo Challenge",
@@ -357,7 +357,7 @@ const getHiloChallengeDevices = (location: Location): Device[] => [
 	{
 		assetId: `plannedPM-hilo-challenge-${location.id}`,
 		id: location.id + 104,
-		name: `Planned PM - Hilo Challenge ${location.name}`,
+		name: `Planned PM Hilo Challenge ${location.name}`,
 		type: "Challenge",
 		locationId: location.id,
 		modelNumber: "Hilo Challenge",
@@ -366,7 +366,7 @@ const getHiloChallengeDevices = (location: Location): Device[] => [
 	{
 		assetId: `inProgress-hilo-challenge-${location.id}`,
 		id: location.id + 105,
-		name: `In Progress - Hilo Challenge ${location.name}`,
+		name: `In Progress Hilo Challenge ${location.name}`,
 		type: "Challenge",
 		locationId: location.id,
 		modelNumber: "Hilo Challenge",

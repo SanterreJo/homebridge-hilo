@@ -4,9 +4,9 @@
 	"description": "Plugin Homebridge (non officiel) pour la passerelle et les appareils Hilo de Hydro-Québec | Unofficial Homebridge plugin for Hydro-Québec Hilo bridge and devices",
 	"main": "dist/hilo.js",
 	"engines": {
-		"node": ">=16.0.0",
-		"homebridge": ">1.4.0"
-	},
+	    "homebridge": "^1.6.0 || ^2.0.0-beta.0",
+	    "node": "^18.20.4 || ^20.15.1"
+  	},
 	"scripts": {
 		"lint": "eslint src/**.ts --max-warnings=0",
 		"build": "rimraf dist/ && tsc",
