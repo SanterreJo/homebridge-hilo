@@ -1,3 +1,87 @@
+# v3.0.0 (Sat Dec 07 2024)
+
+### Release Notes
+
+#### Homebridge 2.0 compat ([#57](https://github.com/SanterreJo/homebridge-hilo/pull/57))
+
+* BREAKING: Les thermostats fonctionnent maintenant en mode HEAT plutôt que AUTO fixes #36 
+* Compatibilité avec homebridge 2.0
+* Les instructions dans la configuration sont maintenant affiché en français aussi
+
+---
+
+#### 💥 Breaking Change
+
+- Homebridge 2.0 compat [#57](https://github.com/SanterreJo/homebridge-hilo/pull/57) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
+# v2.0.1 (Tue Sep 03 2024)
+
+#### 🐛 Bug Fix
+
+- Fix initial config setup on new installs [#54](https://github.com/SanterreJo/homebridge-hilo/pull/54) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
+# v2.0.0 (Tue Apr 16 2024)
+
+#### 💥 Breaking Change
+
+- New auth [#48](https://github.com/SanterreJo/homebridge-hilo/pull/48) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
+# v1.9.2 (Fri Apr 12 2024)
+
+#### 🐛 Bug Fix
+
+- Update doc for deprecated auth [#49](https://github.com/SanterreJo/homebridge-hilo/pull/49) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
+# v1.9.1 (Thu Feb 29 2024)
+
+#### ⚠️ Pushed to `main`
+
+- Update CHANGELOG.md ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
+# v1.9.0 (Thu Feb 29 2024)
+
+#### 🚀 Enhancement
+- Use new hilo api #45 (@SanterreJo)
+- Fix Capteur pour toute la période de défi #39 - Ajout d'un capteur pour la durée du défi #42 (@SanterreJo)
+#### 🐛 Bug Fix
+- Fix Problème de connexion au serveur Hilo - Localisation #41 - Retry on failed location connection #43 (@SanterreJo)
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v1.8.1 (Sun Oct 29 2023)
 
 #### 🐛 Bug Fix

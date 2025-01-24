@@ -2,42 +2,28 @@
 	"pluginAlias": "Hilo",
 	"pluginType": "platform",
 	"singular": true,
+	"customUi": true,
 	"schema": {
 		"type": "object",
 		"properties": {
-			"username": {
-				"title": "Username",
-				"type": "string",
-				"required": true
-			},
-			"password": {
-				"title": "Password",
-				"type": "string",
-				"required": true
-			},
-			"vendor": {
-				"title": "Vendor",
-				"type": "string",
-				"default": "hilo",
-				"oneOf": [
-					{ "title": "Hilo", "enum": ["hilo"] },
-					{ "title": "Allia by Stelpro", "enum": ["allia"] }
-				],
-				"required": true
-			},
 			"noChallengeSensor": {
-				"title": "No Challenge Sensor",
+				"title": "Désactiver les capteurs de défis Hilo / No Challenge Sensor",
 				"type": "boolean",
 				"default": false,
 				"required": true
 			},
 			"plannedHours": {
-				"title": "Trigger planned challenge sensor X hours before preheat phase",
+				"title": "Activer le capteur d'un défi planifié X heures avant la phase de préchauffage / Trigger planned challenge sensor X hours before preheat phase",
 				"type": "number",
 				"default": 2,
 				"minimum": 1,
 				"maximum": 12,
 				"required": false
+			},
+			"refreshToken": {
+				"title": "Jetons d'authentification - Ce champ est automatiquement généré à partir du bouton 'Se connecter avec Hilo' / Refresh Token - This field is automatically populated by the 'Login with Hilo' button",
+				"type": "string",
+				"required": true
 			}
 		}
 	},
