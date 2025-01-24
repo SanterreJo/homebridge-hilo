@@ -4,9 +4,9 @@ import { HiloDevice } from "./HiloDevice";
 import { DeviceValue, HiloAccessoryContext } from "./types";
 import { hiloApi } from "../hiloApi";
 
-export class Thermostat extends HiloDevice<"Thermostat"> {
+export class Thermostat extends HiloDevice<"Thermostat" | "FloorThermostat"> {
 	constructor(
-		accessory: PlatformAccessory<HiloAccessoryContext<"Thermostat">>,
+		accessory: PlatformAccessory<HiloAccessoryContext<"Thermostat" | "FloorThermostat">>,
 		api: API
 	) {
 		super(accessory, api);

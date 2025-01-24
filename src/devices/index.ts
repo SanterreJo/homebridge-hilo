@@ -17,6 +17,7 @@ export const initializeHiloDevice: {
 	WhiteBulb: (accessory, api) => new Light(accessory, api),
 	ColorBulb: (accessory, api) => new Light(accessory, api),
 	Thermostat: (accessory, api) => new Thermostat(accessory, api),
+	FloorThermostat: (accessory, api) => new Thermostat(accessory, api),
 	Outlet: (accessory, api) => new Outlet(accessory, api),
 	Challenge: (accessory, api) => new HiloChallengeSensor(accessory, api),
 };
