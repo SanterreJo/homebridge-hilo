@@ -1,3 +1,15 @@
+# v3.1.0 (Fri Jan 31 2025)
+
+#### 🚀 Enhancement
+
+- Support floor thermostat [#62](https://github.com/SanterreJo/homebridge-hilo/pull/62) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v3.0.0 (Sat Dec 07 2024)
 
 ### Release Notes
