@@ -4,6 +4,7 @@ export const SUPPORTED_DEVICE_TYPES = [
 	"ColorBulb",
 	"WhiteBulb",
 	"Thermostat",
+	"FloorThermostat",
 	"Outlet",
 	"Challenge",
 ] as const;
@@ -12,6 +13,7 @@ export type LightType = Extract<
 	DeviceType,
 	"LightSwitch" | "LightDimmer" | "ColorBulb" | "WhiteBulb"
 >;
+export type ClimateType = Extract<DeviceType, "Thermostat" | "FloorThermostat">;
 
 export interface DeviceValue {
 	deviceId: number;
@@ -97,7 +99,7 @@ export type Device = {
 
 type DeviceValueAttributeMap<T extends Device["type"]> = T extends LightType
 	? OnOffDeviceValue | IntensityDeviceValue
-	: T extends "Thermostat"
+	: T extends ClimateType
 	?
 			| CurrentTemperatureDeviceValue
 			| TargetTemperatureDeviceValue

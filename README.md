@@ -42,9 +42,10 @@ Un capteur de contact vous permet de déterminer si un défi est actif ou non. C
 Appareil | Pris en charge? | Notes
 ---|---|---
 Thermostat | ✅ |
-Interrupteur | ✅ | Non testé
+Thermostat de planché | ✅ |
+Interrupteur | ✅ |
 Gradateur | ✅ |
-Prise | ✅ | Non testé
+Prise | ✅ |
 Ampoule | ✅ * | Ne supporte pas les couleurs présentement
 Détecteur de fumée / monoxyde de carbone | 🚧 |
 Station météo | 🚫 |
@@ -90,9 +91,10 @@ A contact sensor allows you to determine whether a challenge is active or not. T
 Device | Supported? | Notes
 ---|---|---
 Thermostat | ✅ |
-In-wall switch | ✅ | Not tested
+Floor thermostat | ✅ |
+In-wall switch | ✅ |
 In-wall dimmer | ✅ | 
-Plug-in switch | ✅ | Not tested
+Plug-in switch | ✅ |
 Bulb | ✅ | Currently does not support colors
 Smoke / CO detector | 🚧 |
 Weather station | 🚫 |
