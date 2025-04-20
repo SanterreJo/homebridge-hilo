@@ -120,12 +120,11 @@ class Hilo implements DynamicPlatformPlugin {
 
 	private setupNewAccessory(
 		device: Device
-	): PlatformAccessory<HiloAccessoryContext> {
+	): PlatformAccessory<HiloAccessoryContext<Device["type"]>> {
 		const uuid = this.api.hap.uuid.generate(device.assetId);
-		const accessory = new this.api.platformAccessory<HiloAccessoryContext>(
-			device.name.trim(),
-			uuid
-		);
+		const accessory = new this.api.platformAccessory<
+			HiloAccessoryContext<Device["type"]>
+		>(device.name.trim(), uuid);
 		accessory.context.device = device;
 		accessory.context.values = {};
 		this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [

@@ -7,17 +7,17 @@ const port = 8880;
 class UiServer extends HomebridgePluginUiServer {
 	constructor() {
 		super();
-		this.verifier = this.base64URLEncode(crypto.randomBytes(32));
-		this.app = express();
-		this.app.listen(port, () => {
-			console.log(`Auth server listening on port ${port}`);
-		});
 		this.onRequest("/callback", this.handleCallback.bind(this));
 		this.onRequest("/autorizationUrl", this.handleAuthorizationUrl.bind(this));
 		this.ready();
 	}
 
 	async handleAuthorizationUrl() {
+		this.verifier = this.base64URLEncode(crypto.randomBytes(32));
+		this.app = express();
+		this.app.listen(port, () => {
+			console.log(`Auth server listening on port ${port}`);
+		});
 		const challenge = this.base64URLEncode(this.sha256(this.verifier));
 		const clientId = "1ca9f585-4a55-4085-8e30-9746a65fa561";
 		const redirectUri = "https://my.home-assistant.io/redirect/oauth";

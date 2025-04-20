@@ -131,11 +131,21 @@ export type Challenge = {
 export type EventsResponse = Array<Challenge>;
 
 export type HiloAccessoryContext<T extends Device["type"] = Device["type"]> = {
-	values: Partial<{
-		[P in DeviceValue["attribute"]]: Extract<
-			DeviceValueAttributeMap<T>,
-			{ attribute: P }
-		>;
-	}>;
 	device: Device;
+	values: T extends "Challenge"
+		? Partial<{ Challenge: ChallengeDeviceValue }>
+		: T extends LightType
+		? Partial<{ OnOff: OnOffDeviceValue; Intensity: IntensityDeviceValue }>
+		: T extends ClimateType
+		? Partial<{
+				CurrentTemperature: CurrentTemperatureDeviceValue;
+				TargetTemperature: TargetTemperatureDeviceValue;
+				Heating: HeatingDeviceValue;
+				MaxTempSetPoint: MaxTempSetPointDeviceValue;
+				MinTempSetPoint: MinTempSetPointDeviceValue;
+				Humidity: HumidityDeviceValue;
+		  }>
+		: T extends "Outlet"
+		? Partial<{ OnOff: OnOffDeviceValue }>
+		: never;
 };

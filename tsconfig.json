@@ -11,7 +11,7 @@
 		"strict": true,
 		"esModuleInterop": true,
 		"noImplicitAny": true,
-		"skipLibCheck": true,
+		"skipLibCheck": true
 	},
 	"include": ["src/"],
 	"exclude": ["**/*.spec.ts"]

@@ -10,7 +10,10 @@
 	"scripts": {
 		"lint": "eslint src/**.ts --max-warnings=0",
 		"build": "rimraf dist/ && tsc",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"codegen": "graphql-codegen --config codegen.ts",
+		"codegen:watch": "npm run codegen -- --watch",
+		"tsc": "tsc"
 	},
 	"lint-staged": {
 		"**/*": "prettier --write --ignore-unknown"
@@ -32,6 +35,9 @@
 	},
 	"homepage": "https://github.com/SanterreJo/homebridge-hilo#readme",
 	"devDependencies": {
+		"@graphql-codegen/cli": "^5.0.5",
+		"@graphql-codegen/schema-ast": "^4.1.0",
+		"@parcel/watcher": "^2.5.1",
 		"@types/jsonwebtoken": "^8.5.9",
 		"@types/node": "^18.7.11",
 		"@typescript-eslint/eslint-plugin": "^5.34.0",
@@ -45,7 +51,7 @@
 		"lint-staged": "^13.0.3",
 		"prettier": "2.7.1",
 		"rimraf": "^3.0.2",
-		"typescript": "^4.7.4"
+		"typescript": "^5.8.3"
 	},
 	"dependencies": {
 		"@homebridge/plugin-ui-utils": "^1.0.3",
