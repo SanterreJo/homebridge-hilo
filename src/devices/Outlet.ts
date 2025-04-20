@@ -1,7 +1,11 @@
 import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { HiloDevice } from "./HiloDevice";
-import { DeviceValue, HiloAccessoryContext } from "./types";
+import {
+	DeviceValue,
+	DeviceValueAttributeMap,
+	HiloAccessoryContext,
+} from "./types";
 import { hiloApi } from "../hiloApi";
 
 export class Outlet extends HiloDevice<"Outlet"> {
@@ -23,9 +27,7 @@ export class Outlet extends HiloDevice<"Outlet"> {
 			.onGet(this.getOn.bind(this));
 	}
 
-	updateValue(
-		value: HiloAccessoryContext<"Outlet">["values"][DeviceValue["attribute"]]
-	) {
+	updateValue(value: DeviceValueAttributeMap<"Outlet">) {
 		super.updateValue(value);
 		switch (value?.attribute) {
 			case "OnOff":

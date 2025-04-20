@@ -1,7 +1,12 @@
 import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { HiloDevice } from "./HiloDevice";
-import { DeviceValue, HiloAccessoryContext } from "./types";
+import {
+	DeviceValue,
+	DeviceValueAttributeMap,
+	HiloAccessoryContext,
+	LightType,
+} from "./types";
 import { hiloApi } from "../hiloApi";
 
 export class Light extends HiloDevice<
@@ -36,11 +41,7 @@ export class Light extends HiloDevice<
 		}
 	}
 
-	updateValue(
-		value: HiloAccessoryContext<
-			"LightDimmer" | "LightSwitch" | "ColorBulb" | "WhiteBulb"
-		>["values"][DeviceValue["attribute"]]
-	) {
+	updateValue(value: DeviceValueAttributeMap<LightType>) {
 		super.updateValue(value);
 		switch (value?.attribute) {
 			case "OnOff":

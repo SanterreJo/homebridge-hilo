@@ -1,12 +1,19 @@
 import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { HiloDevice } from "./HiloDevice";
-import { DeviceValue, HiloAccessoryContext } from "./types";
+import {
+	ClimateType,
+	DeviceValue,
+	DeviceValueAttributeMap,
+	HiloAccessoryContext,
+} from "./types";
 import { hiloApi } from "../hiloApi";
 
 export class Thermostat extends HiloDevice<"Thermostat" | "FloorThermostat"> {
 	constructor(
-		accessory: PlatformAccessory<HiloAccessoryContext<"Thermostat" | "FloorThermostat">>,
+		accessory: PlatformAccessory<
+			HiloAccessoryContext<"Thermostat" | "FloorThermostat">
+		>,
 		api: API
 	) {
 		super(accessory, api);
@@ -55,9 +62,7 @@ export class Thermostat extends HiloDevice<"Thermostat" | "FloorThermostat"> {
 			.onSet(this.setTemperatureDisplayUnits.bind(this));
 	}
 
-	updateValue(
-		value: HiloAccessoryContext<"Thermostat">["values"][DeviceValue["attribute"]]
-	): void {
+	updateValue(value: DeviceValueAttributeMap<ClimateType>): void {
 		super.updateValue(value);
 		switch (value?.attribute) {
 			case "CurrentTemperature":

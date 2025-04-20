@@ -2,7 +2,12 @@ import subHours from "date-fns/subHours";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { getConfig, HiloConfig } from "../config";
 import { HiloDevice } from "./HiloDevice";
-import { Challenge, DeviceValue, HiloAccessoryContext } from "./types";
+import {
+	Challenge,
+	DeviceValue,
+	DeviceValueAttributeMap,
+	HiloAccessoryContext,
+} from "./types";
 
 const phases: (
 	challenge: Challenge,
@@ -68,9 +73,7 @@ export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 			.onGet(this.getContactSensorState.bind(this));
 	}
 
-	updateValue(
-		value: HiloAccessoryContext<"Challenge">["values"][DeviceValue["attribute"]]
-	) {
+	updateValue(value: DeviceValueAttributeMap<"Challenge">) {
 		super.updateValue(value);
 		switch (value?.attribute) {
 			case "Challenge":

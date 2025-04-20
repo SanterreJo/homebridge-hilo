@@ -97,21 +97,22 @@ export type Device = {
 	modelNumber: string;
 };
 
-type DeviceValueAttributeMap<T extends Device["type"]> = T extends LightType
-	? OnOffDeviceValue | IntensityDeviceValue
-	: T extends ClimateType
-	?
-			| CurrentTemperatureDeviceValue
-			| TargetTemperatureDeviceValue
-			| HeatingDeviceValue
-			| MaxTempSetPointDeviceValue
-			| MinTempSetPointDeviceValue
-			| HumidityDeviceValue
-	: T extends "Outlet"
-	? OnOffDeviceValue
-	: T extends "Challenge"
-	? ChallengeDeviceValue
-	: never;
+export type DeviceValueAttributeMap<T extends Device["type"]> =
+	T extends LightType
+		? OnOffDeviceValue | IntensityDeviceValue
+		: T extends ClimateType
+		?
+				| CurrentTemperatureDeviceValue
+				| TargetTemperatureDeviceValue
+				| HeatingDeviceValue
+				| MaxTempSetPointDeviceValue
+				| MinTempSetPointDeviceValue
+				| HumidityDeviceValue
+		: T extends "Outlet"
+		? OnOffDeviceValue
+		: T extends "Challenge"
+		? ChallengeDeviceValue
+		: never;
 
 export type Challenge = {
 	progress: string;
