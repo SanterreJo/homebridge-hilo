@@ -1,13 +1,14 @@
 import subHours from "date-fns/subHours";
-import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
-import { getConfig, HiloConfig } from "../config";
-import { HiloDevice } from "./HiloDevice";
 import {
-	Challenge,
-	DeviceValue,
-	DeviceValueAttributeMap,
-	HiloAccessoryContext,
-} from "./types";
+	API,
+	CharacteristicValue,
+	Logging,
+	PlatformAccessory,
+	Service,
+} from "homebridge";
+import { getConfig, HiloConfig } from "../config";
+import { Challenge } from "./types";
+import { getLogger } from "../logger";
 
 const phases: (
 	challenge: Challenge,
@@ -54,38 +55,50 @@ const phases: (
 			: undefined,
 });
 
-export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
+export class HiloChallengeSensor {
 	private challenges: Record<number, NodeJS.Timeout[]> = {};
+	protected service: Service | null = null;
+
 	constructor(
-		accessory: PlatformAccessory<HiloAccessoryContext<"Challenge">>,
-		api: API
+		protected readonly accessory: PlatformAccessory<{
+			value: boolean;
+			phase: string;
+			locationHiloId: string;
+		}>,
+		protected readonly api: API,
+		protected readonly logger: Logging = getLogger()
 	) {
-		super(accessory, api);
+		accessory
+			.getService(this.api.hap.Service.AccessoryInformation)!
+			.setCharacteristic(this.api.hap.Characteristic.Manufacturer, "Hilo")
+			.setCharacteristic(this.api.hap.Characteristic.Model, "Challenge")
+			.setCharacteristic(
+				this.api.hap.Characteristic.SerialNumber,
+				this.accessory.context.locationHiloId +
+					"-" +
+					this.accessory.context.phase
+			);
 		this.service =
 			accessory.getService(this.api.hap.Service.ContactSensor) ||
 			accessory.addService(this.api.hap.Service.ContactSensor);
 		this.service.setCharacteristic(
 			this.api.hap.Characteristic.Name,
-			"Hilo Challenge"
+			this.accessory.context.phase + "Hilo Challenge"
 		);
 		this.service
 			.getCharacteristic(this.api.hap.Characteristic.ContactSensorState)
 			.onGet(this.getContactSensorState.bind(this));
 	}
 
-	updateValue(value: DeviceValueAttributeMap<"Challenge">) {
-		super.updateValue(value);
-		switch (value?.attribute) {
-			case "Challenge":
-				this.service
-					?.getCharacteristic(this.api.hap.Characteristic.ContactSensorState)
-					?.updateValue(value.value);
-				break;
-		}
+	updateChallenge(value: boolean) {
+		this.accessory.context.value = value;
+		this.service
+			?.getCharacteristic(this.api.hap.Characteristic.ContactSensorState)
+			?.updateValue(value);
 	}
 
 	private async getContactSensorState(): Promise<CharacteristicValue> {
-		const activeChallenge = this.values.Challenge?.value ?? false;
+		const activeChallenge = this.accessory.context.value ?? false;
 		this.logger.debug(`Getting active Hilo Challenge: ${activeChallenge}`);
 		return activeChallenge;
 	}
@@ -104,14 +117,7 @@ export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 	}
 
 	private updateChallengeValue(active: boolean) {
-		this.updateValue({
-			deviceId: this.device.id,
-			locationId: this.device.locationId,
-			timeStampUTC: new Date().toISOString(),
-			attribute: "Challenge",
-			value: active,
-			valueType: "Boolean",
-		});
+		this.updateChallenge(active);
 	}
 
 	private participating(challenge: Challenge) {
@@ -119,13 +125,13 @@ export class HiloChallengeSensor extends HiloDevice<"Challenge"> {
 			return;
 		}
 		this.challenges[challenge.id] = [];
-		const devicePhase = this.device.assetId.split("-")[0];
+		const devicePhase = this.accessory.context.phase;
 		const phase = phases(challenge, getConfig())[devicePhase];
 		const startPhase = phase?.start;
 		const endPhase = phase?.end;
 		if (!startPhase || !endPhase) {
 			this.logger.debug(
-				`Could not find phase or period does not match device for device ${this.device.assetId}`
+				`Could not find phase or period does not match device for device ${this.accessory.context.locationHiloId} - ${this.accessory.context.phase}`
 			);
 			return;
 		}

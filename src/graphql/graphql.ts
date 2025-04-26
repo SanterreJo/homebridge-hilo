@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -827,195 +827,15 @@ export type GetLocationQueryVariables = Exact<{
 }>;
 
 
-export type GetLocationQuery = { __typename?: 'Query', getLocation?: { __typename?: 'Container', hiloId: string, lastUpdate: any, lastUpdateVersion: any, devices: Array<{ __typename?: 'BasicChargeController', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null } | { __typename?: 'BasicDevice', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null } | { __typename?: 'BasicDimmer', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, state: DeviceState, level?: number | null, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null } | { __typename?: 'BasicEVCharger', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null } | { __typename?: 'BasicLight', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, state: DeviceState, hue?: number | null, level?: number | null, saturation?: number | null, colorTemperature?: number | null, lightType: LightType } | { __typename?: 'BasicSmartMeter', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null } | { __typename?: 'BasicSwitch', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, state: DeviceState, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null } | { __typename?: 'BasicThermostat', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, ambientHumidity?: number | null, gDState: DeviceGdState, version?: string | null, zigbeeVersion?: string | null, heatDemand?: number | null, mode: ThermostatMode, allowedModes: Array<ThermostatMode>, ambientTemperature: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind }, ambientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, maxAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, minAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, maxAmbientTempSetpointLimit?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, minAmbientTempSetpointLimit?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null } | { __typename?: 'Gateway', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null } | { __typename?: 'HeatingFloorThermostat', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, ambientHumidity?: number | null, gDState: DeviceGdState, version?: string | null, zigbeeVersion?: string | null, thermostatType: ThermostatKind, floorMode: FloorThermostatMode, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null, ambientTemperature: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind }, ambientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, maxAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, minAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, floorLimit?: { __typename?: 'TemperatureUnit', value?: number | null } | null } | { __typename?: 'LowVoltageThermostat', fanMode: LowVoltageFanMode, fanSpeed?: number | null, mode: ThermostatMode, currentState: LowVoltageCurrentState, ambientHumidity?: number | null, gDState: DeviceGdState, version?: string | null, zigbeeVersion?: string | null, connectionStatus?: DeviceConnectionStatus | null, allowedModes: Array<ThermostatMode>, fanAllowedModes: Array<LowVoltageFanMode>, deviceType: string, hiloId: string, physicalAddress: string, coolTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null } | null, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null, ambientTemperature: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind }, ambientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, maxAmbientCoolSetPoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, minAmbientCoolSetPoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, maxAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, minAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null } | { __typename?: 'WaterHeater', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null }> } | null };
+export type GetLocationQuery = { __typename?: 'Query', getLocation?: { __typename?: 'Container', hiloId: string, lastUpdate: any, lastUpdateVersion: any, devices: Array<{ __typename: 'BasicChargeController', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null } | { __typename: 'BasicDevice', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null } | { __typename: 'BasicDimmer', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, state: DeviceState, level?: number | null, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null } | { __typename: 'BasicEVCharger', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null } | { __typename: 'BasicLight', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, state: DeviceState, hue?: number | null, level?: number | null, saturation?: number | null, colorTemperature?: number | null, lightType: LightType } | { __typename: 'BasicSmartMeter', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null } | { __typename: 'BasicSwitch', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, state: DeviceState, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null } | { __typename: 'BasicThermostat', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, ambientHumidity?: number | null, gDState: DeviceGdState, version?: string | null, zigbeeVersion?: string | null, heatDemand?: number | null, mode: ThermostatMode, allowedModes: Array<ThermostatMode>, ambientTemperature: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind }, ambientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, maxAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, minAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, maxAmbientTempSetpointLimit?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, minAmbientTempSetpointLimit?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null } | { __typename: 'Gateway', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null } | { __typename: 'HeatingFloorThermostat', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, ambientHumidity?: number | null, gDState: DeviceGdState, version?: string | null, zigbeeVersion?: string | null, thermostatType: ThermostatKind, floorMode: FloorThermostatMode, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null, ambientTemperature: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind }, ambientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, maxAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, minAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, floorLimit?: { __typename?: 'TemperatureUnit', value?: number | null } | null } | { __typename: 'LowVoltageThermostat', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null } | { __typename: 'WaterHeater', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null }> } | null };
 
-export class TypedDocumentString<TResult, TVariables>
-  extends String
-  implements DocumentTypeDecoration<TResult, TVariables>
-{
-  __apiType?: DocumentTypeDecoration<TResult, TVariables>['__apiType'];
-  private value: string;
-  public __meta__?: Record<string, any> | undefined;
+export type OnAnyDeviceUpdatedSubscriptionVariables = Exact<{
+  locationHiloId: Scalars['String']['input'];
+}>;
 
-  constructor(value: string, __meta__?: Record<string, any> | undefined) {
-    super(value);
-    this.value = value;
-    this.__meta__ = __meta__;
-  }
 
-  toString(): string & DocumentTypeDecoration<TResult, TVariables> {
-    return this.value;
-  }
-}
+export type OnAnyDeviceUpdatedSubscription = { __typename?: 'Subscription', onAnyDeviceUpdated: { __typename?: 'Operation', deviceType: string, locationHiloId: string, transmissionTime: any, operationId?: any | null, status: OperationStatus, device: { __typename: 'BasicChargeController' } | { __typename: 'BasicDevice' } | { __typename: 'BasicDimmer', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, state: DeviceState, level?: number | null, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null } | { __typename: 'BasicEVCharger' } | { __typename: 'BasicLight', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, state: DeviceState, hue?: number | null, level?: number | null, saturation?: number | null, colorTemperature?: number | null, lightType: LightType } | { __typename: 'BasicSmartMeter' } | { __typename: 'BasicSwitch', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, state: DeviceState, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null } | { __typename: 'BasicThermostat', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, ambientHumidity?: number | null, gDState: DeviceGdState, version?: string | null, zigbeeVersion?: string | null, heatDemand?: number | null, mode: ThermostatMode, allowedModes: Array<ThermostatMode>, ambientTemperature: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind }, ambientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, maxAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, minAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, maxAmbientTempSetpointLimit?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, minAmbientTempSetpointLimit?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null } | { __typename: 'Gateway' } | { __typename: 'HeatingFloorThermostat', deviceType: string, hiloId: string, physicalAddress: string, connectionStatus?: DeviceConnectionStatus | null, ambientHumidity?: number | null, gDState: DeviceGdState, version?: string | null, zigbeeVersion?: string | null, thermostatType: ThermostatKind, floorMode: FloorThermostatMode, power?: { __typename?: 'PowerUnit', value?: number | null, kind: PowerKind } | null, ambientTemperature: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind }, ambientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, maxAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, minAmbientTempSetpoint?: { __typename?: 'TemperatureUnit', value?: number | null, kind: TemperatureKind } | null, floorLimit?: { __typename?: 'TemperatureUnit', value?: number | null } | null } | { __typename: 'LowVoltageThermostat' } | { __typename: 'WaterHeater' } } };
 
-export const GetLocationDocument = new TypedDocumentString(`
-    query getLocation($locationHiloId: String!) {
-  getLocation(id: $locationHiloId) {
-    hiloId
-    lastUpdate
-    lastUpdateVersion
-    devices {
-      deviceType
-      hiloId
-      physicalAddress
-      connectionStatus
-      ... on LowVoltageThermostat {
-        coolTempSetpoint {
-          value
-        }
-        fanMode
-        fanSpeed
-        mode
-        currentState
-        power {
-          value
-          kind
-        }
-        ambientHumidity
-        gDState
-        ambientTemperature {
-          value
-          kind
-        }
-        ambientTempSetpoint {
-          value
-          kind
-        }
-        version
-        zigbeeVersion
-        connectionStatus
-        maxAmbientCoolSetPoint {
-          value
-          kind
-        }
-        minAmbientCoolSetPoint {
-          value
-          kind
-        }
-        maxAmbientTempSetpoint {
-          value
-          kind
-        }
-        minAmbientTempSetpoint {
-          value
-          kind
-        }
-        allowedModes
-        fanAllowedModes
-      }
-      ... on BasicSwitch {
-        deviceType
-        hiloId
-        physicalAddress
-        connectionStatus
-        state
-        power {
-          value
-          kind
-        }
-      }
-      ... on BasicLight {
-        deviceType
-        hiloId
-        physicalAddress
-        connectionStatus
-        state
-        hue
-        level
-        saturation
-        colorTemperature
-        lightType
-      }
-      ... on HeatingFloorThermostat {
-        deviceType
-        hiloId
-        physicalAddress
-        connectionStatus
-        ambientHumidity
-        gDState
-        version
-        zigbeeVersion
-        thermostatType
-        physicalAddress
-        floorMode
-        power {
-          value
-          kind
-        }
-        ambientTemperature {
-          value
-          kind
-        }
-        ambientTempSetpoint {
-          value
-          kind
-        }
-        maxAmbientTempSetpoint {
-          value
-          kind
-        }
-        minAmbientTempSetpoint {
-          value
-          kind
-        }
-        floorLimit {
-          value
-        }
-      }
-      ... on BasicDimmer {
-        deviceType
-        hiloId
-        physicalAddress
-        connectionStatus
-        state
-        level
-        power {
-          value
-          kind
-        }
-      }
-      ... on BasicThermostat {
-        deviceType
-        hiloId
-        physicalAddress
-        connectionStatus
-        ambientHumidity
-        gDState
-        version
-        zigbeeVersion
-        ambientTemperature {
-          value
-          kind
-        }
-        ambientTempSetpoint {
-          value
-          kind
-        }
-        maxAmbientTempSetpoint {
-          value
-          kind
-        }
-        minAmbientTempSetpoint {
-          value
-          kind
-        }
-        maxAmbientTempSetpointLimit {
-          value
-          kind
-        }
-        minAmbientTempSetpointLimit {
-          value
-          kind
-        }
-        heatDemand
-        power {
-          value
-          kind
-        }
-        mode
-        allowedModes
-      }
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<GetLocationQuery, GetLocationQueryVariables>;
+
+export const GetLocationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getLocation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locationHiloId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getLocation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locationHiloId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdate"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdateVersion"}},{"kind":"Field","name":{"kind":"Name","value":"devices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"connectionStatus"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BasicSwitch"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"connectionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"power"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BasicLight"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"connectionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"hue"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"saturation"}},{"kind":"Field","name":{"kind":"Name","value":"colorTemperature"}},{"kind":"Field","name":{"kind":"Name","value":"lightType"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"HeatingFloorThermostat"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"connectionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"ambientHumidity"}},{"kind":"Field","name":{"kind":"Name","value":"gDState"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"zigbeeVersion"}},{"kind":"Field","name":{"kind":"Name","value":"thermostatType"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"floorMode"}},{"kind":"Field","name":{"kind":"Name","value":"power"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"ambientTemperature"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"ambientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"maxAmbientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"minAmbientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"floorLimit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BasicDimmer"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"connectionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"power"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BasicThermostat"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"connectionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"ambientHumidity"}},{"kind":"Field","name":{"kind":"Name","value":"gDState"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"zigbeeVersion"}},{"kind":"Field","name":{"kind":"Name","value":"ambientTemperature"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"ambientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"maxAmbientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"minAmbientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"maxAmbientTempSetpointLimit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"minAmbientTempSetpointLimit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"heatDemand"}},{"kind":"Field","name":{"kind":"Name","value":"power"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"mode"}},{"kind":"Field","name":{"kind":"Name","value":"allowedModes"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetLocationQuery, GetLocationQueryVariables>;
+export const OnAnyDeviceUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"onAnyDeviceUpdated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locationHiloId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"onAnyDeviceUpdated"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"locationHiloId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locationHiloId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"locationHiloId"}},{"kind":"Field","name":{"kind":"Name","value":"transmissionTime"}},{"kind":"Field","name":{"kind":"Name","value":"operationId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"device"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BasicSwitch"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"connectionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"power"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BasicLight"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"connectionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"hue"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"saturation"}},{"kind":"Field","name":{"kind":"Name","value":"colorTemperature"}},{"kind":"Field","name":{"kind":"Name","value":"lightType"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"HeatingFloorThermostat"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"connectionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"ambientHumidity"}},{"kind":"Field","name":{"kind":"Name","value":"gDState"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"zigbeeVersion"}},{"kind":"Field","name":{"kind":"Name","value":"thermostatType"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"floorMode"}},{"kind":"Field","name":{"kind":"Name","value":"power"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"ambientTemperature"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"ambientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"maxAmbientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"minAmbientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"floorLimit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BasicDimmer"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"connectionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"power"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BasicThermostat"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceType"}},{"kind":"Field","name":{"kind":"Name","value":"hiloId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddress"}},{"kind":"Field","name":{"kind":"Name","value":"connectionStatus"}},{"kind":"Field","name":{"kind":"Name","value":"ambientHumidity"}},{"kind":"Field","name":{"kind":"Name","value":"gDState"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"zigbeeVersion"}},{"kind":"Field","name":{"kind":"Name","value":"ambientTemperature"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"ambientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"maxAmbientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"minAmbientTempSetpoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"maxAmbientTempSetpointLimit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"minAmbientTempSetpointLimit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"heatDemand"}},{"kind":"Field","name":{"kind":"Name","value":"power"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"kind"}}]}},{"kind":"Field","name":{"kind":"Name","value":"mode"}},{"kind":"Field","name":{"kind":"Name","value":"allowedModes"}}]}}]}}]}}]}}]} as unknown as DocumentNode<OnAnyDeviceUpdatedSubscription, OnAnyDeviceUpdatedSubscriptionVariables>;

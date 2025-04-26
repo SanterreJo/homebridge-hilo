@@ -1,16 +1,12 @@
 import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { HiloDevice } from "./HiloDevice";
-import {
-	DeviceValue,
-	DeviceValueAttributeMap,
-	HiloAccessoryContext,
-} from "./types";
 import { hiloApi } from "../hiloApi";
-
-export class Outlet extends HiloDevice<"Outlet"> {
+import { BasicSwitch } from "../graphql/graphql";
+import { DeviceAccessory } from "./types";
+export class Outlet extends HiloDevice<BasicSwitch> {
 	constructor(
-		accessory: PlatformAccessory<HiloAccessoryContext<"Outlet">>,
+		accessory: PlatformAccessory<DeviceAccessory<BasicSwitch>>,
 		api: API
 	) {
 		super(accessory, api);
@@ -19,7 +15,7 @@ export class Outlet extends HiloDevice<"Outlet"> {
 			accessory.addService(this.api.hap.Service.Outlet);
 		this.service.setCharacteristic(
 			this.api.hap.Characteristic.Name,
-			this.accessory.context.device.name
+			this.accessory.context.oldApiDevice.name
 		);
 		this.service
 			.getCharacteristic(this.api.hap.Characteristic.On)
@@ -27,35 +23,39 @@ export class Outlet extends HiloDevice<"Outlet"> {
 			.onGet(this.getOn.bind(this));
 	}
 
-	updateValue(value: DeviceValueAttributeMap<"Outlet">) {
-		super.updateValue(value);
-		switch (value?.attribute) {
-			case "OnOff":
-				this.service
-					?.getCharacteristic(this.api.hap.Characteristic.On)
-					?.updateValue(value.value);
-				break;
+	updateDevice(device: BasicSwitch) {
+		super.updateDevice(device);
+		if ("state" in device) {
+			this.service
+				?.getCharacteristic(this.api.hap.Characteristic.On)
+				?.updateValue(device.state === "ON");
 		}
 	}
 
 	private async setOn(value: CharacteristicValue) {
 		const on = value as boolean;
-		this.logger.debug(`Setting ${this.device.name} ${on ? "on" : "off"}`);
+		this.logger.debug(
+			`Setting ${this.accessory.context.oldApiDevice.name} ${on ? "on" : "off"}`
+		);
 		try {
 			await hiloApi.put(
-				`/Automation/v1/api/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
+				`/Automation/v1/api/Locations/${this.accessory.context.oldApiDevice.locationId}/Devices/${this.accessory.context.oldApiDevice.id}/Attributes`,
 				{ OnOff: on }
 			);
 		} catch (error) {
 			this.logger.error(
-				`Failed to set ${this.device.name} ${on ? "on" : "off"}`,
+				`Failed to set ${this.accessory.context.oldApiDevice.name} ${
+					on ? "on" : "off"
+				}`,
 				axios.isAxiosError(error) ? error.response?.data : error
 			);
 		}
 	}
 
 	private async getOn(): Promise<CharacteristicValue> {
-		this.logger.debug(`Getting ${this.device.name} onOff status`);
-		return this.values.OnOff?.value ?? false;
+		this.logger.debug(
+			`Getting ${this.accessory.context.oldApiDevice.name} onOff status`
+		);
+		return this.device.state === "ON";
 	}
 }

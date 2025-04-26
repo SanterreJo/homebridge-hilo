@@ -1,23 +1,22 @@
 import { API, PlatformAccessory } from "homebridge";
-import { HiloChallengeSensor } from "./HiloChallengeSensor";
 import { HiloDevice } from "./HiloDevice";
 import { Light } from "./Light";
 import { Outlet } from "./Outlet";
 import { Thermostat } from "./Thermostat";
-import { Device, HiloAccessoryContext } from "./types";
+import { Device } from "../graphql/graphql";
+import { DeviceAccessory, SupportedDevice } from "./types";
 
 export const initializeHiloDevice: {
-	[T in Device["type"]]: (
-		accessory: PlatformAccessory<HiloAccessoryContext<T>>,
+	[T in SupportedDevice]: (
+		accessory: PlatformAccessory<
+			DeviceAccessory<Extract<Device, { __typename: T }>>
+		>,
 		api: API
-	) => HiloDevice<T>;
+	) => HiloDevice<Device>;
 } = {
-	LightSwitch: (accessory, api) => new Light(accessory, api, { canDim: false }),
-	LightDimmer: (accessory, api) => new Light(accessory, api),
-	WhiteBulb: (accessory, api) => new Light(accessory, api),
-	ColorBulb: (accessory, api) => new Light(accessory, api),
-	Thermostat: (accessory, api) => new Thermostat(accessory, api),
-	FloorThermostat: (accessory, api) => new Thermostat(accessory, api),
-	Outlet: (accessory, api) => new Outlet(accessory, api),
-	Challenge: (accessory, api) => new HiloChallengeSensor(accessory, api),
+	BasicLight: (accessory, api) => new Light(accessory, api),
+	BasicDimmer: (accessory, api) => new Light(accessory, api),
+	BasicThermostat: (accessory, api) => new Thermostat(accessory, api),
+	HeatingFloorThermostat: (accessory, api) => new Thermostat(accessory, api),
+	BasicSwitch: (accessory, api) => new Outlet(accessory, api),
 };

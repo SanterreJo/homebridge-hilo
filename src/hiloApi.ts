@@ -1,12 +1,10 @@
 import axios, { AxiosRequestConfig } from "axios";
 import fs from "fs";
-import { decode } from "jsonwebtoken";
 import { getConfig } from "./config";
 import { getLogger } from "./logger";
 import { getApi } from "./api";
 
 let accessToken: string | undefined;
-let wsAccessToken: string | undefined;
 let refreshToken: string | undefined;
 
 const clientId = "1ca9f585-4a55-4085-8e30-9746a65fa561";
@@ -80,33 +78,7 @@ async function refreshTokenRequest() {
 	});
 }
 
-type NegotiateResponse = {
-	accessToken: string;
-	url: string;
-	negociateVersion: number;
-};
-export async function negotiate() {
-	getLogger().debug("Negotiating websocket connection");
-	const response = await hiloApi.post<NegotiateResponse>(
-		"/DeviceHub/negotiate",
-		{},
-		{
-			params: {
-				negociateVersion: 1,
-			},
-		}
-	);
-	wsAccessToken = response.data.accessToken;
-	const decoded = decode(wsAccessToken) as any;
-	setTimeout(async () => {
-		getLogger().debug("Refreshing websocket token");
-		const response = await negotiate();
-		wsAccessToken = response.accessToken;
-	}, decoded.exp * 1000 - Date.now() - 1000 * 60 * 5); // 5 minutes before expiration
-	return { accessToken: response.data.accessToken, url: response.data.url };
-}
-
-export const getWsAccessToken = () => wsAccessToken || "";
+export const getAccessToken = () => accessToken || "";
 
 export async function setupAutoRefreshToken(expiresIn: number | undefined) {
 	if (!expiresIn) {
@@ -135,6 +107,10 @@ export async function setupAutoRefreshToken(expiresIn: number | undefined) {
 
 export const hiloApi = axios.create({
 	baseURL: "https://api.hiloenergie.com",
+});
+
+export const graphqlApi = axios.create({
+	baseURL: "https://platform.hiloenergie.com",
 });
 
 const authInterceptor = async (config: AxiosRequestConfig) => {
@@ -169,6 +145,7 @@ const authInterceptor = async (config: AxiosRequestConfig) => {
 };
 
 hiloApi.interceptors.request.use(authInterceptor);
+graphqlApi.interceptors.request.use(authInterceptor);
 
 const unableToLogin = (e: unknown) => {
 	const logger = getLogger();

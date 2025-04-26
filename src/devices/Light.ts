@@ -1,23 +1,11 @@
 import axios from "axios";
 import { API, CharacteristicValue, PlatformAccessory } from "homebridge";
 import { HiloDevice } from "./HiloDevice";
-import {
-	DeviceValue,
-	DeviceValueAttributeMap,
-	HiloAccessoryContext,
-	LightType,
-} from "./types";
 import { hiloApi } from "../hiloApi";
-
-export class Light extends HiloDevice<
-	"LightDimmer" | "LightSwitch" | "ColorBulb" | "WhiteBulb"
-> {
+import { DeviceAccessory, LightDevice } from "./types";
+export class Light extends HiloDevice<LightDevice> {
 	constructor(
-		accessory: PlatformAccessory<
-			HiloAccessoryContext<
-				"LightDimmer" | "LightSwitch" | "ColorBulb" | "WhiteBulb"
-			>
-		>,
+		accessory: PlatformAccessory<DeviceAccessory<LightDevice>>,
 		api: API,
 		{ canDim = true }: { canDim?: boolean } = { canDim: true }
 	) {
@@ -27,7 +15,7 @@ export class Light extends HiloDevice<
 			accessory.addService(this.api.hap.Service.Lightbulb);
 		this.service.setCharacteristic(
 			this.api.hap.Characteristic.Name,
-			this.accessory.context.device.name
+			this.accessory.context.oldApiDevice.name
 		);
 		this.service
 			.getCharacteristic(this.api.hap.Characteristic.On)
@@ -41,64 +29,74 @@ export class Light extends HiloDevice<
 		}
 	}
 
-	updateValue(value: DeviceValueAttributeMap<LightType>) {
-		super.updateValue(value);
-		switch (value?.attribute) {
-			case "OnOff":
-				this.service
-					?.getCharacteristic(this.api.hap.Characteristic.On)
-					?.updateValue(value.value);
-				break;
-			case "Intensity":
-				this.service
-					?.getCharacteristic(this.api.hap.Characteristic.Brightness)
-					?.updateValue(value.value * 100);
-				break;
+	updateDevice(device: LightDevice) {
+		super.updateDevice(device);
+		if ("state" in device) {
+			this.service
+				?.getCharacteristic(this.api.hap.Characteristic.On)
+				?.updateValue(device.state === "ON");
+		}
+		if (
+			"level" in device &&
+			device.level !== undefined &&
+			device.level !== null
+		) {
+			this.service
+				?.getCharacteristic(this.api.hap.Characteristic.Brightness)
+				?.updateValue(device.level);
 		}
 	}
 
 	private async setOn(value: CharacteristicValue) {
 		const on = value as boolean;
-		this.logger.debug(`Setting ${this.device.name} ${on ? "on" : "off"}`);
+		this.logger.debug(
+			`Setting ${this.accessory.context.oldApiDevice.name} ${on ? "on" : "off"}`
+		);
 		try {
 			await hiloApi.put(
-				`/Automation/v1/api/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
+				`/Automation/v1/api/Locations/${this.accessory.context.oldApiDevice.locationId}/Devices/${this.accessory.context.oldApiDevice.id}/Attributes`,
 				{ OnOff: on }
 			);
 		} catch (error) {
 			this.logger.error(
-				`Failed to set ${this.device.name} ${on ? "on" : "off"}`,
+				`Failed to set ${this.accessory.context.oldApiDevice.name} ${
+					on ? "on" : "off"
+				}`,
 				axios.isAxiosError(error) ? error.response?.data : error
 			);
 		}
 	}
 
 	private async getOn(): Promise<CharacteristicValue> {
-		this.logger.debug(`Getting ${this.device.name} onOff status`);
-		return this.values.OnOff?.value ?? false;
+		this.logger.debug(
+			`Getting ${this.accessory.context.oldApiDevice.name} onOff status`
+		);
+		return this.device.state === "ON";
 	}
 
 	private async setBrightness(value: CharacteristicValue) {
 		const brightness = value as number;
 		this.logger.debug(
-			`Setting ${this.device.name} brightness to ${brightness}`
+			`Setting ${this.accessory.context.oldApiDevice.name} brightness to ${brightness}`
 		);
 		try {
 			await hiloApi.put(
-				`/Automation/v1/api/Locations/${this.device.locationId}/Devices/${this.device.id}/Attributes`,
-				{ Intensity: brightness / 100 }
+				`/Automation/v1/api/Locations/${this.accessory.context.oldApiDevice.locationId}/Devices/${this.accessory.context.oldApiDevice.id}/Attributes`,
+				{ Intensity: brightness }
 			);
 		} catch (error) {
 			this.logger.error(
-				`Failed to set ${this.device.name} brightness to ${brightness}`,
+				`Failed to set ${this.accessory.context.oldApiDevice.name} brightness to ${brightness}`,
 				axios.isAxiosError(error) ? error.response?.data : error
 			);
 		}
 	}
 
 	private async getBrightness(): Promise<CharacteristicValue> {
-		const brightness = this.values.Intensity?.value ?? 1;
-		this.logger.debug(`Getting ${this.device.name} brightness`);
-		return brightness * 100;
+		const brightness = this.accessory.context.device.level ?? 100;
+		this.logger.debug(
+			`Getting ${this.accessory.context.oldApiDevice.name} brightness`
+		);
+		return brightness;
 	}
 }

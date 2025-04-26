@@ -1,11 +1,12 @@
 import { API, Logging, PlatformAccessory, Service } from "homebridge";
 import { getLogger } from "../logger";
-import { Device, HiloAccessoryContext, DeviceValueAttributeMap } from "./types";
+import { DeviceAccessory } from "./types";
+import { Device } from "../graphql/graphql";
 
-export abstract class HiloDevice<T extends Device["type"]> {
+export abstract class HiloDevice<T extends Device> {
 	protected service: Service | null = null;
 	constructor(
-		protected readonly accessory: PlatformAccessory<HiloAccessoryContext<T>>,
+		protected readonly accessory: PlatformAccessory<DeviceAccessory<T>>,
 		protected readonly api: API,
 		protected readonly logger: Logging = getLogger()
 	) {
@@ -14,25 +15,19 @@ export abstract class HiloDevice<T extends Device["type"]> {
 			.setCharacteristic(this.api.hap.Characteristic.Manufacturer, "Hilo")
 			.setCharacteristic(
 				this.api.hap.Characteristic.Model,
-				accessory.context.device.type
+				accessory.context.device.deviceType
 			)
 			.setCharacteristic(
 				this.api.hap.Characteristic.SerialNumber,
-				accessory.context.device.modelNumber
+				accessory.context.device.physicalAddress
 			);
 	}
 
-	get device(): Device {
+	get device(): T {
 		return this.accessory.context.device;
 	}
 
-	get values(): HiloAccessoryContext<T>["values"] {
-		return this.accessory.context.values;
-	}
-
-	updateValue(value: DeviceValueAttributeMap<T>) {
-		if (!value) return;
-		const key = value.attribute as keyof HiloAccessoryContext<T>["values"];
-		(this.accessory.context.values[key] as any) = value;
+	updateDevice(device: T) {
+		this.accessory.context.device = device;
 	}
 }
