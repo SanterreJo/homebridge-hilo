@@ -108,18 +108,13 @@ class Hilo implements DynamicPlatformPlugin {
         (accessory) =>
           !currentDeviceHiloIds.includes(accessory.context.device.hiloId),
       );
-      const oldAccessories = Object.values(this.accessories).filter(
-        (accessory) => (accessory as any).context.device.id,
-      );
-
-      const accessoriesToRemove = staleAccessories.concat(oldAccessories);
       this.log.debug(
-        `Found ${accessoriesToRemove.length} stale accessories removing...`,
+        `Found ${staleAccessories.length} stale accessories removing...`,
       );
       this.api.unregisterPlatformAccessories(
         PLUGIN_NAME,
         PLATFORM_NAME,
-        accessoriesToRemove,
+        staleAccessories,
       );
 
       if (this.config.noChallengeSensor !== true) {
@@ -218,6 +213,9 @@ class Hilo implements DynamicPlatformPlugin {
       this.log.warn(
         `Could not configure accessory ${accessory.displayName} because it is probably a device configured with version 3 or lower`,
       );
+      this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
+        accessory,
+      ]);
       return;
     }
     this.accessories[accessory.context.device.hiloId] = accessory as
