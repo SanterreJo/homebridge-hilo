@@ -43,6 +43,7 @@ permet de contrôler vos appareils Hilo par le biais de HomeKit et de l'app [Dom
 1. **Préparation**
    - Notez l'adresse IP ou le nom de domaine de votre serveur Homebridge
    - Assurez-vous que le port 8880 est accessible:
+     - Dans la plupart des cas, le port 8880 est accessible sans configuration supplémentaire
      - Pour Docker: Ajoutez `-p 8880:8880` à votre commande
      - Pour reverse proxy: Configurez le port 8880
 
@@ -126,6 +127,7 @@ enabling control of your Hilo devices via HomeKit and the [Apple Home App](https
 1. **Preparation**
    - Note your Homebridge server's IP address or domain name
    - Ensure port 8880 is accessible:
+     - In most cases, port 8880 is accessible without additional configuration
      - For Docker: Add `-p 8880:8880` to your command
      - For reverse proxy: Configure port 8880
 
