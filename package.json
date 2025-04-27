@@ -32,8 +32,10 @@
   },
   "homepage": "https://github.com/SanterreJo/homebridge-hilo#readme",
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.12.16",
     "@eslint/js": "^9.25.1",
     "@graphql-codegen/cli": "^5.0.5",
+    "@graphql-codegen/schema-ast": "^4.1.0",
     "@parcel/watcher": "^2.5.1",
     "@types/node": "^18.19.87",
     "auto": "^11.3.0",
@@ -52,7 +54,6 @@
     "axios": "^0.27.2",
     "date-fns": "^2.30.0",
     "express": "^4.21.2",
-    "graphql": "^16.10.0",
     "graphql-ws": "^6.0.4"
   },
   "auto": {

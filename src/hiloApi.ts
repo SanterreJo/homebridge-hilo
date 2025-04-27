@@ -3,6 +3,7 @@ import fs from "fs";
 import { getConfig } from "./config";
 import { getLogger } from "./logger";
 import { getApi } from "./api";
+import { TypedDocumentString } from "./graphql/graphql";
 
 let accessToken: string | undefined;
 let refreshToken: string | undefined;
@@ -115,6 +116,24 @@ export const hiloApi = axios.create({
 export const graphqlApi = axios.create({
   baseURL: "https://platform.hiloenergie.com",
 });
+
+export function execute<TResult, TVariables>(
+  query: TypedDocumentString<TResult, TVariables>,
+  ...[variables]: TVariables extends Record<string, never> ? [] : [TVariables]
+) {
+  return graphqlApi.post(
+    "/api/digital-twin/v3/graphql",
+    {
+      query,
+      variables,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+}
 
 const authInterceptor = async (config: AxiosRequestConfig) => {
   if (!accessToken) {

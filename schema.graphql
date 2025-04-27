@@ -1,0 +1,641 @@
+schema {
+  query: Query
+  subscription: Subscription
+}
+
+"""
+The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response.
+"""
+directive @cost(
+  """
+  The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc.
+  """
+  weight: String!
+) on ARGUMENT_DEFINITION | ENUM | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | OBJECT | SCALAR
+
+"""Defines when a policy shall be executed."""
+enum ApplyPolicy {
+  """After the resolver was executed."""
+  AFTER_RESOLVER
+  """Before the resolver was executed."""
+  BEFORE_RESOLVER
+  """The policy is applied in the validation step before the execution."""
+  VALIDATION
+}
+
+"""A basic charge controller."""
+type BasicChargeController implements IBasicDevice {
+  alerts: [String!]
+  ccrAllowedModes: [CCRMode!]!
+  ccrMode: CCRMode!
+  ccrType: CCRKind!
+  connectionStatus: DeviceConnectionStatus
+  deviceType: String!
+  gDState: DeviceGDState!
+  gatewayHiloId: String!
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  locationHiloId: String!
+  model: String
+  physicalAddress: String!
+  power(kind: PowerKind): PowerUnit
+  source: String!
+  state: DeviceState!
+  version: String
+  zigbeeVersion: String
+}
+
+"""A basic device."""
+type BasicDevice implements IBasicDevice {
+  connectionStatus: DeviceConnectionStatus
+  deviceType: String!
+  gatewayHiloId: String!
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  locationHiloId: String!
+  physicalAddress: String!
+  source: String!
+}
+
+"""A basic dimmer."""
+type BasicDimmer implements IBasicDevice {
+  connectionStatus: DeviceConnectionStatus
+  deviceType: String!
+  dimmerType: DimmerKind!
+  gatewayHiloId: String!
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  level: Int
+  locationHiloId: String!
+  model: String
+  physicalAddress: String!
+  power(kind: PowerKind): PowerUnit
+  source: String!
+  state: DeviceState!
+}
+
+"""A basic charging point."""
+type BasicEVCharger implements IBasicDevice {
+  chargingPointType: ChargingPointKind!
+  connectionStatus: DeviceConnectionStatus
+  deviceType: String!
+  gDState: DeviceGDState!
+  gatewayHiloId: String!
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  locationHiloId: String!
+  physicalAddress: String!
+  power(kind: PowerKind): PowerUnit
+  source: String!
+  status: ChargingPointStatus!
+}
+
+"""A basic light."""
+type BasicLight implements IBasicDevice {
+  colorMode: LightColorMode!
+  colorTemperature: Int
+  connectionStatus: DeviceConnectionStatus
+  deviceType: String!
+  gatewayHiloId: String!
+  hiloId: String!
+  hue: Int
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  level: Int
+  lightDeviceType: LightDeviceKind!
+  lightType: LightType!
+  locationHiloId: String!
+  model: String
+  physicalAddress: String!
+  saturation: Int
+  source: String!
+  state: DeviceState!
+}
+
+"""A basic smart meter."""
+type BasicSmartMeter implements IBasicDevice {
+  connectionStatus: DeviceConnectionStatus
+  deviceType: String!
+  gatewayHiloId: String!
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  locationHiloId: String!
+  physicalAddress: String!
+  power(kind: PowerKind): PowerUnit
+  smartMeterType: SmartMeterKind!
+  source: String!
+  zigBeeChannel: Int!
+}
+
+"""A basic switch."""
+type BasicSwitch implements IBasicDevice {
+  connectionStatus: DeviceConnectionStatus
+  deviceType: String!
+  gatewayHiloId: String!
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  locationHiloId: String!
+  model: String
+  physicalAddress: String!
+  power(kind: PowerKind): PowerUnit
+  source: String!
+  state: DeviceState!
+  switchType: SwitchKind!
+}
+
+"""A basic thermostat."""
+type BasicThermostat implements IBasicDevice {
+  alerts: [String!]
+  allowedModes: [ThermostatMode!]!
+  ambientHumidity: Int
+  """The ambient temperature setpoint"""
+  ambientTempSetpoint(kind: TemperatureKind): TemperatureUnit
+  ambientTemperature(kind: TemperatureKind): TemperatureUnit!
+  connectionStatus: DeviceConnectionStatus
+  deviceType: String!
+  gDState: DeviceGDState!
+  gatewayHiloId: String!
+  """
+  Heat demand is the delta between the actual temperature and the desired temperature
+  """
+  heatDemand: Int
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  locationHiloId: String!
+  """Highest Ambient temperature setpoint"""
+  maxAmbientTempSetpoint(kind: TemperatureKind): TemperatureUnit
+  """Highest Ambient temperature setpoint possible for the thermostat"""
+  maxAmbientTempSetpointLimit(kind: TemperatureKind): TemperatureUnit
+  """Lowest Ambient temperature setpoint"""
+  minAmbientTempSetpoint(kind: TemperatureKind): TemperatureUnit
+  """Lowest Ambient temperature setpoint possible for the thermostat"""
+  minAmbientTempSetpointLimit(kind: TemperatureKind): TemperatureUnit
+  mode: ThermostatMode!
+  model: String
+  physicalAddress: String!
+  power(kind: PowerKind): PowerUnit
+  source: String!
+  thermostatType: ThermostatKind!
+  version: String
+  zigbeeVersion: String
+}
+
+"""
+The `Byte` scalar type represents non-fractional whole numeric values. Byte can represent values between 0 and 255.
+"""
+scalar Byte
+
+enum CCRKind {
+  GENERIC
+  WATER_HEATER
+}
+
+enum CCRMode {
+  AUTO
+  AUTO_BYPASS
+  MANUAL
+  OFF
+  UNKNOWN
+}
+
+enum ChargingPointKind {
+  GENERIC
+}
+
+enum ChargingPointStatus {
+  AVAILABLE
+  IN_USE
+  OUT_OF_SERVICE
+  RESERVED
+}
+
+"""A logical container device."""
+type Container {
+  devices(where: IBasicDeviceFilterInput): [IBasicDevice!]!
+  hiloId: String!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  transmissionTime: DateTime!
+}
+
+"""The `DateTime` scalar represents an ISO-8601 compliant date time type."""
+scalar DateTime
+
+"""Union of all devices."""
+union Device = BasicChargeController | BasicDevice | BasicDimmer | BasicEVCharger | BasicLight | BasicSmartMeter | BasicSwitch | BasicThermostat | Gateway | HeatingFloorThermostat | LowVoltageThermostat | WaterHeater
+
+enum DeviceConnectionStatus {
+  CONNECTED
+  DISCONNECTED
+}
+
+enum DeviceGDState {
+  ACTIVE
+  CCR_ACTIVE_SECURITY_WITH_CLOSED_RELAYS
+  CCR_INACTIVE_SECURITY_WITH_CLOSED_RELAYS
+  CCR_INACTIVE_SECURITY_WITH_OPENED_RELAYS
+  EXCLUDED
+  OPT_OUT_THROUGH_LOCATION
+  OPT_OUT_THROUGH_MOBILE_APP
+  OPT_OUT_THROUGH_PHYSICAL_DEVICE
+  UNKNOWN
+}
+
+enum DeviceState {
+  OFF
+  ON
+  UNKNOWN
+}
+
+enum DimmerKind {
+  GENERIC
+}
+
+enum FloorThermostatMode {
+  AMBIENT
+  FLOOR
+  HYBRID
+}
+
+"""A logical gateway device."""
+type Gateway implements IBasicDevice {
+  connectionStatus: DeviceConnectionStatus
+  controllerSoftwareVersion: String!
+  deviceType: String!
+  gatewayHiloId: String!
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  locationHiloId: String!
+  physicalAddress: String!
+  smartMeterPairingStatus: Boolean!
+  smartMeterZigBeeChannel: Int!
+  source: String!
+  willBeConnectedToSmartMeter: Boolean
+  zigBeeChannel: Int!
+  zigBeePairingModeEnhanced: Byte
+}
+
+"""A floor thermostat."""
+type HeatingFloorThermostat implements IBasicDevice {
+  alerts: [String!]
+  allowedModes: [ThermostatMode!]!
+  ambientHumidity: Int
+  """The ambient temperature setpoint"""
+  ambientTempSetpoint(kind: TemperatureKind): TemperatureUnit
+  ambientTemperature(kind: TemperatureKind): TemperatureUnit!
+  connectionStatus: DeviceConnectionStatus
+  deviceType: String!
+  """Floor temperature limit. Is a safety measure to avoid fire, etc"""
+  floorLimit: TemperatureUnit
+  floorMode: FloorThermostatMode!
+  gDState: DeviceGDState!
+  gatewayHiloId: String!
+  """
+  Heat demand is the delta between the actual temperature and the desired temperature
+  """
+  heatDemand: Int
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  locationHiloId: String!
+  """Highest Ambient temperature setpoint"""
+  maxAmbientTempSetpoint(kind: TemperatureKind): TemperatureUnit
+  """Highest Ambient temperature setpoint possible for the thermostat"""
+  maxAmbientTempSetpointLimit(kind: TemperatureKind): TemperatureUnit
+  """Lowest Ambient temperature setpoint"""
+  minAmbientTempSetpoint(kind: TemperatureKind): TemperatureUnit
+  """Lowest Ambient temperature setpoint possible for the thermostat"""
+  minAmbientTempSetpointLimit(kind: TemperatureKind): TemperatureUnit
+  mode: ThermostatMode!
+  model: String
+  physicalAddress: String!
+  power(kind: PowerKind): PowerUnit
+  source: String!
+  thermostatType: ThermostatKind!
+  version: String
+  zigbeeVersion: String
+}
+
+type HiloId {
+  id: String!
+}
+
+interface IBasicDevice {
+  connectionStatus: DeviceConnectionStatus
+  deviceType: String!
+  gatewayHiloId: String!
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  locationHiloId: String!
+  physicalAddress: String!
+  source: String!
+}
+
+input IBasicDeviceFilterInput {
+  and: [IBasicDeviceFilterInput!]
+  deviceType: StringOperationFilterInput
+  hiloId: StringOperationFilterInput
+  or: [IBasicDeviceFilterInput!]
+  source: StringOperationFilterInput
+}
+
+enum LightColorMode {
+  COLOR
+  WHITE
+}
+
+enum LightDeviceKind {
+  GENERIC
+}
+
+enum LightType {
+  COLOR
+  WHITE
+}
+
+enum LowVoltageCurrentState {
+  COOLING
+  HEATING
+  OFF
+  UNKNOWN
+}
+
+enum LowVoltageFanCurrentState {
+  OFF
+  ON
+  UNKNOWN
+}
+
+enum LowVoltageFanMode {
+  AUTO
+  CIRCULATE
+  FOLLOW_SCHEDULE
+  OFF
+  ON
+  UNKNOWN
+}
+
+"""A 24V thermostat."""
+type LowVoltageThermostat implements IBasicDevice {
+  alerts: [String!]
+  allowedModes: [ThermostatMode!]!
+  ambientHumidity: Int
+  """The ambient temperature setpoint"""
+  ambientTempSetpoint(kind: TemperatureKind): TemperatureUnit
+  ambientTemperature(kind: TemperatureKind): TemperatureUnit!
+  connectionStatus: DeviceConnectionStatus
+  """Cool temperature setpoint"""
+  coolTempSetpoint: TemperatureUnit
+  currentState: LowVoltageCurrentState!
+  deviceType: String!
+  fanAllowedModes: [LowVoltageFanMode!]!
+  fanCurrentState: LowVoltageFanCurrentState!
+  fanMode: LowVoltageFanMode!
+  fanSpeed: Int
+  gDState: DeviceGDState!
+  gatewayHiloId: String!
+  """
+  Heat demand is the delta between the actual temperature and the desired temperature
+  """
+  heatDemand: Int
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  locationHiloId: String!
+  maxAmbientCoolSetPoint: TemperatureUnit
+  """Highest Ambient temperature setpoint"""
+  maxAmbientTempSetpoint(kind: TemperatureKind): TemperatureUnit
+  """Highest Ambient temperature setpoint possible for the thermostat"""
+  maxAmbientTempSetpointLimit(kind: TemperatureKind): TemperatureUnit
+  minAmbientCoolSetPoint: TemperatureUnit
+  """Lowest Ambient temperature setpoint"""
+  minAmbientTempSetpoint(kind: TemperatureKind): TemperatureUnit
+  """Lowest Ambient temperature setpoint possible for the thermostat"""
+  minAmbientTempSetpointLimit(kind: TemperatureKind): TemperatureUnit
+  mode: ThermostatMode!
+  model: String
+  physicalAddress: String!
+  power(kind: PowerKind): PowerUnit
+  source: String!
+  thermostatType: ThermostatKind!
+  version: String
+  zigbeeVersion: String
+}
+
+type Operation {
+  destinationInstance: String
+  device: Device!
+  deviceType: String!
+  gatewayHiloId: String! @deprecated(reason: "GatewayHiloId should not be used, use LocationHiloId instead")
+  gatewayId: String! @deprecated(reason: "GatewayId should not be used, use LocationHiloId instead")
+  location: Container!
+  locationHiloId: String!
+  message: String
+  methodName: String
+  operationId: UUID
+  sessionId: UUID
+  sourceInstance: String
+  status: OperationStatus!
+  statusReason: OperationStatusReason!
+  transmissionTime: DateTime!
+}
+
+enum OperationStatus {
+  ACCEPTED
+  FAILED
+  REJECTED
+  REPORT
+  SUCCEEDED
+  SUPERSEDED
+  TIMED_OUT
+}
+
+enum OperationStatusReason {
+  INVALID_ARGUMENT
+  NONE
+}
+
+enum PowerKind {
+  BOILER_HORSEPOWER
+  BRITISH_THERMAL_UNIT_PER_HOUR
+  DECAWATT
+  DECIWATT
+  ELECTRICAL_HORSEPOWER
+  FEMTOWATT
+  GIGAJOULE_PER_HOUR
+  GIGAWATT
+  HYDRAULIC_HORSEPOWER
+  JOULE_PER_HOUR
+  KILOBRITISH_THERMAL_UNIT_PER_HOUR
+  KILOJOULE_PER_HOUR
+  KILOWATT
+  MECHANICAL_HORSEPOWER
+  MEGAJOULE_PER_HOUR
+  MEGAWATT
+  METRIC_HORSEPOWER
+  MICROWATT
+  MILLIJOULE_PER_HOUR
+  MILLIWATT
+  NANOWATT
+  PETAWATT
+  PICOWATT
+  TERAWATT
+  WATT
+}
+
+type PowerUnit {
+  kind: PowerKind!
+  lastUpate: DateTime @deprecated(reason: "Will be removed in future versions, use LastUpdate instead")
+  lastUpdate: DateTime
+  value: Float
+}
+
+type Query {
+  """
+  Retrieve a location.
+  
+  
+  **Returns:**
+  A logical location. If the logical location does not exist, it will be created.
+  """
+  getLocation(
+    """The hilo id of the location to retrieve."""
+    id: String!
+  ): Container
+}
+
+enum SmartMeterKind {
+  GENERIC
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  contains: String
+  endsWith: String
+  eq: String
+  in: [String]
+  ncontains: String
+  nendsWith: String
+  neq: String
+  nin: [String]
+  nstartsWith: String
+  or: [StringOperationFilterInput!]
+  startsWith: String
+}
+
+type Subscription {
+  """
+  Subscribe to updates from any device, including Smart Meters partitioned by the location hiloId.
+  """
+  onAnyDeviceUpdated(
+    """location HiloId of subscription"""
+    locationHiloId: String!
+  ): Operation!
+  """Subscribe to updates from any location"""
+  onAnyLocationUpdated(
+    """location HiloId of subscription"""
+    locationHiloId: String!
+  ): Operation!
+}
+
+enum SwitchKind {
+  GENERIC
+}
+
+enum TemperatureKind {
+  DEGREE_CELSIUS
+  DEGREE_DELISLE
+  DEGREE_FAHRENHEIT
+  DEGREE_NEWTON
+  DEGREE_RANKINE
+  DEGREE_REAUMUR
+  DEGREE_ROEMER
+  KELVIN
+  MILLIDEGREE_CELSIUS
+  SOLAR_TEMPERATURE
+}
+
+type TemperatureUnit {
+  kind: TemperatureKind!
+  value: Float
+}
+
+enum ThermostatKind {
+  FLOOR
+  GENERIC
+  LOW_VOLTAGE
+}
+
+enum ThermostatMode {
+  AUTO
+  AUTO_BYPASS
+  AUTO_COOL
+  AUTO_HEAT
+  COOL
+  EMERGENCY_HEAT
+  HEAT
+  MANUAL
+  OFF
+  SOUTHERN_AWAY
+  UNKNOWN
+}
+
+"""The `TimeSpan` scalar represents an ISO-8601 compliant duration type."""
+scalar TimeSpan
+
+scalar UUID
+
+"""
+The UnsignedLong scalar type represents a unsigned 64-bit numeric non-fractional value greater than or equal to 0.
+"""
+scalar UnsignedLong
+
+"""A water heater."""
+type WaterHeater implements IBasicDevice {
+  alerts: [String!]
+  ccrAllowedModes: [CCRMode!]!
+  ccrMode: CCRMode!
+  ccrType: CCRKind!
+  connectionStatus: DeviceConnectionStatus
+  deviceType: String!
+  gDState: DeviceGDState!
+  gatewayHiloId: String!
+  """High Temp Duration in seconds."""
+  highTempDuration: Int
+  highTempThreshold: TemperatureUnit
+  hiloId: String!
+  lastConnectionTime: DateTime!
+  lastUpdate: DateTime!
+  lastUpdateVersion: UnsignedLong!
+  locationHiloId: String!
+  lowTempThreshold: TemperatureUnit
+  model: String
+  physicalAddress: String!
+  power(kind: PowerKind): PowerUnit
+  probeTemp: TemperatureUnit
+  source: String!
+  state: DeviceState!
+  version: String
+  zigbeeVersion: String
+}

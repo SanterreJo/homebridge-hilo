@@ -11,7 +11,13 @@
     "strict": true,
     "esModuleInterop": true,
     "noImplicitAny": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "./schema.graphql"
+      }
+    ]
   },
   "include": ["src/"],
   "exclude": ["**/*.spec.ts", "homebridge-ui/**"]

@@ -11,7 +11,9 @@
         "editor.codeActionsOnSave": {
           "source.fixAll": "always"
         },
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true
       }
     }
   }

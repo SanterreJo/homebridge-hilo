@@ -7,8 +7,14 @@ const config: CodegenConfig = {
   generates: {
     "./src/graphql/": {
       preset: "client",
-      presetConfig: {
-        gqlTagName: "gql",
+      config: {
+        documentMode: "string",
+      },
+    },
+    "./schema.graphql": {
+      plugins: ["schema-ast"],
+      config: {
+        includeDirectives: true,
       },
     },
   },

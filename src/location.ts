@@ -1,9 +1,9 @@
-import { gql } from "graphql-tag";
 import { getLogger } from "./logger";
-import { graphqlApi } from "./hiloApi";
-import { Device, GetLocationQuery } from "./graphql/graphql";
+import { execute } from "./hiloApi";
+import { Device } from "./graphql/graphql";
+import { graphql } from "./graphql/gql";
 
-const LOCATION_QUERY = gql`
+const LOCATION_QUERY = graphql(/* GraphQL */ `
   query getLocation($locationHiloId: String!) {
     getLocation(id: $locationHiloId) {
       hiloId
@@ -130,7 +130,7 @@ const LOCATION_QUERY = gql`
       }
     }
   }
-`;
+`);
 
 export const fetchDevicesForLocation = async (
   locationHiloId: string,
@@ -138,18 +138,7 @@ export const fetchDevicesForLocation = async (
   const logger = getLogger();
 
   try {
-    const response = await graphqlApi.post<{ data: GetLocationQuery }>(
-      "/api/digital-twin/v3/graphql",
-      {
-        query: LOCATION_QUERY.loc?.source.body,
-        variables: { locationHiloId },
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
+    const response = await execute(LOCATION_QUERY, { locationHiloId });
     return (response.data.data.getLocation?.devices || []) as Device[];
   } catch (error) {
     logger.error("Error fetching devices for location:", error);
