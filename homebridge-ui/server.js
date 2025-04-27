@@ -1,6 +1,7 @@
-import { HomebridgePluginUiServer } from "@homebridge/plugin-ui-utils";
-import express from "express";
-import crypto from "crypto";
+const { HomebridgePluginUiServer } = require("@homebridge/plugin-ui-utils");
+const express = require("express");
+const crypto = require("crypto");
+
 
 const port = 8880;
 
@@ -26,6 +27,7 @@ class UiServer extends HomebridgePluginUiServer {
       "https://HiloDirectoryB2C.onmicrosoft.com/hiloapis/user_impersonation",
       "offline_access",
     ].join(" ");
+
     const state = Math.random().toString(36).substring(7);
     const authorizationURL = `https://connexion.hiloenergie.com/HiloDirectoryB2C.onmicrosoft.com/B2C_1A_SIGN_IN/oauth2/v2.0/authorize?response_type=code&code_challenge=${challenge}&code_challenge_method=S256&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
     return {

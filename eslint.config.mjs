@@ -37,6 +37,6 @@ export default defineConfig([
     },
   },
   {
-    ignores: ["dist/**", "src/graphql/**"],
+    ignores: ["dist/**", "src/graphql/**", "homebridge-ui/**"],
   },
 ]);
