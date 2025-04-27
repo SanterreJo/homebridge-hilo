@@ -148,7 +148,7 @@ export const setupSubscription = async (
     const subscription = client.iterate<{
       onAnyDeviceUpdated: { device: Device };
     }>({
-      query: SUBSCRIPTION_QUERY as unknown as string,
+      query: SUBSCRIPTION_QUERY.toString(),
       variables: { locationHiloId },
     });
 

@@ -124,7 +124,7 @@ export function execute<TResult, TVariables>(
   return graphqlApi.post(
     "/api/digital-twin/v3/graphql",
     {
-      query,
+      query: query.toString(),
       variables,
     },
     {
