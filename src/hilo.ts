@@ -104,9 +104,11 @@ class Hilo implements DynamicPlatformPlugin {
       const currentDeviceHiloIds = this.oldApiDevices.map(
         (device) => device.hiloId,
       );
-      const staleAccessories = Object.values(this.accessories).filter(
-        (accessory) =>
-          !currentDeviceHiloIds.includes(accessory.context.device.hiloId),
+      const staleAccessorieKeys = Object.keys(this.accessories).filter(
+        (accessoryKey) => !currentDeviceHiloIds.includes(accessoryKey),
+      );
+      const staleAccessories = staleAccessorieKeys.map(
+        (key) => this.accessories[key],
       );
       this.log.debug(
         `Found ${staleAccessories.length} accessories removing...`,
