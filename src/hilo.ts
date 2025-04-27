@@ -99,24 +99,27 @@ class Hilo implements DynamicPlatformPlugin {
         );
         this.pluginAccessories[device.hiloId] = pluginAccessory;
       });
-      await this.setupSubscriptions();
+      this.setupSubscriptions();
 
       const currentDeviceHiloIds = this.oldApiDevices.map(
         (device) => device.hiloId,
       );
-      const staleAccessorieKeys = Object.keys(this.accessories).filter(
-        (accessoryKey) => !currentDeviceHiloIds.includes(accessoryKey),
+      const staleAccessories = Object.values(this.accessories).filter(
+        (accessory) =>
+          !currentDeviceHiloIds.includes(accessory.context.device.hiloId),
       );
-      const staleAccessories = staleAccessorieKeys.map(
-        (key) => this.accessories[key],
+      const oldAccessories = Object.values(this.accessories).filter(
+        (accessory) => (accessory as any).context.device.id,
       );
+
+      const accessoriesToRemove = staleAccessories.concat(oldAccessories);
       this.log.debug(
-        `Found ${staleAccessories.length} accessories removing...`,
+        `Found ${accessoriesToRemove.length} stale accessories removing...`,
       );
       this.api.unregisterPlatformAccessories(
         PLUGIN_NAME,
         PLATFORM_NAME,
-        staleAccessories,
+        accessoriesToRemove,
       );
 
       if (this.config.noChallengeSensor !== true) {
