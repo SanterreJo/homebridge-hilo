@@ -209,7 +209,7 @@ class Hilo implements DynamicPlatformPlugin {
 
   configureAccessory(accessory: PlatformAccessory): void {
     this.log.debug(`Configuring accessory from cache ${accessory.displayName}`);
-    if (!accessory?.context?.device?.hiloId) {
+    if (!accessory?.context?.oldApiDevice) {
       this.log.warn(
         `Could not configure accessory ${accessory.displayName} because it is probably a device configured with version 3 or lower`,
       );
