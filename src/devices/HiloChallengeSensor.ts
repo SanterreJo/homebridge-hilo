@@ -77,7 +77,7 @@ export class HiloChallengeSensor {
       accessory.addService(this.api.hap.Service.ContactSensor);
     this.service.setCharacteristic(
       this.api.hap.Characteristic.Name,
-      this.accessory.context.device.phase + "Hilo Challenge",
+      this.accessory.context.device.phase + " Hilo Challenge",
     );
     this.service
       .getCharacteristic(this.api.hap.Characteristic.ContactSensorState)

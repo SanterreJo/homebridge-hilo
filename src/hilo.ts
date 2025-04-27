@@ -36,6 +36,7 @@ class Hilo implements DynamicPlatformPlugin {
   private locations: Location[] = [];
   private subscriptions: Record<string, any> = {};
   private oldApiDevices: OldApiDevice[] = [];
+  private staleAccessories: PlatformAccessory<any>[] = [];
   constructor(
     private readonly log: Logging,
     private readonly config: PlatformConfig,
@@ -104,17 +105,19 @@ class Hilo implements DynamicPlatformPlugin {
       const currentDeviceHiloIds = this.oldApiDevices.map(
         (device) => device.hiloId,
       );
-      const staleAccessories = Object.values(this.accessories).filter(
-        (accessory) =>
-          !currentDeviceHiloIds.includes(accessory.context.device.hiloId),
+      this.staleAccessories.concat(
+        Object.values(this.accessories).filter(
+          (accessory) =>
+            !currentDeviceHiloIds.includes(accessory.context.device.hiloId),
+        ),
       );
       this.log.debug(
-        `Found ${staleAccessories.length} stale accessories removing...`,
+        `Found ${this.staleAccessories.length} stale accessories removing...`,
       );
       this.api.unregisterPlatformAccessories(
         PLUGIN_NAME,
         PLATFORM_NAME,
-        staleAccessories,
+        this.staleAccessories,
       );
 
       if (this.config.noChallengeSensor !== true) {
@@ -209,13 +212,11 @@ class Hilo implements DynamicPlatformPlugin {
 
   configureAccessory(accessory: PlatformAccessory): void {
     this.log.debug(`Configuring accessory from cache ${accessory.displayName}`);
-    if (!accessory?.context?.oldApiDevice) {
+    if (accessory?.context?.device?.id) {
       this.log.warn(
         `Could not configure accessory ${accessory.displayName} because it is probably a device configured with version 3 or lower`,
       );
-      this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
-        accessory,
-      ]);
+      this.staleAccessories.push(accessory);
       return;
     }
     this.accessories[accessory.context.device.hiloId] = accessory as
