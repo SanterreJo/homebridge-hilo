@@ -1,14 +1,18 @@
 {
-	"image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:20-bookworm",
-	"mounts": [
-		"source=homebridge-hilo-extensions,target=/root/.vscode-server/extensions,type=volume"
-	],
-	"extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"],
-	"settings": {
-		"editor.formatOnSave": true,
-		"editor.codeActionsOnSave": {
-			"source.fixAll": true
-		},
-		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
-	}
+  "image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:22-bookworm",
+  "mounts": [
+    "source=homebridge-hilo-extensions,target=/root/.vscode-server/extensions,type=volume"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll": "always"
+        },
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+      }
+    }
+  }
 }

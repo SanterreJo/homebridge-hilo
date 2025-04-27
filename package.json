@@ -1,80 +1,75 @@
 {
-	"name": "homebridge-hilo",
-	"version": "3.2.0",
-	"description": "Plugin Homebridge (non officiel) pour la passerelle et les appareils Hilo de Hydro-Québec | Unofficial Homebridge plugin for Hydro-Québec Hilo bridge and devices",
-	"main": "dist/hilo.js",
-	"engines": {
-		"homebridge": "^1.6.0 || ^2.0.0-beta.0",
-		"node": "^18.20.4 || ^20.15.1"
-	},
-	"scripts": {
-		"lint": "eslint src/**.ts --max-warnings=0",
-		"build": "rimraf dist/ && tsc",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"codegen": "graphql-codegen --config codegen.ts",
-		"codegen:watch": "npm run codegen -- --watch",
-		"tsc": "npm run codegen && tsc"
-	},
-	"lint-staged": {
-		"**/*": "prettier --write --ignore-unknown"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/SanterreJo/homebridge-hilo.git"
-	},
-	"keywords": [
-		"homebridge",
-		"homebridge-plugin",
-		"hilo",
-		"hydroquebec"
-	],
-	"author": "Jonathan Santerre <jonathan@santerre.dev>",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/SanterreJo/homebridge-hilo/issues"
-	},
-	"homepage": "https://github.com/SanterreJo/homebridge-hilo#readme",
-	"devDependencies": {
-		"@graphql-codegen/cli": "^5.0.5",
-		"@parcel/watcher": "^2.5.1",
-		"@types/jsonwebtoken": "^8.5.9",
-		"@types/node": "^18.7.11",
-		"@typescript-eslint/eslint-plugin": "^5.34.0",
-		"@typescript-eslint/parser": "^5.34.0",
-		"auto": "^11.0.7",
-		"eslint": "^8.22.0",
-		"eslint-config-prettier": "^8.5.0",
-		"eslint-plugin-prettier": "^4.2.1",
-		"homebridge": "^1.5.0",
-		"husky": "^8.0.1",
-		"lint-staged": "^13.0.3",
-		"prettier": "2.7.1",
-		"rimraf": "^3.0.2",
-		"typescript": "^5.8.3"
-	},
-	"dependencies": {
-		"@homebridge/plugin-ui-utils": "^1.0.3",
-		"axios": "^0.27.2",
-		"date-fns": "^2.29.3",
-		"express": "^4.19.2",
-		"graphql": "^16.10.0",
-		"graphql-ws": "^6.0.4",
-		"jsonwebtoken": "^8.5.1"
-	},
-	"auto": {
-		"plugins": [
-			"npm",
-			"released"
-		]
-	},
-	"funding": [
-		{
-			"type": "buymeacoffee",
-			"url": "https://www.buymeacoffee.com/santerrejo"
-		},
-		{
-			"type": "paypal",
-			"url": "https://paypal.me/santerrejo"
-		}
-	]
+  "name": "homebridge-hilo",
+  "version": "3.2.0",
+  "description": "Plugin Homebridge (non officiel) pour la passerelle et les appareils Hilo de Hydro-Québec | Unofficial Homebridge plugin for Hydro-Québec Hilo bridge and devices",
+  "main": "dist/hilo.js",
+  "type": "module",
+  "engines": {
+    "homebridge": "^1.8.0 || ^2.0.0-beta.0",
+    "node": "^18.20.4 || ^20.18.0 || ^22.10.0"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings=0",
+    "build": "rimraf dist/ && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen:watch": "npm run codegen -- --watch",
+    "tsc": "npm run codegen && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SanterreJo/homebridge-hilo.git"
+  },
+  "keywords": [
+    "homebridge",
+    "homebridge-plugin",
+    "hilo",
+    "hydroquebec"
+  ],
+  "author": "Jonathan Santerre <jonathan@santerre.dev>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SanterreJo/homebridge-hilo/issues"
+  },
+  "homepage": "https://github.com/SanterreJo/homebridge-hilo#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.25.1",
+    "@graphql-codegen/cli": "^5.0.5",
+    "@parcel/watcher": "^2.5.1",
+    "@types/node": "^18.19.87",
+    "auto": "^11.3.0",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "globals": "^16.0.0",
+    "homebridge": "^2.0.0-beta.0",
+    "prettier": "3.5.3",
+    "rimraf": "^3.0.2",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.31.0"
+  },
+  "dependencies": {
+    "@homebridge/plugin-ui-utils": "^1.0.3",
+    "axios": "^0.27.2",
+    "date-fns": "^2.30.0",
+    "express": "^4.21.2",
+    "graphql": "^16.10.0",
+    "graphql-ws": "^6.0.4"
+  },
+  "auto": {
+    "plugins": [
+      "npm",
+      "released"
+    ]
+  },
+  "funding": [
+    {
+      "type": "buymeacoffee",
+      "url": "https://www.buymeacoffee.com/santerrejo"
+    },
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/santerrejo"
+    }
+  ]
 }
