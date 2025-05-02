@@ -92,7 +92,18 @@ class Hilo implements DynamicPlatformPlugin {
         }
         let accessory = this.accessories[device.hiloId];
         if (!accessory) {
+          this.log.debug(
+            `Setting up new accessory for device ${device.hiloId}`,
+          );
           accessory = this.setupNewAccessory(device, oldDevice);
+        } else if (accessory.context.device.type !== "Challenge") {
+          this.log.debug(
+            `Setting up cached accessory for device ${device.hiloId}`,
+          );
+          (accessory.context as DeviceAccessory<Device>) = {
+            device: oldDevice,
+            graphqlDevice: device,
+          };
         }
         const pluginAccessory = initializeHiloDevice[device.__typename!](
           accessory as any,
@@ -106,10 +117,15 @@ class Hilo implements DynamicPlatformPlugin {
         (device) => device.hiloId,
       );
       this.staleAccessories.concat(
-        Object.values(this.accessories).filter(
-          (accessory) =>
-            !currentDeviceHiloIds.includes(accessory.context.device.hiloId),
-        ),
+        Object.values(this.accessories).filter((accessory) => {
+          if (accessory.context.device.type === "Challenge") {
+            return false;
+          } else {
+            return !currentDeviceHiloIds.includes(
+              accessory.context.device.hiloId,
+            );
+          }
+        }),
       );
       this.log.debug(
         `Found ${this.staleAccessories.length} stale accessories removing...`,
@@ -140,38 +156,71 @@ class Hilo implements DynamicPlatformPlugin {
   }
 
   private setupHiloChallengeDevices(location: Location): HiloChallengeSensor[] {
-    return ["Preheat", "Reduction", "Recovery", "Planned AM", "Planned PM"].map(
-      (phase) => {
-        const challengeId = `${location.locationHiloId}-${phase}`;
-        let challengeAccessory = this.accessories[challengeId] as unknown as
-          | PlatformAccessory<ChallengeAccessory>
-          | undefined;
-        if (!challengeAccessory) {
-          const uuid = this.api.hap.uuid.generate(challengeId);
-          challengeAccessory =
-            new this.api.platformAccessory<ChallengeAccessory>(
-              challengeId,
-              uuid,
-            );
-          challengeAccessory.context = {
-            device: {
-              value: false,
-              phase,
-              hiloId: challengeId,
-            },
-          };
-          this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
-            challengeAccessory,
-          ]);
-          this.accessories[challengeId] = challengeAccessory as any;
-        }
-        return new HiloChallengeSensor(
-          challengeAccessory as any,
-          this.api,
-          this.log,
+    return [
+      "preheat",
+      "reduction",
+      "recovery",
+      "plannedAM",
+      "plannedPM",
+      "inProgress",
+    ].map((phase, index) => {
+      const challengeId = `${phase}-hilo-challenge-${location.id}`;
+      const challengeName = `${phase.charAt(0).toUpperCase() + phase.slice(1)} Hilo Challenge ${location.name}`;
+      let challengeAccessory = this.accessories[challengeId] as unknown as
+        | PlatformAccessory<ChallengeAccessory>
+        | undefined;
+      if (!challengeAccessory) {
+        const uuid = this.api.hap.uuid.generate(challengeId);
+        challengeAccessory = new this.api.platformAccessory<ChallengeAccessory>(
+          challengeName,
+          uuid,
         );
-      },
-    );
+        challengeAccessory.context = {
+          device: {
+            assetId: challengeId,
+            id: location.id + index + 100,
+            name: challengeName,
+            type: "Challenge",
+            locationId: location.id,
+            modelNumber: "Hilo Challenge",
+            identifier: challengeId,
+            hiloId: challengeId,
+          },
+          v4Device: {
+            value: false,
+            phase,
+            localId: challengeId,
+          },
+        };
+        this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
+          challengeAccessory,
+        ]);
+        this.accessories[challengeId] = challengeAccessory as any;
+      } else {
+        challengeAccessory.context = {
+          device: {
+            assetId: challengeId,
+            id: location.id + index + 100,
+            name: challengeName,
+            type: "Challenge",
+            locationId: location.id,
+            modelNumber: "Hilo Challenge",
+            identifier: challengeId,
+            hiloId: challengeId,
+          },
+          v4Device: {
+            value: false,
+            phase,
+            localId: challengeId,
+          },
+        };
+      }
+      return new HiloChallengeSensor(
+        challengeAccessory as any,
+        this.api,
+        this.log,
+      );
+    });
   }
 
   private async setupSubscriptions() {
@@ -212,10 +261,11 @@ class Hilo implements DynamicPlatformPlugin {
 
   configureAccessory(accessory: PlatformAccessory): void {
     this.log.debug(`Configuring accessory from cache ${accessory.displayName}`);
-    if (accessory?.context?.device?.id) {
-      this.log.warn(
-        `Could not configure accessory ${accessory.displayName} because it is probably a device configured with version 3 or lower`,
-      );
+    if (
+      accessory.context.device.type !== "Challenge" &&
+      !accessory.context.device.hiloId
+    ) {
+      this.log.warn(`Could not configure accessory ${accessory.displayName}`);
       this.staleAccessories.push(accessory);
       return;
     }
@@ -228,14 +278,14 @@ class Hilo implements DynamicPlatformPlugin {
     device: Device,
     oldApiDevice: OldApiDevice,
   ): PlatformAccessory<DeviceAccessory<Device>> {
-    const uuid = this.api.hap.uuid.generate(device.hiloId);
+    const uuid = this.api.hap.uuid.generate(oldApiDevice.assetId);
     const accessory = new this.api.platformAccessory<DeviceAccessory<Device>>(
-      device.__typename!,
+      oldApiDevice.name.trim(),
       uuid,
     );
     accessory.context = {
-      device,
-      oldApiDevice,
+      device: oldApiDevice,
+      graphqlDevice: device,
     };
     this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
       accessory,

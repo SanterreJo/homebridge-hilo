@@ -15,7 +15,7 @@ export class Outlet extends HiloDevice<BasicSwitch> {
       accessory.addService(this.api.hap.Service.Outlet);
     this.service.setCharacteristic(
       this.api.hap.Characteristic.Name,
-      this.accessory.context.oldApiDevice.name,
+      this.accessory.context.device.name,
     );
     this.service
       .getCharacteristic(this.api.hap.Characteristic.On)
@@ -35,16 +35,16 @@ export class Outlet extends HiloDevice<BasicSwitch> {
   private async setOn(value: CharacteristicValue) {
     const on = value as boolean;
     this.logger.debug(
-      `Setting ${this.accessory.context.oldApiDevice.name} ${on ? "on" : "off"}`,
+      `Setting ${this.accessory.context.device.name} ${on ? "on" : "off"}`,
     );
     try {
       await hiloApi.put(
-        `/Automation/v1/api/Locations/${this.accessory.context.oldApiDevice.locationId}/Devices/${this.accessory.context.oldApiDevice.id}/Attributes`,
+        `/Automation/v1/api/Locations/${this.accessory.context.device.locationId}/Devices/${this.accessory.context.device.id}/Attributes`,
         { OnOff: on },
       );
     } catch (error) {
       this.logger.error(
-        `Failed to set ${this.accessory.context.oldApiDevice.name} ${
+        `Failed to set ${this.accessory.context.device.name} ${
           on ? "on" : "off"
         }`,
         axios.isAxiosError(error) ? error.response?.data : error,
@@ -54,7 +54,7 @@ export class Outlet extends HiloDevice<BasicSwitch> {
 
   private async getOn(): Promise<CharacteristicValue> {
     this.logger.debug(
-      `Getting ${this.accessory.context.oldApiDevice.name} onOff status`,
+      `Getting ${this.accessory.context.device.name} onOff status`,
     );
     return this.device.state === "ON";
   }

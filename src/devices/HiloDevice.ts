@@ -15,19 +15,19 @@ export abstract class HiloDevice<T extends Device> {
       .setCharacteristic(this.api.hap.Characteristic.Manufacturer, "Hilo")
       .setCharacteristic(
         this.api.hap.Characteristic.Model,
-        accessory.context.device.deviceType,
+        accessory.context.device.type,
       )
       .setCharacteristic(
         this.api.hap.Characteristic.SerialNumber,
-        accessory.context.device.physicalAddress,
+        accessory.context.graphqlDevice.physicalAddress,
       );
   }
 
   get device(): T {
-    return this.accessory.context.device;
+    return this.accessory.context.graphqlDevice;
   }
 
   updateDevice(device: T) {
-    this.accessory.context.device = device;
+    this.accessory.context.graphqlDevice = device;
   }
 }

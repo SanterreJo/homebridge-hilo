@@ -70,14 +70,14 @@ export class HiloChallengeSensor {
       .setCharacteristic(this.api.hap.Characteristic.Model, "Challenge")
       .setCharacteristic(
         this.api.hap.Characteristic.SerialNumber,
-        this.accessory.context.device.hiloId,
+        this.accessory.context.v4Device.localId,
       );
     this.service =
       accessory.getService(this.api.hap.Service.ContactSensor) ||
       accessory.addService(this.api.hap.Service.ContactSensor);
     this.service.setCharacteristic(
       this.api.hap.Characteristic.Name,
-      this.accessory.context.device.phase + " Hilo Challenge",
+      this.accessory.context.v4Device.phase + " Hilo Challenge",
     );
     this.service
       .getCharacteristic(this.api.hap.Characteristic.ContactSensorState)
@@ -85,14 +85,14 @@ export class HiloChallengeSensor {
   }
 
   updateChallenge(value: boolean) {
-    this.accessory.context.device.value = value;
+    this.accessory.context.v4Device.value = value;
     this.service
       ?.getCharacteristic(this.api.hap.Characteristic.ContactSensorState)
       ?.updateValue(value);
   }
 
   private async getContactSensorState(): Promise<CharacteristicValue> {
-    const activeChallenge = this.accessory.context.device.value ?? false;
+    const activeChallenge = this.accessory.context.v4Device.value ?? false;
     this.logger.debug(`Getting active Hilo Challenge: ${activeChallenge}`);
     return activeChallenge;
   }
@@ -121,13 +121,13 @@ export class HiloChallengeSensor {
       return;
     }
     this.challenges[challenge.id] = [];
-    const devicePhase = this.accessory.context.device.phase;
+    const devicePhase = this.accessory.context.v4Device.phase;
     const phase = phases(challenge, getConfig())[devicePhase];
     const startPhase = phase?.start;
     const endPhase = phase?.end;
     if (!startPhase || !endPhase) {
       this.logger.debug(
-        `Could not find phase or period does not match device for device ${this.accessory.context.device.hiloId} - ${this.accessory.context.device.phase}`,
+        `Could not find phase or period does not match device for device ${this.accessory.context.v4Device.localId} - ${this.accessory.context.v4Device.phase}`,
       );
       return;
     }

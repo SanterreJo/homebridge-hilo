@@ -34,6 +34,7 @@ export type Challenge = {
 export type EventsResponse = Array<Challenge>;
 
 export type OldApiDevice = {
+  type: "Thermostat" | "LightDimmer";
   locationId: string;
   id: string;
   name: string;
@@ -42,8 +43,8 @@ export type OldApiDevice = {
 };
 
 export type DeviceAccessory<T extends Device> = {
-  device: T;
-  oldApiDevice: OldApiDevice;
+  device: OldApiDevice;
+  graphqlDevice: T;
 };
 
 export type LightDevice = BasicLight | BasicDimmer;
@@ -51,8 +52,18 @@ export type ClimateDevice = BasicThermostat | HeatingFloorThermostat;
 
 export type ChallengeAccessory = {
   device: {
+    assetId: string;
+    id: number;
+    name: string;
+    type: "Challenge";
+    locationId: number;
+    modelNumber: string;
+    identifier: string;
+    hiloId?: string;
+  };
+  v4Device: {
     value: boolean;
     phase: string;
-    hiloId: string;
+    localId: string;
   };
 };

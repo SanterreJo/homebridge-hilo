@@ -15,7 +15,7 @@ export class Light extends HiloDevice<LightDevice> {
       accessory.addService(this.api.hap.Service.Lightbulb);
     this.service.setCharacteristic(
       this.api.hap.Characteristic.Name,
-      this.accessory.context.oldApiDevice.name,
+      this.accessory.context.device.name,
     );
     this.service
       .getCharacteristic(this.api.hap.Characteristic.On)
@@ -50,16 +50,16 @@ export class Light extends HiloDevice<LightDevice> {
   private async setOn(value: CharacteristicValue) {
     const on = value as boolean;
     this.logger.debug(
-      `Setting ${this.accessory.context.oldApiDevice.name} ${on ? "on" : "off"}`,
+      `Setting ${this.accessory.context.device.name} ${on ? "on" : "off"}`,
     );
     try {
       await hiloApi.put(
-        `/Automation/v1/api/Locations/${this.accessory.context.oldApiDevice.locationId}/Devices/${this.accessory.context.oldApiDevice.id}/Attributes`,
+        `/Automation/v1/api/Locations/${this.accessory.context.device.locationId}/Devices/${this.accessory.context.device.id}/Attributes`,
         { OnOff: on },
       );
     } catch (error) {
       this.logger.error(
-        `Failed to set ${this.accessory.context.oldApiDevice.name} ${
+        `Failed to set ${this.accessory.context.device.name} ${
           on ? "on" : "off"
         }`,
         axios.isAxiosError(error) ? error.response?.data : error,
@@ -69,7 +69,7 @@ export class Light extends HiloDevice<LightDevice> {
 
   private async getOn(): Promise<CharacteristicValue> {
     this.logger.debug(
-      `Getting ${this.accessory.context.oldApiDevice.name} onOff status`,
+      `Getting ${this.accessory.context.device.name} onOff status`,
     );
     return this.device.state === "ON";
   }
@@ -77,25 +77,25 @@ export class Light extends HiloDevice<LightDevice> {
   private async setBrightness(value: CharacteristicValue) {
     const brightness = value as number;
     this.logger.debug(
-      `Setting ${this.accessory.context.oldApiDevice.name} brightness to ${brightness}`,
+      `Setting ${this.accessory.context.device.name} brightness to ${brightness}`,
     );
     try {
       await hiloApi.put(
-        `/Automation/v1/api/Locations/${this.accessory.context.oldApiDevice.locationId}/Devices/${this.accessory.context.oldApiDevice.id}/Attributes`,
+        `/Automation/v1/api/Locations/${this.accessory.context.device.locationId}/Devices/${this.accessory.context.device.id}/Attributes`,
         { Intensity: brightness },
       );
     } catch (error) {
       this.logger.error(
-        `Failed to set ${this.accessory.context.oldApiDevice.name} brightness to ${brightness}`,
+        `Failed to set ${this.accessory.context.device.name} brightness to ${brightness}`,
         axios.isAxiosError(error) ? error.response?.data : error,
       );
     }
   }
 
   private async getBrightness(): Promise<CharacteristicValue> {
-    const brightness = this.accessory.context.device.level ?? 100;
+    const brightness = this.accessory.context.graphqlDevice.level ?? 100;
     this.logger.debug(
-      `Getting ${this.accessory.context.oldApiDevice.name} brightness`,
+      `Getting ${this.accessory.context.device.name} brightness`,
     );
     return brightness;
   }

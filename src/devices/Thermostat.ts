@@ -15,7 +15,7 @@ export class Thermostat extends HiloDevice<ClimateDevice> {
       accessory.addService(this.api.hap.Service.Thermostat);
     this.service.setCharacteristic(
       this.api.hap.Characteristic.Name,
-      this.accessory.context.oldApiDevice.name,
+      this.accessory.context.device.name,
     );
     this.service
       .getCharacteristic(this.api.hap.Characteristic.CurrentHeatingCoolingState)
@@ -33,6 +33,7 @@ export class Thermostat extends HiloDevice<ClimateDevice> {
       .onSet(this.setTargetHeatingCoolingState.bind(this))
       .setProps({
         validValues: [
+          this.api.hap.Characteristic.TargetHeatingCoolingState.OFF,
           this.api.hap.Characteristic.TargetHeatingCoolingState.HEAT,
         ],
         maxValue: this.api.hap.Characteristic.TargetHeatingCoolingState.HEAT,
@@ -77,16 +78,19 @@ export class Thermostat extends HiloDevice<ClimateDevice> {
         ?.updateValue(device.ambientTempSetpoint?.value ?? 20);
     }
     if (
-      "heatDemand" in device &&
-      device.heatDemand !== undefined &&
-      device.heatDemand !== null
+      "power" in device &&
+      device.power !== undefined &&
+      device.power !== null &&
+      "value" in device.power &&
+      device.power.value !== null &&
+      device.power.value !== undefined
     ) {
       this.service
         ?.getCharacteristic(
           this.api.hap.Characteristic.CurrentHeatingCoolingState,
         )
         ?.updateValue(
-          device.heatDemand > 0
+          device.power.value > 0
             ? this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT
             : this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF,
         );
@@ -95,29 +99,32 @@ export class Thermostat extends HiloDevice<ClimateDevice> {
 
   private async getCurrentHeatingCoolingState(): Promise<CharacteristicValue> {
     this.logger.debug(
-      `Getting ${this.accessory.context.oldApiDevice.name} currentHeatingCoolingState`,
+      `Getting ${this.accessory.context.device.name} currentHeatingCoolingState`,
     );
-    return this.device.heatDemand && this.device.heatDemand > 0
+    return this.device.power &&
+      this.device.power.value !== null &&
+      this.device.power.value !== undefined &&
+      this.device.power.value > 0
       ? this.api.hap.Characteristic.CurrentHeatingCoolingState.HEAT
       : this.api.hap.Characteristic.CurrentHeatingCoolingState.OFF;
   }
 
   private async getTargetHeatingCoolingState(): Promise<CharacteristicValue> {
     this.logger.debug(
-      `Getting ${this.accessory.context.oldApiDevice.name} targetHeatingCoolingState`,
+      `Getting ${this.accessory.context.device.name} targetHeatingCoolingState`,
     );
     return this.api.hap.Characteristic.TargetHeatingCoolingState.HEAT;
   }
 
   private async setTargetHeatingCoolingState(value: CharacteristicValue) {
     this.logger.debug(
-      `Setting ${this.accessory.context.oldApiDevice.name} targetHeatingCoolingState to ${value}`,
+      `Setting ${this.accessory.context.device.name} targetHeatingCoolingState to ${value}`,
     );
   }
 
   private async getTargetTemperature(): Promise<CharacteristicValue> {
     this.logger.debug(
-      `Getting ${this.accessory.context.oldApiDevice.name} target temperature`,
+      `Getting ${this.accessory.context.device.name} target temperature`,
     );
     return this.device.ambientTempSetpoint?.value ?? 20;
   }
@@ -125,11 +132,11 @@ export class Thermostat extends HiloDevice<ClimateDevice> {
   private async setTargetTemperature(value: CharacteristicValue) {
     const targetTemperature = value as number;
     this.logger.debug(
-      `Setting ${this.accessory.context.oldApiDevice.name} target temparature to ${targetTemperature}`,
+      `Setting ${this.accessory.context.device.name} target temparature to ${targetTemperature}`,
     );
     try {
       await hiloApi.put(
-        `/Automation/v1/api/Locations/${this.accessory.context.oldApiDevice.locationId}/Devices/${this.accessory.context.oldApiDevice.id}/Attributes`,
+        `/Automation/v1/api/Locations/${this.accessory.context.device.locationId}/Devices/${this.accessory.context.device.id}/Attributes`,
         { TargetTemperature: targetTemperature },
       );
     } catch (error) {
@@ -142,21 +149,21 @@ export class Thermostat extends HiloDevice<ClimateDevice> {
 
   private async getCurrentTemperature(): Promise<CharacteristicValue> {
     this.logger.debug(
-      `Getting ${this.accessory.context.oldApiDevice.name} current temperature`,
+      `Getting ${this.accessory.context.device.name} current temperature`,
     );
     return this.device.ambientTemperature?.value ?? 20;
   }
 
   private async getTemperatureDisplayUnits(): Promise<CharacteristicValue> {
     this.logger.debug(
-      `Getting ${this.accessory.context.oldApiDevice.name} temperature display units`,
+      `Getting ${this.accessory.context.device.name} temperature display units`,
     );
     return this.api.hap.Characteristic.TemperatureDisplayUnits.CELSIUS;
   }
 
   private async setTemperatureDisplayUnits(value: CharacteristicValue) {
     this.logger.debug(
-      `Setting ${this.accessory.context.oldApiDevice.name} temperature display units to ${value}`,
+      `Setting ${this.accessory.context.device.name} temperature display units to ${value}`,
     );
   }
 }
