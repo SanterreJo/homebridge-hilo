@@ -54,7 +54,8 @@
     "axios": "^0.27.2",
     "date-fns": "^2.30.0",
     "express": "^4.21.2",
-    "graphql-ws": "^6.0.4"
+    "graphql-ws": "^6.0.4",
+    "ws": "^8.18.2"
   },
   "auto": {
     "plugins": [
