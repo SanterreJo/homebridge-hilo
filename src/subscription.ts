@@ -4,6 +4,7 @@ import { Device } from "./graphql/graphql";
 import { createClient } from "graphql-ws";
 import { SUPPORTED_DEVICES } from "./devices/types";
 import { graphql } from "./graphql/gql";
+import WebSocket from "ws";
 
 const SUBSCRIPTION_QUERY = graphql(/* GraphQL */ `
   subscription onAnyDeviceUpdated($locationHiloId: String!) {
@@ -143,6 +144,7 @@ export const setupSubscription = async (
     const client = createClient({
       url: `wss://platform.hiloenergie.com/api/digital-twin/v3/graphql?access_token=${getAccessToken()}`,
       retryAttempts: Infinity,
+      webSocketImpl: WebSocket,
     });
 
     const subscription = client.iterate<{
