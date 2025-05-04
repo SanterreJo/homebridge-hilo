@@ -93,7 +93,7 @@ export class Light extends HiloDevice<LightDevice> {
   }
 
   private async getBrightness(): Promise<CharacteristicValue> {
-    const brightness = this.accessory.context.graphqlDevice.level ?? 100;
+    const brightness = this.device.level ?? 100;
     this.logger.debug(
       `Getting ${this.accessory.context.device.name} brightness`,
     );

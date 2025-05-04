@@ -14,8 +14,8 @@ export const initializeHiloDevice: {
     api: API,
   ) => HiloDevice<Device>;
 } = {
-  BasicLight: (accessory, api) => new Light(accessory, api),
-  BasicDimmer: (accessory, api) => new Light(accessory, api),
+  BasicLight: (accessory, api) => new Light(accessory, api, { canDim: false }),
+  BasicDimmer: (accessory, api) => new Light(accessory, api, { canDim: true }),
   BasicThermostat: (accessory, api) => new Thermostat(accessory, api),
   HeatingFloorThermostat: (accessory, api) => new Thermostat(accessory, api),
   BasicSwitch: (accessory, api) => new Outlet(accessory, api),
