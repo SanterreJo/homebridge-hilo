@@ -82,7 +82,7 @@ export class Light extends HiloDevice<LightDevice> {
     try {
       await hiloApi.put(
         `/Automation/v1/api/Locations/${this.accessory.context.device.locationId}/Devices/${this.accessory.context.device.id}/Attributes`,
-        { Intensity: brightness },
+        { Intensity: brightness / 100 },
       );
     } catch (error) {
       this.logger.error(
