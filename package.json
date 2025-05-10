@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@homebridge/plugin-ui-utils": "^1.0.3",
-    "axios": "^0.27.2",
+    "axios": "^1.9.0",
     "date-fns": "^2.30.0",
     "express": "^4.21.2",
     "graphql-ws": "^6.0.4",
