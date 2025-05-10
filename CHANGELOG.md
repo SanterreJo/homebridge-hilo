@@ -1,3 +1,33 @@
+# v5.0.0 (Sat May 10 2025)
+
+#### 💥 Breaking Change
+
+- Bump date-fns from 2.30.0 to 4.1.0 [#79](https://github.com/SanterreJo/homebridge-hilo/pull/79) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@SanterreJo](https://github.com/SanterreJo))
+- Bump @homebridge/plugin-ui-utils from 1.0.3 to 2.0.2 [#80](https://github.com/SanterreJo/homebridge-hilo/pull/80) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### 🐛 Bug Fix
+
+- bump deps [#81](https://github.com/SanterreJo/homebridge-hilo/pull/81) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### 🏠 Internal
+
+- add skip-release labels for dependabot [#78](https://github.com/SanterreJo/homebridge-hilo/pull/78) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### 🔩 Dependency Updates
+
+- Bump the patch group with 7 updates [#74](https://github.com/SanterreJo/homebridge-hilo/pull/74) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump @types/node from 18.19.87 to 22.15.17 [#77](https://github.com/SanterreJo/homebridge-hilo/pull/77) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@SanterreJo](https://github.com/SanterreJo))
+- Bump express from 4.21.2 to 5.1.0 [#76](https://github.com/SanterreJo/homebridge-hilo/pull/76) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump rimraf from 3.0.2 to 6.0.1 [#75](https://github.com/SanterreJo/homebridge-hilo/pull/75) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@SanterreJo](https://github.com/SanterreJo))
+- Bump axios from 0.27.2 to 1.9.0 [#68](https://github.com/SanterreJo/homebridge-hilo/pull/68) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v4.0.0 (Sat May 10 2025)
 
 #### 💥 Breaking Change
