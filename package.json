@@ -37,7 +37,7 @@
     "@graphql-codegen/cli": "^5.0.5",
     "@graphql-codegen/schema-ast": "^4.1.0",
     "@parcel/watcher": "^2.5.1",
-    "@types/node": "^18.19.87",
+    "@types/node": "^22.15.17",
     "auto": "^11.3.0",
     "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.2",
