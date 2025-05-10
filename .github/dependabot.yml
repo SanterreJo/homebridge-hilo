@@ -7,10 +7,14 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    labels:
+      - "dependencies"
+      - "javascript"
+      - "skip-release"
     schedule:
       interval: "quarterly"
     groups:
-      patch:
+      patch_minor:
         patterns:
           - "*"
         update-types:
@@ -18,5 +22,9 @@ updates:
           - "minor"
   - package-ecosystem: "github-actions"
     directory: "/"
+    labels:
+      - "dependencies"
+      - "actions"
+      - "skip-release"
     schedule:
       interval: "quarterly"
