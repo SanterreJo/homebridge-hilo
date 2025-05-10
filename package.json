@@ -50,7 +50,7 @@
     "typescript-eslint": "^8.31.0"
   },
   "dependencies": {
-    "@homebridge/plugin-ui-utils": "^1.0.3",
+    "@homebridge/plugin-ui-utils": "^2.0.2",
     "axios": "^1.9.0",
     "date-fns": "^2.30.0",
     "express": "^5.1.0",
