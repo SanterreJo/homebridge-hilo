@@ -1,3 +1,26 @@
+# v4.0.0 (Sat May 10 2025)
+
+#### 💥 Breaking Change
+
+- Graphql API support [#65](https://github.com/SanterreJo/homebridge-hilo/pull/65) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### ⚠️ Pushed to `main`
+
+- Update dependabot.yml ([@SanterreJo](https://github.com/SanterreJo))
+
+#### 🔩 Dependency Updates
+
+- Bump actions/checkout from 2 to 4 [#72](https://github.com/SanterreJo/homebridge-hilo/pull/72) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/setup-node from 1 to 4 [#73](https://github.com/SanterreJo/homebridge-hilo/pull/73) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/cache from 1 to 4 [#71](https://github.com/SanterreJo/homebridge-hilo/pull/71) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v3.1.0 (Fri Jan 31 2025)
 
 #### 🚀 Enhancement
