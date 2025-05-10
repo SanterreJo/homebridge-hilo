@@ -1,4 +1,3 @@
-import subHours from "date-fns/subHours";
 import {
   API,
   CharacteristicValue,
@@ -9,6 +8,7 @@ import {
 import { getConfig, HiloConfig } from "../config";
 import { Challenge, ChallengeAccessory } from "./types";
 import { getLogger } from "../logger";
+import { subHours } from "date-fns/subHours";
 
 const phases: (
   challenge: Challenge,
