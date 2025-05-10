@@ -5,11 +5,18 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
       interval: "quarterly"
-  - package-ecosystem: "github-actions" # See documentation for possible values
-    directory: "/" # Location of package manifests
+    groups:
+      patch:
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+          - "minor"
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "quarterly"

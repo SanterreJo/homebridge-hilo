@@ -1,375 +1,371 @@
 import {
-	API,
-	APIEvent,
-	DynamicPlatformPlugin,
-	Logging,
-	PlatformAccessory,
-	PlatformConfig,
+  API,
+  APIEvent,
+  DynamicPlatformPlugin,
+  Logging,
+  PlatformAccessory,
+  PlatformConfig,
 } from "homebridge";
-import * as signalR from "@microsoft/signalr";
 import { getConfig, HiloConfig, setConfig } from "./config";
-import { getLogger, setLogger, signalRLogger } from "./logger";
+import { getLogger, setLogger } from "./logger";
 import { setApi } from "./api";
-import { getWsAccessToken, hiloApi, negotiate } from "./hiloApi";
-import {
-	Device,
-	DeviceValue,
-	EventsResponse,
-	HiloAccessoryContext,
-	SUPPORTED_DEVICE_TYPES,
-} from "./devices/types";
+import { hiloApi } from "./hiloApi";
 import { initializeHiloDevice } from "./devices";
-import axios from "axios";
 import { HiloDevice } from "./devices/HiloDevice";
+import { setupSubscription } from "./subscription";
+import { Device } from "./graphql/graphql";
+import { fetchDevicesForLocation } from "./location";
+import {
+  ChallengeAccessory,
+  DeviceAccessory,
+  EventsResponse,
+  OldApiDevice,
+  SUPPORTED_DEVICES,
+} from "./devices/types";
 import { HiloChallengeSensor } from "./devices/HiloChallengeSensor";
-
-const PLUGIN_NAME = "homebridge hilo";
+import axios from "axios";
+const PLUGIN_NAME = "homebridge-hilo";
 const PLATFORM_NAME = "Hilo";
 
 export default function (api: API) {
-	api.registerPlatform(PLATFORM_NAME, Hilo);
+  api.registerPlatform(PLATFORM_NAME, Hilo);
 }
 
 class Hilo implements DynamicPlatformPlugin {
-	private readonly pluginAccessories: Record<string, HiloDevice<any>> = {};
-	private locations: Location[] = [];
-	private webSocketRetries = 0;
-	private wsConnection: signalR.HubConnection | null = null;
-	constructor(
-		private readonly log: Logging,
-		private readonly config: PlatformConfig,
-		private readonly api: API,
-		private readonly accessories: Record<
-			string,
-			PlatformAccessory<HiloAccessoryContext>
-		> = {}
-	) {
-		setConfig(config as HiloConfig);
-		this.config = getConfig();
-		if (!this.config.refreshToken) {
-			this.log.error("Please login with hilo in the plugin configuration page");
-			return;
-		}
-		setLogger(log);
-		setApi(api);
-		log.info("Initializing Hilo platform");
-		api.on(APIEvent.DID_FINISH_LAUNCHING, async () => {
-			this.locations = await fetchLocations();
-			if (this.locations.length === 0) {
-				log.error("No locations found");
-				return;
-			}
-			const devices = (
-				await Promise.all(
-					this.locations.map((location) => fetchDevices(location))
-				)
-			).flatMap((response) => response);
-			if (devices.length === 0) {
-				log.error("No devices found");
-				return;
-			}
-			if (this.config.noChallengeSensor !== true) {
-				// Add Hilo Challenge sensor for each location
-				this.locations.forEach((location) => {
-					devices.push(...getHiloChallengeDevices(location));
-				});
-			}
-			devices.forEach((device) => {
-				if (!SUPPORTED_DEVICE_TYPES.includes(device.type)) {
-					this.log.debug("Unsupported device", device);
-					return;
-				}
-				let accessory = this.accessories[device.id.toString()];
-				if (!accessory) {
-					accessory = this.setupNewAccessory(device);
-				}
-				const pluginAccessory = initializeHiloDevice[device.type](
-					accessory,
-					this.api
-				);
-				this.pluginAccessories[device.id.toString()] = pluginAccessory;
-			});
-			await this.setupWebsocketConnection();
-			const currentDeviceAssetIds = devices.map((device) => device.assetId);
-			const staleAccessories = Object.values(this.accessories).filter(
-				(accessory) =>
-					!currentDeviceAssetIds.includes(accessory.context.device.assetId)
-			);
-			this.log.debug(
-				`Found ${staleAccessories.length} accessories removing...`
-			);
-			this.api.unregisterPlatformAccessories(
-				PLUGIN_NAME,
-				PLATFORM_NAME,
-				staleAccessories
-			);
-			this.locations.forEach((location) => {
-				setInterval(async () => {
-					this.updateChallenges(location);
-				}, /* 4 hours */ 4 * 60 * 60 * 1000);
-				this.updateChallenges(location);
-			});
-			log.info("Hilo platform is ready");
-		});
-	}
+  private readonly pluginAccessories: Record<string, HiloDevice<any>> = {};
+  private locations: Location[] = [];
+  private subscriptions: Record<string, any> = {};
+  private oldApiDevices: OldApiDevice[] = [];
+  private staleAccessories: PlatformAccessory<any>[] = [];
+  constructor(
+    private readonly log: Logging,
+    private readonly config: PlatformConfig,
+    private readonly api: API,
+    private readonly accessories: Record<
+      string,
+      | PlatformAccessory<DeviceAccessory<Device>>
+      | PlatformAccessory<ChallengeAccessory>
+    > = {},
+  ) {
+    setConfig(config as HiloConfig);
+    this.config = getConfig();
+    if (!this.config.refreshToken) {
+      this.log.error("Please login with hilo in the plugin configuration page");
+      return;
+    }
+    setLogger(log);
+    setApi(api);
+    log.info("Initializing Hilo platform");
+    api.on(APIEvent.DID_FINISH_LAUNCHING, async () => {
+      this.locations = await fetchLocations();
+      if (this.locations.length === 0) {
+        log.error("No locations found");
+        return;
+      }
+      const devices = (
+        await Promise.all(
+          this.locations.map((location) =>
+            fetchDevicesForLocation(location.locationHiloId),
+          ),
+        )
+      )
+        .flatMap((response) => response)
+        .filter((device) => SUPPORTED_DEVICES.includes(device.__typename!));
+      this.oldApiDevices = (
+        await Promise.all(
+          this.locations.map((location) => fetchDevices(location)),
+        )
+      ).flatMap((response) => response);
 
-	configureAccessory(accessory: PlatformAccessory<HiloAccessoryContext>): void {
-		this.log.debug(`Configuring accessory from cache ${accessory.displayName}`);
-		this.accessories[accessory.context.device.id.toString()] = accessory;
-	}
+      if (devices.length === 0) {
+        log.error("No devices found");
+        return;
+      }
+      devices.forEach((device) => {
+        this.log.debug("Initializing device", device);
+        const oldDevice = this.oldApiDevices.find(
+          (d) => d.hiloId === device.hiloId,
+        );
+        if (!oldDevice) {
+          this.log.error("No old device found for", device);
+          return;
+        }
+        let accessory = this.accessories[device.hiloId];
+        if (!accessory) {
+          this.log.debug(
+            `Setting up new accessory for device ${device.hiloId}`,
+          );
+          accessory = this.setupNewAccessory(device, oldDevice);
+        } else if (accessory.context.device.type !== "Challenge") {
+          this.log.debug(
+            `Setting up cached accessory for device ${device.hiloId}`,
+          );
+          (accessory.context as DeviceAccessory<Device>) = {
+            device: oldDevice,
+            graphqlDevice: device,
+          };
+        }
+        const pluginAccessory = initializeHiloDevice[device.__typename!](
+          accessory as any,
+          this.api,
+        );
+        this.pluginAccessories[device.hiloId] = pluginAccessory;
+      });
+      this.setupSubscriptions();
 
-	private setupNewAccessory(
-		device: Device
-	): PlatformAccessory<HiloAccessoryContext> {
-		const uuid = this.api.hap.uuid.generate(device.assetId);
-		const accessory = new this.api.platformAccessory<HiloAccessoryContext>(
-			device.name.trim(),
-			uuid
-		);
-		accessory.context.device = device;
-		accessory.context.values = {};
-		this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
-			accessory,
-		]);
-		this.accessories[accessory.context.device.id.toString()] = accessory;
-		return accessory;
-	}
+      const currentDeviceHiloIds = this.oldApiDevices.map(
+        (device) => device.hiloId,
+      );
+      this.staleAccessories.concat(
+        Object.values(this.accessories).filter((accessory) => {
+          if (accessory.context.device.type === "Challenge") {
+            return false;
+          } else {
+            return !currentDeviceHiloIds.includes(
+              accessory.context.device.hiloId,
+            );
+          }
+        }),
+      );
+      this.log.debug(
+        `Found ${this.staleAccessories.length} stale accessories removing...`,
+      );
+      this.api.unregisterPlatformAccessories(
+        PLUGIN_NAME,
+        PLATFORM_NAME,
+        this.staleAccessories,
+      );
 
-	private async setupWebsocketConnection() {
-		let url: string | undefined = undefined;
-		try {
-			const response = await negotiate();
-			url = response.url;
-		} catch (error) {
-			this.log.error(
-				"Unable to connect to websocket",
-				axios.isAxiosError(error) ? error.response?.data : error
-			);
-			this.retryWebsocketConnection();
-			return;
-		}
-		if (!url) return;
-		this.wsConnection = new signalR.HubConnectionBuilder()
-			.withUrl(url, { accessTokenFactory: getWsAccessToken })
-			.configureLogging(signalRLogger)
-			.build();
-		this.wsConnection.on("Heartbeat", (message) =>
-			this.log.debug(`Heartbeat: ${message}`)
-		);
-		this.wsConnection.on(
-			"DevicesValuesReceived",
-			(message: Array<DeviceValue>) => {
-				this.log.debug(`DevicesValuesReceived:`, message);
-				message.forEach((value) => {
-					const accessory = this.accessories[value.deviceId.toString()];
-					const pluginAccessory =
-						this.pluginAccessories[value.deviceId.toString()];
-					if (!accessory || !pluginAccessory) {
-						this.log.debug(`No accessory for device ${value.deviceId}`);
-						return;
-					}
-					pluginAccessory.updateValue(value as any);
-				});
-			}
-		);
-		this.wsConnection.on("GatewayValuesReceived", (message: any) => {
-			this.log.debug(`GatewayValuesReceived:`, message);
-		});
-		this.wsConnection.on("DeviceListInitialValuesReceived", (message: any) => {
-			this.log.debug(`DeviceListInitialValuesReceived`, message);
-		});
-		this.wsConnection.onreconnecting(() => {
-			this.log.info("Reconnecting to websocket");
-		});
-		this.wsConnection.onreconnected(() => {
-			this.log.info("Reconnected to websocket");
-		});
-		this.wsConnection.onclose(() => {
-			this.log.info("Disconnected from websocket");
-			this.retryWebsocketConnection();
-		});
-		try {
-			await this.wsConnection.start();
-			this.log.info("Connected to websocket");
-		} catch (e) {
-			this.log.error("Unable to start websocket connection", e);
-			this.retryWebsocketConnection();
-			return;
-		}
-		for (const location of this.locations) {
-			try {
-				await this.wsConnection.invoke(
-					"SubscribeToLocation",
-					location.id.toString()
-				);
-			} catch (e) {
-				this.log.error(`Unable to subscribe to location ${location.id}`, e);
-				this.stopWebsocket();
-				this.retryWebsocketConnection();
-				return;
-			}
-		}
-		this.webSocketRetries = 0;
-	}
+      if (this.config.noChallengeSensor !== true) {
+        // Add Hilo Challenge sensor for each location
+        this.log.info("Setting up Hilo Challenge sensors");
+        this.locations.forEach((location) => {
+          const challengeDevices = this.setupHiloChallengeDevices(location);
 
-	retryWebsocketConnection() {
-		if (this.webSocketRetries > 8) {
-			this.log.error(
-				`Unable to reconnect to websocket after ${this.webSocketRetries} attempts`
-			);
-			return;
-		}
-		const backoff = 2 ** this.webSocketRetries * 30_000;
-		this.log.info(
-			`Attempting to reconnect to websocket in ${backoff / 1000} seconds`
-		);
-		setTimeout(async () => {
-			this.webSocketRetries++;
-			this.log.info(`Reconnection attempt ${this.webSocketRetries}`);
-			this.setupWebsocketConnection();
-		}, backoff);
-	}
+          setInterval(
+            async () => {
+              this.updateChallenges(location, challengeDevices);
+            },
+            /* 4 hours */ 4 * 60 * 60 * 1000,
+          );
+          this.updateChallenges(location, challengeDevices);
+        });
+      }
+      log.info("Hilo platform is ready");
+    });
+  }
 
-	stopWebsocket() {
-		try {
-			this.wsConnection?.stop();
-		} catch (e) {
-			this.log.error(`Unable to stop wsConnection`, e);
-		}
-	}
+  private setupHiloChallengeDevices(location: Location): HiloChallengeSensor[] {
+    return [
+      "preheat",
+      "reduction",
+      "recovery",
+      "plannedAM",
+      "plannedPM",
+      "inProgress",
+    ].map((phase, index) => {
+      const challengeId = `${phase}-hilo-challenge-${location.id}`;
+      const challengeName = `${phase.charAt(0).toUpperCase() + phase.slice(1)} Hilo Challenge ${location.name}`;
+      let challengeAccessory = this.accessories[challengeId] as unknown as
+        | PlatformAccessory<ChallengeAccessory>
+        | undefined;
+      if (!challengeAccessory) {
+        const uuid = this.api.hap.uuid.generate(challengeId);
+        challengeAccessory = new this.api.platformAccessory<ChallengeAccessory>(
+          challengeName,
+          uuid,
+        );
+        challengeAccessory.context = {
+          device: {
+            assetId: challengeId,
+            id: location.id + index + 100,
+            name: challengeName,
+            type: "Challenge",
+            locationId: location.id,
+            modelNumber: "Hilo Challenge",
+            identifier: challengeId,
+            hiloId: challengeId,
+          },
+          v4Device: {
+            value: false,
+            phase,
+            localId: challengeId,
+          },
+        };
+        this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
+          challengeAccessory,
+        ]);
+        this.accessories[challengeId] = challengeAccessory as any;
+      } else {
+        challengeAccessory.context = {
+          device: {
+            assetId: challengeId,
+            id: location.id + index + 100,
+            name: challengeName,
+            type: "Challenge",
+            locationId: location.id,
+            modelNumber: "Hilo Challenge",
+            identifier: challengeId,
+            hiloId: challengeId,
+          },
+          v4Device: {
+            value: false,
+            phase,
+            localId: challengeId,
+          },
+        };
+      }
+      return new HiloChallengeSensor(
+        challengeAccessory as any,
+        this.api,
+        this.log,
+      );
+    });
+  }
 
-	private async updateChallenges(location: Location) {
-		if (this.config.noChallengeSensor === true) {
-			return;
-		}
-		try {
-			const response = await hiloApi.get<EventsResponse>(
-				`/GDService/v1/api/Locations/${location.id}/Events`,
-				{ params: { active: true } }
-			);
-			const challenges = response.data;
-			const locationChallengeDevices = Object.values(
-				this.pluginAccessories
-			).filter(
-				(device) =>
-					device.device.locationId === location.id &&
-					device.device.type === "Challenge"
-			) as HiloChallengeSensor[];
-			locationChallengeDevices.forEach((device) =>
-				device.updateChallengeStatus(challenges)
-			);
-		} catch (error) {
-			this.log.error("Could not retrieve Hilo Challenges", error);
-		}
-	}
+  private async setupSubscriptions() {
+    for (const location of this.locations) {
+      try {
+        const subscription = await setupSubscription(
+          location.locationHiloId,
+          (device) => {
+            this.log.debug(`Device update received:`, device);
+            const oldApiDevice = this.oldApiDevices.find(
+              (d) => d.hiloId === device.hiloId,
+            );
+            if (!oldApiDevice) {
+              this.log.error("No old device found for", device);
+              return;
+            }
+            const accessory = this.accessories[device.hiloId];
+            const pluginAccessory = this.pluginAccessories[device.hiloId];
+            if (!accessory || !pluginAccessory) {
+              this.log.debug(`No accessory for device ${device.hiloId}`);
+              return;
+            }
+            pluginAccessory.updateDevice(device);
+          },
+        );
+        this.subscriptions[location.locationHiloId] = subscription;
+        this.log.info(
+          `Subscribed to updates for location ${location.locationHiloId}`,
+        );
+      } catch (error: unknown) {
+        this.log.error(
+          `Failed to subscribe to location ${location.locationHiloId}:`,
+          error instanceof Error ? error.message : String(error),
+        );
+      }
+    }
+  }
+
+  configureAccessory(accessory: PlatformAccessory): void {
+    this.log.debug(`Configuring accessory from cache ${accessory.displayName}`);
+    if (
+      accessory.context.device.type !== "Challenge" &&
+      !accessory.context.device.hiloId
+    ) {
+      this.log.warn(`Could not configure accessory ${accessory.displayName}`);
+      this.staleAccessories.push(accessory);
+      return;
+    }
+    this.accessories[accessory.context.device.hiloId] = accessory as
+      | PlatformAccessory<DeviceAccessory<Device>>
+      | PlatformAccessory<ChallengeAccessory>;
+  }
+
+  private setupNewAccessory(
+    device: Device,
+    oldApiDevice: OldApiDevice,
+  ): PlatformAccessory<DeviceAccessory<Device>> {
+    const uuid = this.api.hap.uuid.generate(oldApiDevice.assetId);
+    const accessory = new this.api.platformAccessory<DeviceAccessory<Device>>(
+      oldApiDevice.name.trim(),
+      uuid,
+    );
+    accessory.context = {
+      device: oldApiDevice,
+      graphqlDevice: device,
+    };
+    this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
+      accessory,
+    ]);
+    this.accessories[device.hiloId] = accessory;
+    return accessory;
+  }
+
+  private async updateChallenges(
+    location: Location,
+    challengeDevices: HiloChallengeSensor[],
+  ) {
+    if (this.config.noChallengeSensor === true) {
+      return;
+    }
+    try {
+      const response = await hiloApi.get<EventsResponse>(
+        `/GDService/v1/api/Locations/${location.id}/Events`,
+        { params: { active: true } },
+      );
+      const challenges = response.data;
+      challengeDevices.forEach((device) =>
+        device.updateChallengeStatus(challenges),
+      );
+    } catch (error) {
+      this.log.error("Could not retrieve Hilo Challenges", error);
+    }
+  }
 }
 
 type Location = {
-	id: number;
-	adressId: string;
-	name: string;
-	energyCostConfigured: boolean;
-	postalCode: string;
-	countryCode: string;
-	temperatureFormat: string;
-	timeFormat: string;
-	timeZone: string;
-	gatewayCount: number;
-	createdUtc: string;
+  id: number;
+  locationHiloId: string;
+  adressId: string;
+  name: string;
+  energyCostConfigured: boolean;
+  postalCode: string;
+  countryCode: string;
+  temperatureFormat: string;
+  timeFormat: string;
+  timeZone: string;
+  gatewayCount: number;
+  createdUtc: string;
 };
 type LocationsResponse = Array<Location>;
 async function fetchLocations() {
-	getLogger().debug("Fetching locations");
-	try {
-		const response = await hiloApi.get<LocationsResponse>(
-			"/Automation/v1/api/Locations",
-			{
-				params: { force: true },
-			}
-		);
-		return response.data;
-	} catch (error) {
-		getLogger().error(
-			"Error while fetching locations",
-			axios.isAxiosError(error) ? error.response?.data : error
-		);
-		return [];
-	}
+  getLogger().debug("Fetching locations");
+  try {
+    const response = await hiloApi.get<LocationsResponse>(
+      "/Automation/v1/api/Locations",
+      {
+        params: { force: true },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    getLogger().error(
+      "Error while fetching locations",
+      error instanceof Error ? error.message : String(error),
+    );
+    return [];
+  }
 }
 
-type DevicesResponse = Array<Device>;
+type DevicesResponse = OldApiDevice[];
 async function fetchDevices(location: Location) {
-	getLogger().debug("Fetching devices for location", location.name);
-	try {
-		const response = await hiloApi.get<DevicesResponse>(
-			`/Automation/v1/api/Locations/${location.id}/Devices`,
-			{
-				params: { force: true },
-			}
-		);
-		return response.data;
-	} catch (error) {
-		getLogger().error(
-			"Error while fetching devices",
-			axios.isAxiosError(error) ? error.response?.data : error
-		);
-		return [];
-	}
+  getLogger().debug("Fetching devices for location", location.name);
+  try {
+    const response = await hiloApi.get<DevicesResponse>(
+      `/Automation/v1/api/Locations/${location.id}/Devices`,
+      {
+        params: { force: true },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    getLogger().error(
+      "Error while fetching devices",
+      axios.isAxiosError(error) ? error.response?.data : error,
+    );
+    return [];
+  }
 }
-
-const getHiloChallengeDevices = (location: Location): Device[] => [
-	{
-		assetId: `preheat-hilo-challenge-${location.id}`,
-		id: location.id + 100,
-		name: `Preheat Hilo Challenge ${location.name}`,
-		type: "Challenge",
-		locationId: location.id,
-		modelNumber: "Hilo Challenge",
-		identifier: `preheat-hilo-challenge-${location.id}`,
-	},
-	{
-		assetId: `reduction-hilo-challenge-${location.id}`,
-		id: location.id + 101,
-		name: `Reduction Hilo Challenge ${location.name}`,
-		type: "Challenge",
-		locationId: location.id,
-		modelNumber: "Hilo Challenge",
-		identifier: `reduction-hilo-challenge-${location.id}`,
-	},
-	{
-		assetId: `recovery-hilo-challenge-${location.id}`,
-		id: location.id + 102,
-		name: `Recovery Hilo Challenge ${location.name}`,
-		type: "Challenge",
-		locationId: location.id,
-		modelNumber: "Hilo Challenge",
-		identifier: `recovery-hilo-challenge-${location.id}`,
-	},
-	{
-		assetId: `plannedAM-hilo-challenge-${location.id}`,
-		id: location.id + 103,
-		name: `Planned AM Hilo Challenge ${location.name}`,
-		type: "Challenge",
-		locationId: location.id,
-		modelNumber: "Hilo Challenge",
-		identifier: `plannedAM-hilo-challenge-${location.id}`,
-	},
-	{
-		assetId: `plannedPM-hilo-challenge-${location.id}`,
-		id: location.id + 104,
-		name: `Planned PM Hilo Challenge ${location.name}`,
-		type: "Challenge",
-		locationId: location.id,
-		modelNumber: "Hilo Challenge",
-		identifier: `plannedPM-hilo-challenge-${location.id}`,
-	},
-	{
-		assetId: `inProgress-hilo-challenge-${location.id}`,
-		id: location.id + 105,
-		name: `In Progress Hilo Challenge ${location.name}`,
-		type: "Challenge",
-		locationId: location.id,
-		modelNumber: "Hilo Challenge",
-		identifier: `inProgress-hilo-challenge-${location.id}`,
-	},
-];

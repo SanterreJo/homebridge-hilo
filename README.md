@@ -1,8 +1,11 @@
-⚠️ Hilo a retiré la méthode de connexion par nom d'utilisateur et mot de passe à partir du 10 avril 2024. Les versions 1.X.X ne fonctionnent plus. Veuillez installer la version 2.0.0 ou supérieur ⚠️
+# ⚠️ IMPORTANT: Compatibilité des versions ⚠️
 
-⚠️ Hilo deprecated the username/password login method as of April 10th 2024. Versions 1.X.X no longer work. You must install version 2.0.0 or higher. ⚠️
+Hilo a changé leur méthode de synchronisation des appareils entre les applications.
+- Les versions 3.X.X et moins ne sont plus supportées
+- Vous devez installer la version 4.0.0 ou supérieure
 
 # homebridge-hilo
+
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 [![npm-version](https://badgen.net/npm/v/homebridge-hilo)](https://www.npmjs.com/package/homebridge-hilo)
 [![npm-total-downloads](https://badgen.net/npm/dt/homebridge-hilo)](https://www.npmjs.com/package/homebridge-hilo)
@@ -13,90 +16,165 @@
 Plugin [Homebridge](https://homebridge.io) pour [Hilo](https://www.hiloenergie.com/) par [Hydro-Québec](https://www.hydroquebec.com/),
 permet de contrôler vos appareils Hilo par le biais de HomeKit et de l'app [Domicile d'Apple](https://www.apple.com/ios/home/).
 
-Note: Ceci n'est pas un plugin officiel, le plugin n'est pas affilié avec Hilo ni Hydro-Québec
+> **Note:** Ceci n'est pas un plugin officiel, le plugin n'est pas affilié avec Hilo ni Hydro-Québec
+
+## Table des matières
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Défis Hilo](#défis-hilo)
+- [Appareils supportés](#appareils-supportés)
+- [Dépannage](#dépannage)
+- [Contributions](#contributions)
 
 ## Installation
-1. Installer Homebridge en suivant
-   [les instructions](https://github.com/homebridge/homebridge/wiki).
-2. Installer le plugin en utilisant [Homebridge Config UI X (REQUIS)](https://github.com/oznu/homebridge-config-ui-x).
+
+1. Installer Homebridge en suivant [les instructions](https://github.com/homebridge/homebridge/wiki)
+2. Installer le plugin en utilisant [Homebridge Config UI X (REQUIS)](https://github.com/oznu/homebridge-config-ui-x)
 
 ## Configuration
-Pour que le plugin soit fonctionnel, il doit avoir accès à votre compte Hilo
 
-Vous devrez vous connecter à votre compte Hilo lors du processus d'installation fournit par [Homebridge Config UI X (REQUIS)](https://github.com/oznu/homebridge-config-ui-x)
+### Prérequis
+- Un compte Hilo actif
+- Accès à votre serveur Homebridge via une adresse IP ou un nom de domaine
+- Port 8880 accessible sur votre serveur Homebridge
 
-### Dans la page de configuration du plugin
+### Étapes de Configuration
 
-1. Vous devrez connaître l'adresse IP ou le nom de domaine que vous utilisez pour vous connecter à homebridge. Habituellement, ce sera l'adresse dans votre navigateur
-1. Cliquez sur le bouton "Login with Hilo" pour démarrer le processus d'authentification
-1. Connectez-vous à votre compte hilo
-1. Entrez l'adresse ip ou le nom de domaine que vous avez pris à l'étape 1 et ajoutez le port 8880 à la fin. Exemples: http://192.1680.10:8880 http://homebridge.local:8880
-    * Attention: Selon la façon dont vous avez configuré votre serveur homebridge, vous devrez vous assurer que le port 8880 est acheminé jusqu'à votre serveur homebridge. Par exemple pour une configuration docker il faudra ajouter `-p 8880:8880` à votre commande docker. Si vous utilisez un reverse proxy, vous devrez ajouter le port 8880 à votre configuration
-1. Cliquez sur le bouton "Save", puis cliquez sur le bouton "Link account"
-1. Vous pouvez sauvegarder votre configuration et redémarrer votre serveur homebridge
+1. **Préparation**
+   - Notez l'adresse IP ou le nom de domaine de votre serveur Homebridge
+   - Assurez-vous que le port 8880 est accessible:
+     - Dans la plupart des cas, le port 8880 est accessible sans configuration supplémentaire
+     - Pour Docker: Ajoutez `-p 8880:8880` à votre commande
+     - Pour reverse proxy: Configurez le port 8880
 
-## Défi Hilo
-Un capteur de contact vous permet de déterminer si un défi est actif ou non. Cela peut être utile pour déterminer si vos automatisations doivent être mis en pause.
+2. **Processus d'Authentification**
+   1. Cliquez sur "Login with Hilo" dans l'interface de configuration
+   2. Connectez-vous à votre compte Hilo
+   3. Entrez l'URL de redirection (ex: `http://192.168.0.10:8880` ou `http://homebridge.local:8880`)
+   4. Cliquez sur "Save" puis "Link account"
+      > Note: La redirection vers Home Assistant est normale - le plugin utilise leur service de redirection
 
-## Appareils pris en charge
-Appareil | Pris en charge? | Notes
----|---|---
-Thermostat | ✅ |
-Thermostat de planché | ✅ |
-Interrupteur | ✅ |
-Gradateur | ✅ |
-Prise | ✅ |
-Ampoule | ✅ * | Ne supporte pas les couleurs présentement
-Détecteur de fumée / monoxyde de carbone | 🚧 |
-Station météo | 🚫 |
+3. **Finalisation**
+   - Sauvegardez la configuration
+   - Redémarrez votre serveur Homebridge
 
-Si l'un de vos appareils n'est pas encore pris en charge par le plugin, les contributions (PR) sont les bienvenues.
+## Défis Hilo
 
+Un capteur de contact vous permet de:
+- Détecter si un défi Hilo est actif
+- Suspendre vos automatisations pendant les défis
+- Intégrer les défis dans vos scènes HomeKit
 
----------------------------------
+## Appareils supportés
 
+| Type d'appareil | Statut | Notes |
+|----------------|--------|-------|
+| Thermostat | ✅ |  |
+| Thermostat de plancher | ✅ |  |
+| Interrupteur mural | ✅ |  |
+| Gradateur mural | ✅ |  |
+| Prise | ✅ |  |
+| Ampoule intelligente | ✅  \* | Couleurs non supportées présentement |
+| Détecteur de fumée/CO | 🚧 | Développement futur |
+| Station météo | 🚫 | |
+| Borne de recharge | 🚫 | |
 
-# homebridge-hilo
+### Obtenir de l'aide
+- Consultez les [problèmes GitHub](https://github.com/your-repo/issues) pour les problèmes connus
+- Créez un nouveau problème si votre problème n'est pas documenté
 
-[Homebridge](https://homebridge.io) plugin for [Hilo](https://www.hiloenergie.com/) par [Hydro-Québec](https://www.hydroquebec.com/),
+## Contributions
+
+Les contributions sont les bienvenues ! Si vous souhaitez :
+- Ajouter le support pour de nouveaux appareils
+- Améliorer les fonctionnalités existantes
+- Corriger des bogues
+- Améliorer la documentation
+
+Veuillez soumettre une Pull Request avec vos modifications.
+
+---
+
+# homebridge-hilo (English)
+
+[Homebridge](https://homebridge.io) plugin for [Hilo](https://www.hiloenergie.com/) by [Hydro-Québec](https://www.hydroquebec.com/),
 enabling control of your Hilo devices via HomeKit and the [Apple Home App](https://www.apple.com/ios/home/).
 
-Note: This is not an official plugin, this plugin is not affiliated with Hilo nor Hydro-Québec.
+> **Note:** This is not an official plugin, this plugin is not affiliated with Hilo nor Hydro-Québec.
+
+## Table of Contents
+- [Installation](#installation-1)
+- [Configuration](#configuration-1)
+- [Hilo Events (Challenges)](#hilo-events-challenges)
+- [Supported Devices](#supported-devices)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
 
 ## Installation
-1. Install Homebridge by following
-   [the instructions](https://github.com/homebridge/homebridge/wiki).
-2. Install this plugin using [Homebridge Config UI X (REQUIRED)](https://github.com/oznu/homebridge-config-ui-x).
+
+1. Install Homebridge by following [the instructions](https://github.com/homebridge/homebridge/wiki)
+2. Install this plugin using [Homebridge Config UI X (REQUIRED)](https://github.com/oznu/homebridge-config-ui-x)
 
 ## Configuration
-For the plugin to work, it needs access to your Hilo account
 
-You will need to login to your Hilo account during the installation process provided by [Homebridge Config UI X (REQUIRED)](https://github.com/oznu/homebridge-config-ui-x),
-or by adding the following configuration to [homebridge](https://github.com/homebridge/homebridge/wiki/Homebridge-Config-JSON-Explained)
+### Prerequisites
+- An active Hilo account
+- Access to your Homebridge server via IP address or domain name
+- Port 8880 accessible on your Homebridge server
 
-### In the plugin configuration page
+### Configuration Steps
 
-1. You will need to know the IP address or the domain name you use to connect to homebridge. Usually it will be theaddress in your browser
-1. Click on the "Login with Hilo" button to start the authentication process
-1. Login to your hilo account
-1. Enter the ip address or domain name you took not at step 1 and add the port 8880 at the end. Examples: http://192.1680.10:8880 http://homebridge.local:8880
-    * Note: Depending on how you have configured your homebridge server, you will need to ensure that port 8880 is routed to your homebridge server. For example for a docker configuration you will need to add `-p 8880:8880` to your docker command. If you are using a reverse proxy, you will need to add port 8880 to your configuration
-1. Click on the "Save" button, then click on the "Link account" button
-1. You can save your config and restart your homebridge server
+1. **Preparation**
+   - Note your Homebridge server's IP address or domain name
+   - Ensure port 8880 is accessible:
+     - In most cases, port 8880 is accessible without additional configuration
+     - For Docker: Add `-p 8880:8880` to your command
+     - For reverse proxy: Configure port 8880
+
+2. **Authentication Process**
+   1. Click "Login with Hilo" in the configuration interface
+   2. Log in to your Hilo account
+   3. Enter the redirect URL (e.g., `http://192.168.0.10:8880` or `http://homebridge.local:8880`)
+   4. Click "Save" then "Link account"
+      > Note: Redirection to Home Assistant is normal - the plugin uses their redirect service and does not interfere with your home assistant server if you have one.
+
+3. **Finalization**
+   - Save the configuration
+   - Restart your Homebridge server
 
 ## Hilo Events (Challenges)
-A contact sensor allows you to determine whether a challenge is active or not. This can be useful in determining if your automations should be paused.
 
-## Supported devices
-Device | Supported? | Notes
----|---|---
-Thermostat | ✅ |
-Floor thermostat | ✅ |
-In-wall switch | ✅ |
-In-wall dimmer | ✅ | 
-Plug-in switch | ✅ |
-Bulb | ✅ | Currently does not support colors
-Smoke / CO detector | 🚧 |
-Weather station | 🚫 |
+A contact sensor allows you to:
+- Detect if a Hilo challenge is active
+- Pause your automations during challenges
+- Integrate challenges into your HomeKit scenes
 
-If one of your device is not yet supported by the plugin, contributions (PR) are welcome.
+## Supported Devices
+
+| Device Type | Status | Notes |
+|------------|--------|-------|
+| Thermostat | ✅ | |
+| Floor Thermostat | ✅ | |
+| In-wall Switch | ✅ | |
+| In-wall Dimmer | ✅ | |
+| Plug-in Switch | ✅ |  |
+| Smart Bulb | ✅ | Colors not currently supported |
+| Smoke/CO Detector | 🚧 | Futur development |
+| Weather Station | 🚫 | |
+| EV Charger | 🚫 | |
+
+## Troubleshooting
+
+### Getting Help
+- Check the [GitHub Issues](https://github.com/your-repo/issues) for known problems
+- Create a new issue if your problem isn't documented
+
+## Contributing
+
+Contributions are welcome! If you'd like to:
+- Add support for new devices
+- Improve existing features
+- Fix bugs
+- Enhance documentation
+
+Please submit a Pull Request with your changes.

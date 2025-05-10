@@ -16,9 +16,9 @@
 
 #### Homebridge 2.0 compat ([#57](https://github.com/SanterreJo/homebridge-hilo/pull/57))
 
-* BREAKING: Les thermostats fonctionnent maintenant en mode HEAT plutôt que AUTO fixes #36 
-* Compatibilité avec homebridge 2.0
-* Les instructions dans la configuration sont maintenant affiché en français aussi
+- BREAKING: Les thermostats fonctionnent maintenant en mode HEAT plutôt que AUTO fixes #36
+- Compatibilité avec homebridge 2.0
+- Les instructions dans la configuration sont maintenant affiché en français aussi
 
 ---
 
@@ -83,9 +83,12 @@
 # v1.9.0 (Thu Feb 29 2024)
 
 #### 🚀 Enhancement
+
 - Use new hilo api #45 (@SanterreJo)
 - Fix Capteur pour toute la période de défi #39 - Ajout d'un capteur pour la durée du défi #42 (@SanterreJo)
+
 #### 🐛 Bug Fix
+
 - Fix Problème de connexion au serveur Hilo - Localisation #41 - Retry on failed location connection #43 (@SanterreJo)
 
 #### Authors: 1

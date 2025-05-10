@@ -1,48 +1,110 @@
 <div class="card">
-	<ol>
-		<li>Vous devrez connaître l'adresse IP ou le nom de domaine que vous utilisez pour vous connecter à homebridge. Habituellement, ce sera l'adresse dans votre navigateur</li>
-		<li>Cliquez sur le bouton ci-dessous pour démarrer le processus d'authentification</li>
-		<li>Connectez-vous à votre compte hilo</li>
-		<li>Entrez l'adresse IP ou le nom de domaine que vous avez noté à l'étape 1 et ajoutez le port 8880 à la fin. Exemples : http://192.168.0.10:8880 http://homebridge.local:8880
-			<ul>
-				<li>Remarque : Selon la façon dont vous avez configuré votre serveur homebridge, vous devrez vous assurer que le port 8880 est routé vers votre serveur homebridge. Par exemple, pour une configuration docker, vous devrez ajouter `-p 8880:8880` à votre commande docker. Si vous utilisez un proxy inverse, vous devrez ajouter le port 8880 à votre configuration</li>
-			</ul>
-		</li>
-		<li>Cliquez sur le bouton "Enregistrer", puis cliquez sur le bouton "Lier le compte"</li>
-		<li>Vous pouvez enregistrer votre configuration et redémarrer votre serveur homebridge</li>
-	</ol>
-	<button type="button" class="btn btn-primary" onclick="initiateAuth()">
-		Se connecter avec Hilo
-	</button>
-	<br><br>
-	<ol>
-		<li>You will need to know the IP address or the domain name you use to connect to homebridge. Usually it will be the address in your browser</li>
-		<li>Click on the button below to start the authentication process</li>
-		<li>Login to your hilo account</li>
-		<li>Enter the ip address or domain name you took note of at step 1 and add the port 8880 at the end. Examples: http://192.168.0.10:8880 http://homebridge.local:8880
-			<ul>
-				<li>Note: Depending on how you have configured your homebridge server, you will need to ensure that port 8880 is routed to your homebridge server. For example for a docker configuration you will need to add `-p 8880:8880` to your docker command. If you are using a reverse proxy, you will need to add port 8880 to your configuration</li>
-			</ul>
-		</li>
-		<li>Click on the "Save" button, then click on the "Link account" button</li>
-		<li>You can save your config and restart your homebridge server</li>
-	</ol>
-	<button type="button" class="btn btn-primary" onclick="initiateAuth()">
-		Login with Hilo
-	</button>
+  <h3>Configuration de Hilo</h3>
+  <div class="alert alert-info">
+    <strong>Important:</strong> Assurez-vous que le port 8880 est accessible sur votre serveur Homebridge avant de commencer.
+  </div>
+  
+  <h4>Étapes de configuration</h4>
+  <ol>
+    <li>
+      <strong>Préparation</strong>
+      <ul>
+        <li>Notez l'adresse IP ou le nom de domaine de votre serveur Homebridge (généralement l'adresse dans votre navigateur)</li>
+        <li>Vérifiez que le port 8880 est accessible :
+          <ul>
+            <li>Dans la plupart des cas, le port 8880 est accessible sans configuration supplémentaire</li>
+            <li>Pour Docker : Ajoutez <code>-p 8880:8880</code> à votre commande</li>
+            <li>Pour reverse proxy : Configurez le port 8880 dans votre configuration</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <strong>Authentification</strong>
+      <ul>
+        <li>Cliquez sur le bouton "Se connecter avec Hilo" ci-dessous</li>
+        <li>Connectez-vous à votre compte Hilo</li>
+        <li>Entrez l'URL de redirection : <code>http://[votre-ip]:8880</code> ou <code>http://[votre-domaine]:8880</code></li>
+      </ul>
+    </li>
+    <li>
+      <strong>Finalisation</strong>
+      <ul>
+        <li>Cliquez sur "Enregistrer" puis "Lier le compte"</li>
+        <li>Note : La redirection vers Home Assistant est normale - le plugin utilise leur service de redirection</li>
+        <li>Sauvegardez la configuration et redémarrez votre serveur Homebridge</li>
+      </ul>
+    </li>
+  </ol>
+
+  <button type="button" class="btn btn-primary" onclick="initiateAuth()">
+    Se connecter avec Hilo
+  </button>
+
+  <hr>
+
+  <h3>Hilo Configuration</h3>
+  <div class="alert alert-info">
+    <strong>Important:</strong> Ensure port 8880 is accessible on your Homebridge server before starting.
+  </div>
+
+  <h4>Configuration Steps</h4>
+  <ol>
+    <li>
+      <strong>Preparation</strong>
+      <ul>
+        <li>Note your Homebridge server's IP address or domain name (usually the address in your browser)</li>
+        <li>Ensure port 8880 is accessible:
+          <ul>
+            <li>In most cases, port 8880 is accessible without additional configuration</li>
+            <li>For Docker: Add <code>-p 8880:8880</code> to your command</li>
+            <li>For reverse proxy: Configure port 8880 in your configuration</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <strong>Authentication</strong>
+      <ul>
+        <li>Click the "Login with Hilo" button below</li>
+        <li>Log in to your Hilo account</li>
+        <li>Enter the redirect URL: <code>http://[your-ip]:8880</code> or <code>http://[your-domain]:8880</code></li>
+      </ul>
+    </li>
+    <li>
+      <strong>Finalization</strong>
+      <ul>
+        <li>Click "Save" then "Link account"</li>
+        <li>Note: Redirection to Home Assistant is normal - the plugin uses their redirect service</li>
+        <li>Save the configuration and restart your Homebridge server</li>
+      </ul>
+    </li>
+  </ol>
+
+  <button type="button" class="btn btn-primary" onclick="initiateAuth()">
+    Login with Hilo
+  </button>
 </div>
+
 <script>
-	homebridge.showSchemaForm();
-	async function initiateAuth() {
-		const { authorizationURL } = await homebridge.request('/autorizationUrl');
-		const callback = homebridge.request('/callback');
+  homebridge.showSchemaForm();
+  async function initiateAuth() {
+    try {
+      const { authorizationURL } = await homebridge.request("/autorizationUrl");
+      const callback = homebridge.request("/callback");
 
-		window.open(authorizationURL, "_blank");
+      window.open(authorizationURL, "_blank");
 
-		const { accessToken, refreshToken, expiresIn } = await callback;
-		const [config, ...otherConfigs] = await homebridge.getPluginConfig();
-		await homebridge.updatePluginConfig([{ ...config, refreshToken }, ...otherConfigs]);
-		await homebridge.savePluginConfig();
-		homebridge.toast.success("Successfully authenticated with Hilo");
-	}
+      const { accessToken, refreshToken, expiresIn } = await callback;
+      const [config, ...otherConfigs] = await homebridge.getPluginConfig();
+      await homebridge.updatePluginConfig([
+        { ...config, refreshToken },
+        ...otherConfigs,
+      ]);
+      await homebridge.savePluginConfig();
+      homebridge.toast.success("Successfully authenticated with Hilo");
+    } catch (error) {
+      homebridge.toast.error("Authentication failed: " + error.message);
+    }
+  }
 </script>
