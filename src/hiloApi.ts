@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosHeaders, InternalAxiosRequestConfig } from "axios";
 import fs from "fs";
 import { getConfig } from "./config";
 import { getLogger } from "./logger";
@@ -135,7 +135,7 @@ export function execute<TResult, TVariables>(
   );
 }
 
-const authInterceptor = async (config: AxiosRequestConfig) => {
+const authInterceptor = async (config: InternalAxiosRequestConfig) => {
   if (!accessToken) {
     if (refreshToken) {
       try {
@@ -155,14 +155,11 @@ const authInterceptor = async (config: AxiosRequestConfig) => {
       }
     }
   }
-  config = {
-    ...config,
-    headers: {
-      ...config.headers,
-      "Ocp-Apim-Subscription-Key": "20eeaedcb86945afa3fe792cea89b8bf",
-      Authorization: accessToken ? `Bearer ${accessToken}` : "",
-    },
-  };
+  config.headers = new AxiosHeaders({
+    ...config.headers,
+    "Ocp-Apim-Subscription-Key": "20eeaedcb86945afa3fe792cea89b8bf",
+    Authorization: accessToken ? `Bearer ${accessToken}` : "",
+  });
   return config;
 };
 
