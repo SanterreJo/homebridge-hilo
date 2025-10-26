@@ -34,8 +34,8 @@
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.12.16",
     "@eslint/js": "^9.25.1",
-    "@graphql-codegen/cli": "^5.0.5",
-    "@graphql-codegen/schema-ast": "^4.1.0",
+    "@graphql-codegen/cli": "^6.0.0",
+    "@graphql-codegen/schema-ast": "^5.0.0",
     "@parcel/watcher": "^2.5.1",
     "@types/node": "^24.0.10",
     "auto": "^11.3.0",
