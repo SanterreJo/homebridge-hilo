@@ -147,28 +147,44 @@ export const setupSubscription = async (
       webSocketImpl: WebSocket,
     });
 
-    const subscription = client.iterate<{
+    const subscriptionIter = client.iterate<{
       onAnyDeviceUpdated: { device: Device };
     }>({
       query: SUBSCRIPTION_QUERY.toString(),
       variables: { locationHiloId },
     });
 
-    for await (const event of subscription) {
-      logger.debug("GraphQL subscription event: ", event);
-      if (event.data?.onAnyDeviceUpdated) {
-        if (
-          SUPPORTED_DEVICES.includes(
-            event.data.onAnyDeviceUpdated.device.__typename!,
-          )
-        ) {
-          onUpdate(event.data.onAnyDeviceUpdated.device);
+    (async () => {
+      try {
+        for await (const event of subscriptionIter) {
+          logger.debug("GraphQL subscription event: ", event);
+          if (event.data?.onAnyDeviceUpdated) {
+            if (
+              SUPPORTED_DEVICES.includes(
+                event.data.onAnyDeviceUpdated.device.__typename!,
+              )
+            ) {
+              onUpdate(event.data.onAnyDeviceUpdated.device);
+            }
+          }
         }
+      } catch (err) {
+        logger.error("GraphQL subscription loop error:", err);
       }
-    }
+    })();
 
-    return subscription;
+    return {
+      client,
+      close: () => {
+        try {
+          client.dispose();
+        } catch (e) {
+          logger.error("Error closing subscription client:", e);
+        }
+      },
+    } as const;
   } catch (error) {
     logger.error("Error setting up subscription:", error);
+    return null;
   }
 };
