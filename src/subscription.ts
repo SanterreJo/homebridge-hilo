@@ -154,9 +154,6 @@ export const setupSubscription = async (
       variables: { locationHiloId },
     });
 
-    // Consume the async iterable in a background task so this function
-    // returns immediately and doesn't block the caller. Errors are handled
-    // and logged here so the background loop doesn't crash silently.
     (async () => {
       try {
         for await (const event of subscriptionIter) {
@@ -176,14 +173,11 @@ export const setupSubscription = async (
       }
     })();
 
-    // Return a handle so callers can store and later close the client if needed
     return {
       client,
       close: () => {
         try {
-          // graphql-ws client exposes a dispose/close method; guard access
-          // in case the runtime client type differs.
-          if (typeof client.dispose === "function") client.dispose();
+          client.dispose();
         } catch (e) {
           logger.error("Error closing subscription client:", e);
         }
