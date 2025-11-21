@@ -1,3 +1,27 @@
+# v5.0.1 (Fri Nov 21 2025)
+
+#### 🐛 Bug Fix
+
+- Cleanup setup subscriptions, better logging [#96](https://github.com/SanterreJo/homebridge-hilo/pull/96) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### 🔩 Dependency Updates
+
+- Bump homebridge from 2.0.0-beta.27 to 2.0.0-beta.30 [#92](https://github.com/SanterreJo/homebridge-hilo/pull/92) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@SanterreJo](https://github.com/SanterreJo))
+- Bump @graphql-codegen/schema-ast from 4.1.0 to 5.0.0 [#91](https://github.com/SanterreJo/homebridge-hilo/pull/91) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/checkout from 4 to 5 [#88](https://github.com/SanterreJo/homebridge-hilo/pull/88) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump @graphql-codegen/cli from 5.0.7 to 6.0.0 [#90](https://github.com/SanterreJo/homebridge-hilo/pull/90) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the patch_minor group with 11 updates [#89](https://github.com/SanterreJo/homebridge-hilo/pull/89) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/setup-node from 4 to 5 [#87](https://github.com/SanterreJo/homebridge-hilo/pull/87) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump @types/node from 22.15.17 to 24.0.10 [#83](https://github.com/SanterreJo/homebridge-hilo/pull/83) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the patch_minor group with 12 updates [#82](https://github.com/SanterreJo/homebridge-hilo/pull/82) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v5.0.0 (Sat May 10 2025)
 
 #### 💥 Breaking Change
