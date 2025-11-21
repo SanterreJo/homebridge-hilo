@@ -1,9 +1,3 @@
-# ⚠️ IMPORTANT: Compatibilité des versions ⚠️
-
-Hilo a changé leur méthode de synchronisation des appareils entre les applications.
-- Les versions 3.X.X et moins ne sont plus supportées
-- Vous devez installer la version 4.0.0 ou supérieure
-
 # homebridge-hilo
 
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
@@ -59,11 +53,7 @@ permet de contrôler vos appareils Hilo par le biais de HomeKit et de l'app [Dom
    - Redémarrez votre serveur Homebridge
 
 ## Défis Hilo
-
-Un capteur de contact vous permet de:
-- Détecter si un défi Hilo est actif
-- Suspendre vos automatisations pendant les défis
-- Intégrer les défis dans vos scènes HomeKit
+⚠️ Depuis la version 6.0.0 les défis Hilo ne sont plus supporté par le plugin ⚠️
 
 ## Appareils supportés
 
@@ -143,11 +133,7 @@ enabling control of your Hilo devices via HomeKit and the [Apple Home App](https
    - Restart your Homebridge server
 
 ## Hilo Events (Challenges)
-
-A contact sensor allows you to:
-- Detect if a Hilo challenge is active
-- Pause your automations during challenges
-- Integrate challenges into your HomeKit scenes
+⚠️ As of 6.0.0 Hilo challenge are no longer supported by the plugin ⚠️
 
 ## Supported Devices
 

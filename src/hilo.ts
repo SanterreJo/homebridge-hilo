@@ -16,13 +16,10 @@ import { setupSubscription } from "./subscription";
 import { Device } from "./graphql/graphql";
 import { fetchDevicesForLocation } from "./location";
 import {
-  ChallengeAccessory,
   DeviceAccessory,
-  EventsResponse,
   OldApiDevice,
   SUPPORTED_DEVICES,
 } from "./devices/types";
-import { HiloChallengeSensor } from "./devices/HiloChallengeSensor";
 import axios from "axios";
 const PLUGIN_NAME = "homebridge-hilo";
 const PLATFORM_NAME = "Hilo";
@@ -43,8 +40,7 @@ class Hilo implements DynamicPlatformPlugin {
     private readonly api: API,
     private readonly accessories: Record<
       string,
-      | PlatformAccessory<DeviceAccessory<Device>>
-      | PlatformAccessory<ChallengeAccessory>
+      PlatformAccessory<DeviceAccessory<Device>>
     > = {},
   ) {
     setConfig(config as HiloConfig);
@@ -100,14 +96,6 @@ class Hilo implements DynamicPlatformPlugin {
             `Setting up new accessory for device ${device.hiloId}`,
           );
           accessory = this.setupNewAccessory(device, oldDevice);
-        } else if (accessory.context.device.type !== "Challenge") {
-          this.log.debug(
-            `Setting up cached accessory for device ${device.hiloId}`,
-          );
-          (accessory.context as DeviceAccessory<Device>) = {
-            device: oldDevice,
-            graphqlDevice: device,
-          };
         }
         const pluginAccessory = initializeHiloDevice[device.__typename!](
           accessory as any,
@@ -121,13 +109,9 @@ class Hilo implements DynamicPlatformPlugin {
       );
       this.staleAccessories = this.staleAccessories.concat(
         Object.values(this.accessories).filter((accessory) => {
-          if (accessory.context.device.type === "Challenge") {
-            return false;
-          } else {
-            return !currentDeviceHiloIds.includes(
-              accessory.context.device.hiloId,
-            );
-          }
+          return !currentDeviceHiloIds.includes(
+            accessory.context.device.hiloId,
+          );
         }),
       );
       this.log.debug(
@@ -139,91 +123,8 @@ class Hilo implements DynamicPlatformPlugin {
         this.staleAccessories,
       );
 
-      if (this.config.noChallengeSensor !== true) {
-        // Add Hilo Challenge sensor for each location
-        this.log.info("Setting up Hilo Challenge sensors");
-        this.locations.forEach((location) => {
-          const challengeDevices = this.setupHiloChallengeDevices(location);
-
-          setInterval(
-            async () => {
-              this.updateChallenges(location, challengeDevices);
-            },
-            /* 4 hours */ 4 * 60 * 60 * 1000,
-          );
-          this.updateChallenges(location, challengeDevices);
-        });
-      }
       this.setupSubscriptions();
       log.info("Hilo platform is ready");
-    });
-  }
-
-  private setupHiloChallengeDevices(location: Location): HiloChallengeSensor[] {
-    return [
-      "preheat",
-      "reduction",
-      "recovery",
-      "plannedAM",
-      "plannedPM",
-      "inProgress",
-    ].map((phase, index) => {
-      const challengeId = `${phase}-hilo-challenge-${location.id}`;
-      const challengeName = `${phase.charAt(0).toUpperCase() + phase.slice(1)} Hilo Challenge ${location.name}`;
-      let challengeAccessory = this.accessories[challengeId] as unknown as
-        | PlatformAccessory<ChallengeAccessory>
-        | undefined;
-      if (!challengeAccessory) {
-        const uuid = this.api.hap.uuid.generate(challengeId);
-        challengeAccessory = new this.api.platformAccessory<ChallengeAccessory>(
-          challengeName,
-          uuid,
-        );
-        challengeAccessory.context = {
-          device: {
-            assetId: challengeId,
-            id: location.id + index + 100,
-            name: challengeName,
-            type: "Challenge",
-            locationId: location.id,
-            modelNumber: "Hilo Challenge",
-            identifier: challengeId,
-            hiloId: challengeId,
-          },
-          v4Device: {
-            value: false,
-            phase,
-            localId: challengeId,
-          },
-        };
-        this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
-          challengeAccessory,
-        ]);
-        this.accessories[challengeId] = challengeAccessory as any;
-      } else {
-        challengeAccessory.context = {
-          device: {
-            assetId: challengeId,
-            id: location.id + index + 100,
-            name: challengeName,
-            type: "Challenge",
-            locationId: location.id,
-            modelNumber: "Hilo Challenge",
-            identifier: challengeId,
-            hiloId: challengeId,
-          },
-          v4Device: {
-            value: false,
-            phase,
-            localId: challengeId,
-          },
-        };
-      }
-      return new HiloChallengeSensor(
-        challengeAccessory as any,
-        this.api,
-        this.log,
-      );
     });
   }
 
@@ -265,17 +166,13 @@ class Hilo implements DynamicPlatformPlugin {
 
   configureAccessory(accessory: PlatformAccessory): void {
     this.log.debug(`Configuring accessory from cache ${accessory.displayName}`);
-    if (
-      accessory.context.device.type !== "Challenge" &&
-      !accessory.context.device.hiloId
-    ) {
+    if (!accessory.context.device.hiloId) {
       this.log.warn(`Could not configure accessory ${accessory.displayName}`);
       this.staleAccessories.push(accessory);
       return;
     }
-    this.accessories[accessory.context.device.hiloId] = accessory as
-      | PlatformAccessory<DeviceAccessory<Device>>
-      | PlatformAccessory<ChallengeAccessory>;
+    this.accessories[accessory.context.device.hiloId] =
+      accessory as PlatformAccessory<DeviceAccessory<Device>>;
   }
 
   private setupNewAccessory(
@@ -296,27 +193,6 @@ class Hilo implements DynamicPlatformPlugin {
     ]);
     this.accessories[device.hiloId] = accessory;
     return accessory;
-  }
-
-  private async updateChallenges(
-    location: Location,
-    challengeDevices: HiloChallengeSensor[],
-  ) {
-    if (this.config.noChallengeSensor === true) {
-      return;
-    }
-    try {
-      const response = await hiloApi.get<EventsResponse>(
-        `/GDService/v1/api/Locations/${location.id}/Events`,
-        { params: { active: true } },
-      );
-      const challenges = response.data;
-      challengeDevices.forEach((device) =>
-        device.updateChallengeStatus(challenges),
-      );
-    } catch (error) {
-      this.log.error("Could not retrieve Hilo Challenges", error);
-    }
   }
 }
 
