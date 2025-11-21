@@ -61,6 +61,8 @@ class Hilo implements DynamicPlatformPlugin {
       if (this.locations.length === 0) {
         log.error("No locations found");
         return;
+      } else {
+        log.info(`Found ${this.locations.length} locations`);
       }
       const devices = (
         await Promise.all(
@@ -80,6 +82,8 @@ class Hilo implements DynamicPlatformPlugin {
       if (devices.length === 0) {
         log.error("No devices found");
         return;
+      } else {
+        log.info(`Found ${devices.length} supported devices`);
       }
       devices.forEach((device) => {
         this.log.debug("Initializing device", device);
@@ -111,12 +115,11 @@ class Hilo implements DynamicPlatformPlugin {
         );
         this.pluginAccessories[device.hiloId] = pluginAccessory;
       });
-      this.setupSubscriptions();
 
       const currentDeviceHiloIds = this.oldApiDevices.map(
         (device) => device.hiloId,
       );
-      this.staleAccessories.concat(
+      this.staleAccessories = this.staleAccessories.concat(
         Object.values(this.accessories).filter((accessory) => {
           if (accessory.context.device.type === "Challenge") {
             return false;
@@ -151,6 +154,7 @@ class Hilo implements DynamicPlatformPlugin {
           this.updateChallenges(location, challengeDevices);
         });
       }
+      this.setupSubscriptions();
       log.info("Hilo platform is ready");
     });
   }
