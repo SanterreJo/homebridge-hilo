@@ -87,24 +87,36 @@
 </div>
 
 <script>
-  homebridge.showSchemaForm();
+  homebridge.addEventListener('ready', () => {
+    homebridge.showSchemaForm();
+  });
   async function initiateAuth() {
     try {
+      homebridge.hideSchemaForm();
       const { authorizationURL } = await homebridge.request("/autorizationUrl");
       const callback = homebridge.request("/callback");
 
       window.open(authorizationURL, "_blank");
 
       const { accessToken, refreshToken, expiresIn } = await callback;
-      const [config, ...otherConfigs] = await homebridge.getPluginConfig();
-      await homebridge.updatePluginConfig([
-        { ...config, refreshToken },
-        ...otherConfigs,
-      ]);
-      await homebridge.savePluginConfig();
+      const config = await homebridge.getPluginConfig();
+      if (config.length === 0) {
+        config.push({
+          platform: 'Hilo',
+          name: 'Hilo',
+        });
+      }
+      config[0].platform = 'Hilo';
+      config[0].name = 'Hilo';
+      config[0].refreshToken = refreshToken;
+      await homebridge.updatePluginConfig(config);
+      await homebridge.savePluginConfig(config);
       homebridge.toast.success("Successfully authenticated with Hilo");
     } catch (error) {
+      console.log(error);
       homebridge.toast.error("Authentication failed: " + error.message);
+    } finally {
+      homebridge.showSchemaForm();
     }
   }
 </script>
