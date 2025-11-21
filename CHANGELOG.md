@@ -1,3 +1,15 @@
+# v5.0.2 (Fri Nov 21 2025)
+
+#### 🐛 Bug Fix
+
+- Fix config [#99](https://github.com/SanterreJo/homebridge-hilo/pull/99) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### Authors: 1
+
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v5.0.1 (Fri Nov 21 2025)
 
 #### 🐛 Bug Fix
