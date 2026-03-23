@@ -20,7 +20,6 @@ import {
   OldApiDevice,
   SUPPORTED_DEVICES,
 } from "./devices/types";
-import axios from "axios";
 const PLUGIN_NAME = "homebridge-hilo";
 const PLATFORM_NAME = "Hilo";
 
@@ -28,11 +27,20 @@ export default function (api: API) {
   api.registerPlatform(PLATFORM_NAME, Hilo);
 }
 
+// Map GraphQL __typename to the device type used in OldApiDevice context
+const GRAPHQL_TO_DEVICE_TYPE: Record<string, string> = {
+  BasicThermostat: "Thermostat",
+  HeatingFloorThermostat: "Thermostat",
+  BasicDimmer: "LightDimmer",
+  BasicLight: "LightDimmer",
+  BasicSwitch: "Switch",
+};
+
 class Hilo implements DynamicPlatformPlugin {
   private readonly pluginAccessories: Record<string, HiloDevice<any>> = {};
   private locations: Location[] = [];
   private subscriptions: Record<string, any> = {};
-  private oldApiDevices: OldApiDevice[] = [];
+  private deviceMetadata: Record<string, OldApiDevice> = {};
   private staleAccessories: PlatformAccessory<any>[] = [];
   constructor(
     private readonly log: Logging,
@@ -69,11 +77,6 @@ class Hilo implements DynamicPlatformPlugin {
       )
         .flatMap((response) => response)
         .filter((device) => SUPPORTED_DEVICES.includes(device.__typename!));
-      this.oldApiDevices = (
-        await Promise.all(
-          this.locations.map((location) => fetchDevices(location)),
-        )
-      ).flatMap((response) => response);
 
       if (devices.length === 0) {
         log.error("No devices found");
@@ -81,13 +84,14 @@ class Hilo implements DynamicPlatformPlugin {
       } else {
         log.info(`Found ${devices.length} supported devices`);
       }
+
+      this.buildDeviceMetadata(devices, this.locations);
+
       devices.forEach((device) => {
         this.log.debug("Initializing device", device);
-        const oldDevice = this.oldApiDevices.find(
-          (d) => d.hiloId === device.hiloId,
-        );
-        if (!oldDevice) {
-          this.log.error("No old device found for", device);
+        const metadata = this.deviceMetadata[device.hiloId];
+        if (!metadata) {
+          this.log.error("No device metadata for", device.hiloId);
           return;
         }
         let accessory = this.accessories[device.hiloId];
@@ -95,7 +99,10 @@ class Hilo implements DynamicPlatformPlugin {
           this.log.debug(
             `Setting up new accessory for device ${device.hiloId}`,
           );
-          accessory = this.setupNewAccessory(device, oldDevice);
+          accessory = this.setupNewAccessory(device, metadata);
+        } else {
+          // Update cached context with latest GraphQL data
+          accessory.context.graphqlDevice = device;
         }
         const pluginAccessory = initializeHiloDevice[device.__typename!](
           accessory as any,
@@ -104,9 +111,8 @@ class Hilo implements DynamicPlatformPlugin {
         this.pluginAccessories[device.hiloId] = pluginAccessory;
       });
 
-      const currentDeviceHiloIds = this.oldApiDevices.map(
-        (device) => device.hiloId,
-      );
+      // Use GraphQL device list for stale detection
+      const currentDeviceHiloIds = devices.map((device) => device.hiloId);
       this.staleAccessories = this.staleAccessories.concat(
         Object.values(this.accessories).filter((accessory) => {
           return !currentDeviceHiloIds.includes(
@@ -128,6 +134,45 @@ class Hilo implements DynamicPlatformPlugin {
     });
   }
 
+  /**
+   * Build device metadata from cached accessories or GraphQL data.
+   *
+   * The REST endpoint /Locations/{id}/Devices was deprecated by Hilo
+   * (see https://github.com/dvd-dev/hilo/issues/564).
+   * For existing accessories, we use the cached device metadata.
+   * For new devices, we synthesize metadata from GraphQL data.
+   * Note: new devices will have an empty `id` field, which means write
+   * operations (set temperature, toggle lights) won't work until the
+   * device metadata is fully populated via the DeviceHub WebSocket
+   * (not yet implemented — see dvd-dev/hilo#564 for the approach).
+   */
+  private buildDeviceMetadata(
+    devices: Device[],
+    locations: Location[],
+  ): void {
+    const locationId = locations[0]?.id?.toString() ?? "";
+    for (const device of devices) {
+      const cached = this.accessories[device.hiloId];
+      if (cached?.context?.device) {
+        this.deviceMetadata[device.hiloId] = cached.context.device;
+      } else {
+        this.log.warn(
+          `New device ${device.hiloId} (${device.__typename}) has no cached metadata. ` +
+            `Device will appear in HomeKit but control actions may not work ` +
+            `until Homebridge is restarted and the device is cached.`,
+        );
+        this.deviceMetadata[device.hiloId] = {
+          hiloId: device.hiloId,
+          assetId: device.hiloId,
+          name: device.physicalAddress ?? device.hiloId,
+          id: "",
+          type: GRAPHQL_TO_DEVICE_TYPE[device.__typename ?? ""] ?? "Unknown",
+          locationId,
+        };
+      }
+    }
+  }
+
   private async setupSubscriptions() {
     for (const location of this.locations) {
       try {
@@ -135,13 +180,6 @@ class Hilo implements DynamicPlatformPlugin {
           location.locationHiloId,
           (device) => {
             this.log.debug(`Device update received:`, device);
-            const oldApiDevice = this.oldApiDevices.find(
-              (d) => d.hiloId === device.hiloId,
-            );
-            if (!oldApiDevice) {
-              this.log.error("No old device found for", device);
-              return;
-            }
             const accessory = this.accessories[device.hiloId];
             const pluginAccessory = this.pluginAccessories[device.hiloId];
             if (!accessory || !pluginAccessory) {
@@ -177,15 +215,15 @@ class Hilo implements DynamicPlatformPlugin {
 
   private setupNewAccessory(
     device: Device,
-    oldApiDevice: OldApiDevice,
+    metadata: OldApiDevice,
   ): PlatformAccessory<DeviceAccessory<Device>> {
-    const uuid = this.api.hap.uuid.generate(oldApiDevice.assetId);
+    const uuid = this.api.hap.uuid.generate(metadata.assetId);
     const accessory = new this.api.platformAccessory<DeviceAccessory<Device>>(
-      oldApiDevice.name.trim(),
+      metadata.name.trim(),
       uuid,
     );
     accessory.context = {
-      device: oldApiDevice,
+      device: metadata,
       graphqlDevice: device,
     };
     this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
@@ -225,26 +263,6 @@ async function fetchLocations() {
     getLogger().error(
       "Error while fetching locations",
       error instanceof Error ? error.message : String(error),
-    );
-    return [];
-  }
-}
-
-type DevicesResponse = OldApiDevice[];
-async function fetchDevices(location: Location) {
-  getLogger().debug("Fetching devices for location", location.name);
-  try {
-    const response = await hiloApi.get<DevicesResponse>(
-      `/Automation/v1/api/Locations/${location.id}/Devices`,
-      {
-        params: { force: true },
-      },
-    );
-    return response.data;
-  } catch (error) {
-    getLogger().error(
-      "Error while fetching devices",
-      axios.isAxiosError(error) ? error.response?.data : error,
     );
     return [];
   }

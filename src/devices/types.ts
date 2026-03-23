@@ -17,7 +17,7 @@ export const SUPPORTED_DEVICES = [
 export type SupportedDevice = (typeof SUPPORTED_DEVICES)[number];
 
 export type OldApiDevice = {
-  type: "Thermostat" | "LightDimmer";
+  type: "Thermostat" | "LightDimmer" | "Switch" | string;
   locationId: string;
   id: string;
   name: string;
