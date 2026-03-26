@@ -1,5 +1,6 @@
 import axios, { AxiosHeaders, InternalAxiosRequestConfig } from "axios";
 import fs from "fs";
+import { decode } from "jsonwebtoken";
 import { getConfig } from "./config";
 import { getLogger } from "./logger";
 import { getApi } from "./api";
@@ -7,6 +8,7 @@ import { TypedDocumentString } from "./graphql/graphql";
 
 let accessToken: string | undefined;
 let refreshToken: string | undefined;
+let wsAccessToken: string | undefined;
 
 const clientId = "1ca9f585-4a55-4085-8e30-9746a65fa561";
 
@@ -80,6 +82,59 @@ async function refreshTokenRequest() {
 }
 
 export const getAccessToken = () => accessToken || "";
+export const getWsAccessToken = () => wsAccessToken || "";
+
+type NegotiateResponse = {
+  url: string;
+  accessToken: string;
+};
+
+let wsRefreshTimer: ReturnType<typeof setTimeout> | undefined;
+
+export async function negotiate() {
+  getLogger().debug("Negotiating websocket connection");
+  const response = await hiloApi.post<NegotiateResponse>(
+    "/DeviceHub/negotiate",
+    {},
+    {
+      params: {
+        negociateVersion: 1,
+      },
+    },
+  );
+  wsAccessToken = response.data.accessToken;
+
+  if (wsRefreshTimer) {
+    clearTimeout(wsRefreshTimer);
+  }
+
+  const decoded = decode(response.data.accessToken) as { exp?: number } | null;
+  const exp = decoded?.exp;
+  // Refresh 5 minutes before expiration, fallback to 55 minutes if exp is unreadable
+  const refreshIn = exp
+    ? exp * 1000 - Date.now() - 5 * 60 * 1000
+    : 55 * 60 * 1000;
+
+  getLogger().debug(
+    `WebSocket token refreshing in ${Math.round(refreshIn / 60000)} minutes`,
+  );
+
+  wsRefreshTimer = setTimeout(
+    async () => {
+      getLogger().debug("Refreshing websocket token");
+      try {
+        await negotiate();
+      } catch (e) {
+        getLogger().error(
+          "Failed to refresh websocket token",
+          e instanceof Error ? e.message : e,
+        );
+      }
+    },
+    Math.max(refreshIn, 60_000),
+  );
+  return { accessToken: response.data.accessToken, url: response.data.url };
+}
 
 export async function setupAutoRefreshToken(expiresIn: number | undefined) {
   if (!expiresIn) {

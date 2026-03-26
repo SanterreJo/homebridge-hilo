@@ -15,7 +15,8 @@ export abstract class HiloDevice<T extends Device> {
       .setCharacteristic(this.api.hap.Characteristic.Manufacturer, "Hilo")
       .setCharacteristic(
         this.api.hap.Characteristic.Model,
-        accessory.context.device.type,
+        accessory.context.graphqlDevice.deviceType ??
+          accessory.context.device.type,
       )
       .setCharacteristic(
         this.api.hap.Characteristic.SerialNumber,

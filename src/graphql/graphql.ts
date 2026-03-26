@@ -506,6 +506,7 @@ export enum LightType {
 }
 
 export enum LowVoltageCurrentState {
+  AuxHeating = 'AUX_HEATING',
   Cooling = 'COOLING',
   Heating = 'HEATING',
   Off = 'OFF',
@@ -547,6 +548,7 @@ export type LowVoltageThermostat = IBasicDevice & {
   fanSpeed?: Maybe<Scalars['Int']['output']>;
   gDState: DeviceGdState;
   gatewayHiloId: Scalars['String']['output'];
+  heatCoolSetpointMinDelta?: Maybe<Scalars['Float']['output']>;
   /** Heat demand is the delta between the actual temperature and the desired temperature */
   heatDemand?: Maybe<Scalars['Int']['output']>;
   hiloId: Scalars['String']['output'];
@@ -555,11 +557,13 @@ export type LowVoltageThermostat = IBasicDevice & {
   lastUpdateVersion: Scalars['UnsignedLong']['output'];
   locationHiloId: Scalars['String']['output'];
   maxAmbientCoolSetPoint?: Maybe<TemperatureUnit>;
+  maxAmbientCoolSetpointLimit?: Maybe<TemperatureUnit>;
   /** Highest Ambient temperature setpoint */
   maxAmbientTempSetpoint?: Maybe<TemperatureUnit>;
   /** Highest Ambient temperature setpoint possible for the thermostat */
   maxAmbientTempSetpointLimit?: Maybe<TemperatureUnit>;
   minAmbientCoolSetPoint?: Maybe<TemperatureUnit>;
+  minAmbientCoolSetpointLimit?: Maybe<TemperatureUnit>;
   /** Lowest Ambient temperature setpoint */
   minAmbientTempSetpoint?: Maybe<TemperatureUnit>;
   /** Lowest Ambient temperature setpoint possible for the thermostat */
@@ -683,8 +687,6 @@ export enum PowerKind {
 export type PowerUnit = {
   __typename?: 'PowerUnit';
   kind: PowerKind;
-  /** @deprecated Will be removed in future versions, use LastUpdate instead */
-  lastUpate?: Maybe<Scalars['DateTime']['output']>;
   lastUpdate?: Maybe<Scalars['DateTime']['output']>;
   value?: Maybe<Scalars['Float']['output']>;
 };
@@ -779,6 +781,7 @@ export enum ThermostatMode {
   AutoHeat = 'AUTO_HEAT',
   Cool = 'COOL',
   EmergencyHeat = 'EMERGENCY_HEAT',
+  FrostProtection = 'FROST_PROTECTION',
   Heat = 'HEAT',
   Manual = 'MANUAL',
   Off = 'OFF',
@@ -812,6 +815,7 @@ export type WaterHeater = IBasicDevice & {
   probeTemp?: Maybe<TemperatureUnit>;
   source: Scalars['String']['output'];
   state: DeviceState;
+  tempCorrectionFactor?: Maybe<Scalars['Int']['output']>;
   version?: Maybe<Scalars['String']['output']>;
   zigbeeVersion?: Maybe<Scalars['String']['output']>;
 };

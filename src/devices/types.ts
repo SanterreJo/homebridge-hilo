@@ -5,6 +5,7 @@ import {
   Device,
   HeatingFloorThermostat,
 } from "../graphql/graphql";
+import { SignalRDevice } from "../deviceHub";
 
 export const SUPPORTED_DEVICES = [
   "BasicLight",
@@ -16,17 +17,8 @@ export const SUPPORTED_DEVICES = [
 
 export type SupportedDevice = (typeof SUPPORTED_DEVICES)[number];
 
-export type OldApiDevice = {
-  type: "Thermostat" | "LightDimmer";
-  locationId: string;
-  id: string;
-  name: string;
-  assetId: string;
-  hiloId: string;
-};
-
 export type DeviceAccessory<T extends Device> = {
-  device: OldApiDevice;
+  device: SignalRDevice;
   graphqlDevice: T;
 };
 

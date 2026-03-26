@@ -1,11 +1,11 @@
 {
   "name": "homebridge-hilo",
-  "version": "6.0.0",
+  "version": "7.0.0-alpha.0",
   "description": "Plugin Homebridge (non officiel) pour la passerelle et les appareils Hilo de Hydro-Québec | Unofficial Homebridge plugin for Hydro-Québec Hilo bridge and devices",
   "main": "dist/hilo.js",
   "engines": {
     "homebridge": "^1.8.0 || ^2.0.0-beta.0",
-    "node": "^18.20.4 || ^20.18.0 || ^22.10.0"
+    "node": "^18.20.4 || ^20.18.0 || ^22.10.0 || ^24.0.0"
   },
   "scripts": {
     "lint": "eslint . --max-warnings=0",
@@ -13,7 +13,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "codegen": "graphql-codegen --config codegen.ts",
     "codegen:watch": "npm run codegen -- --watch",
-    "tsc": "npm run codegen && tsc"
+    "tsc": "npm run codegen && tsc",
+    "preversion": "npm run build",
+    "postversion": "git push --follow-tags"
   },
   "repository": {
     "type": "git",
@@ -37,8 +39,8 @@
     "@graphql-codegen/cli": "^6.0.0",
     "@graphql-codegen/schema-ast": "^5.0.0",
     "@parcel/watcher": "^2.5.1",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.3",
-    "auto": "^11.3.0",
     "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
@@ -51,17 +53,13 @@
   },
   "dependencies": {
     "@homebridge/plugin-ui-utils": "^2.0.2",
+    "@microsoft/signalr": "^10.0.0",
     "axios": "^1.9.0",
     "date-fns": "^4.1.0",
     "express": "^5.1.0",
     "graphql-ws": "^6.0.4",
+    "jsonwebtoken": "^9.0.3",
     "ws": "^8.18.2"
-  },
-  "auto": {
-    "plugins": [
-      "npm",
-      "released"
-    ]
   },
   "funding": [
     {
