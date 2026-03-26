@@ -374,6 +374,7 @@ enum LightType {
 }
 
 enum LowVoltageCurrentState {
+  AUX_HEATING
   COOLING
   HEATING
   OFF
@@ -414,6 +415,7 @@ type LowVoltageThermostat implements IBasicDevice {
   fanSpeed: Int
   gDState: DeviceGDState!
   gatewayHiloId: String!
+  heatCoolSetpointMinDelta: Float
   """
   Heat demand is the delta between the actual temperature and the desired temperature
   """
@@ -424,11 +426,13 @@ type LowVoltageThermostat implements IBasicDevice {
   lastUpdateVersion: UnsignedLong!
   locationHiloId: String!
   maxAmbientCoolSetPoint: TemperatureUnit
+  maxAmbientCoolSetpointLimit: TemperatureUnit
   """Highest Ambient temperature setpoint"""
   maxAmbientTempSetpoint(kind: TemperatureKind): TemperatureUnit
   """Highest Ambient temperature setpoint possible for the thermostat"""
   maxAmbientTempSetpointLimit(kind: TemperatureKind): TemperatureUnit
   minAmbientCoolSetPoint: TemperatureUnit
+  minAmbientCoolSetpointLimit: TemperatureUnit
   """Lowest Ambient temperature setpoint"""
   minAmbientTempSetpoint(kind: TemperatureKind): TemperatureUnit
   """Lowest Ambient temperature setpoint possible for the thermostat"""
@@ -506,7 +510,6 @@ enum PowerKind {
 
 type PowerUnit {
   kind: PowerKind!
-  lastUpate: DateTime @deprecated(reason: "Will be removed in future versions, use LastUpdate instead")
   lastUpdate: DateTime
   value: Float
 }
@@ -594,6 +597,7 @@ enum ThermostatMode {
   AUTO_HEAT
   COOL
   EMERGENCY_HEAT
+  FROST_PROTECTION
   HEAT
   MANUAL
   OFF
@@ -636,6 +640,7 @@ type WaterHeater implements IBasicDevice {
   probeTemp: TemperatureUnit
   source: String!
   state: DeviceState!
+  tempCorrectionFactor: Int
   version: String
   zigbeeVersion: String
 }

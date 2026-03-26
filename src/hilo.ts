@@ -15,12 +15,9 @@ import { HiloDevice } from "./devices/HiloDevice";
 import { setupSubscription } from "./subscription";
 import { Device } from "./graphql/graphql";
 import { fetchDevicesForLocation } from "./location";
-import {
-  DeviceAccessory,
-  OldApiDevice,
-  SUPPORTED_DEVICES,
-} from "./devices/types";
-import axios from "axios";
+import { connectToDeviceHub, SignalRDevice } from "./deviceHub";
+import { DeviceAccessory, SUPPORTED_DEVICES } from "./devices/types";
+
 const PLUGIN_NAME = "homebridge-hilo";
 const PLATFORM_NAME = "Hilo";
 
@@ -32,7 +29,6 @@ class Hilo implements DynamicPlatformPlugin {
   private readonly pluginAccessories: Record<string, HiloDevice<any>> = {};
   private locations: Location[] = [];
   private subscriptions: Record<string, any> = {};
-  private oldApiDevices: OldApiDevice[] = [];
   private staleAccessories: PlatformAccessory<any>[] = [];
   constructor(
     private readonly log: Logging,
@@ -60,34 +56,42 @@ class Hilo implements DynamicPlatformPlugin {
       } else {
         log.info(`Found ${this.locations.length} locations`);
       }
-      const devices = (
-        await Promise.all(
-          this.locations.map((location) =>
-            fetchDevicesForLocation(location.locationHiloId),
-          ),
-        )
-      )
-        .flatMap((response) => response)
-        .filter((device) => SUPPORTED_DEVICES.includes(device.__typename!));
-      this.oldApiDevices = (
-        await Promise.all(
-          this.locations.map((location) => fetchDevices(location)),
-        )
-      ).flatMap((response) => response);
 
-      if (devices.length === 0) {
-        log.error("No devices found");
+      const allSignalRDevices: SignalRDevice[] = [];
+      const allGraphqlDevices: Device[] = [];
+
+      for (const location of this.locations) {
+        const [signalRDevices, graphqlDevices] = await Promise.all([
+          connectToDeviceHub(location.id),
+          fetchDevicesForLocation(location.locationHiloId),
+        ]);
+        signalRDevices.forEach((d) => (d.locationId = location.id));
+        allSignalRDevices.push(...signalRDevices);
+        allGraphqlDevices.push(...graphqlDevices);
+      }
+
+      const supportedDevices = allGraphqlDevices.filter((device) =>
+        SUPPORTED_DEVICES.includes(device.__typename!),
+      );
+
+      if (supportedDevices.length === 0) {
+        log.error("No supported devices found");
         return;
       } else {
-        log.info(`Found ${devices.length} supported devices`);
+        log.info(`Found ${supportedDevices.length} supported devices`);
       }
-      devices.forEach((device) => {
+
+      const signalRByHiloId = new Map(
+        allSignalRDevices.map((d) => [d.hiloId, d]),
+      );
+
+      supportedDevices.forEach((device) => {
         this.log.debug("Initializing device", device);
-        const oldDevice = this.oldApiDevices.find(
-          (d) => d.hiloId === device.hiloId,
-        );
-        if (!oldDevice) {
-          this.log.error("No old device found for", device);
+        const signalRDevice = signalRByHiloId.get(device.hiloId);
+        if (!signalRDevice) {
+          this.log.error(
+            `No SignalR device found for hiloId ${device.hiloId}`,
+          );
           return;
         }
         let accessory = this.accessories[device.hiloId];
@@ -95,7 +99,12 @@ class Hilo implements DynamicPlatformPlugin {
           this.log.debug(
             `Setting up new accessory for device ${device.hiloId}`,
           );
-          accessory = this.setupNewAccessory(device, oldDevice);
+          accessory = this.setupNewAccessory(device, signalRDevice);
+        } else {
+          accessory.context = {
+            device: signalRDevice,
+            graphqlDevice: device,
+          };
         }
         const pluginAccessory = initializeHiloDevice[device.__typename!](
           accessory as any,
@@ -104,24 +113,22 @@ class Hilo implements DynamicPlatformPlugin {
         this.pluginAccessories[device.hiloId] = pluginAccessory;
       });
 
-      const currentDeviceHiloIds = this.oldApiDevices.map(
-        (device) => device.hiloId,
-      );
+      const currentHiloIds = new Set(signalRByHiloId.keys());
       this.staleAccessories = this.staleAccessories.concat(
         Object.values(this.accessories).filter((accessory) => {
-          return !currentDeviceHiloIds.includes(
-            accessory.context.device.hiloId,
-          );
+          return !currentHiloIds.has(accessory.context.device.hiloId);
         }),
       );
       this.log.debug(
         `Found ${this.staleAccessories.length} stale accessories removing...`,
       );
-      this.api.unregisterPlatformAccessories(
-        PLUGIN_NAME,
-        PLATFORM_NAME,
-        this.staleAccessories,
-      );
+      if (this.staleAccessories.length > 0) {
+        this.api.unregisterPlatformAccessories(
+          PLUGIN_NAME,
+          PLATFORM_NAME,
+          this.staleAccessories,
+        );
+      }
 
       this.setupSubscriptions();
       log.info("Hilo platform is ready");
@@ -135,16 +142,8 @@ class Hilo implements DynamicPlatformPlugin {
           location.locationHiloId,
           (device) => {
             this.log.debug(`Device update received:`, device);
-            const oldApiDevice = this.oldApiDevices.find(
-              (d) => d.hiloId === device.hiloId,
-            );
-            if (!oldApiDevice) {
-              this.log.error("No old device found for", device);
-              return;
-            }
-            const accessory = this.accessories[device.hiloId];
             const pluginAccessory = this.pluginAccessories[device.hiloId];
-            if (!accessory || !pluginAccessory) {
+            if (!pluginAccessory) {
               this.log.debug(`No accessory for device ${device.hiloId}`);
               return;
             }
@@ -166,26 +165,28 @@ class Hilo implements DynamicPlatformPlugin {
 
   configureAccessory(accessory: PlatformAccessory): void {
     this.log.debug(`Configuring accessory from cache ${accessory.displayName}`);
-    if (!accessory.context.device.hiloId) {
-      this.log.warn(`Could not configure accessory ${accessory.displayName}`);
+    if (accessory.context.device?.hiloId) {
+      this.accessories[accessory.context.device.hiloId] =
+        accessory as PlatformAccessory<DeviceAccessory<Device>>;
+    } else {
+      this.log.warn(
+        `Stale cached accessory ${accessory.displayName}, will remove`,
+      );
       this.staleAccessories.push(accessory);
-      return;
     }
-    this.accessories[accessory.context.device.hiloId] =
-      accessory as PlatformAccessory<DeviceAccessory<Device>>;
   }
 
   private setupNewAccessory(
     device: Device,
-    oldApiDevice: OldApiDevice,
+    signalRDevice: SignalRDevice,
   ): PlatformAccessory<DeviceAccessory<Device>> {
-    const uuid = this.api.hap.uuid.generate(oldApiDevice.assetId);
+    const uuid = this.api.hap.uuid.generate(signalRDevice.hiloId);
     const accessory = new this.api.platformAccessory<DeviceAccessory<Device>>(
-      oldApiDevice.name.trim(),
+      signalRDevice.name.trim(),
       uuid,
     );
     accessory.context = {
-      device: oldApiDevice,
+      device: signalRDevice,
       graphqlDevice: device,
     };
     this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
@@ -225,26 +226,6 @@ async function fetchLocations() {
     getLogger().error(
       "Error while fetching locations",
       error instanceof Error ? error.message : String(error),
-    );
-    return [];
-  }
-}
-
-type DevicesResponse = OldApiDevice[];
-async function fetchDevices(location: Location) {
-  getLogger().debug("Fetching devices for location", location.name);
-  try {
-    const response = await hiloApi.get<DevicesResponse>(
-      `/Automation/v1/api/Locations/${location.id}/Devices`,
-      {
-        params: { force: true },
-      },
-    );
-    return response.data;
-  } catch (error) {
-    getLogger().error(
-      "Error while fetching devices",
-      axios.isAxiosError(error) ? error.response?.data : error,
     );
     return [];
   }
