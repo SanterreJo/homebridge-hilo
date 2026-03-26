@@ -1,43 +1,25 @@
 name: Release
-
-on: [push]
+on:
+  push:
+    tags: ['v*']
 
 permissions:
   id-token: write
   contents: write
 
 jobs:
-  release:
+  publish:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
-    permissions:
-      id-token: write
-      contents: write
     steps:
       - uses: actions/checkout@v6
-
-      - name: Prepare repository
-        run: git fetch --unshallow --tags
-
-      - name: Use Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: "24"
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Cache node modules
-        uses: actions/cache@v5
-        with:
-          path: node_modules
-          key: npm-deps-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            npm-deps-
-
-      - name: Create Release
+      - run: npm ci
+      - run: npm run build
+      - run: npm publish
+      - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: "true"
-        run: |
-          npm ci
-          npm run build
-          npx auto shipit
+        run: gh release create "${{ github.ref_name }}" --generate-notes

@@ -1,0 +1,10 @@
+src/
+.github/
+.claude/
+.devcontainer.json
+codegen.ts
+tsconfig.json
+eslint.config.mjs
+.prettierignore
+schema.json
+schema.graphql

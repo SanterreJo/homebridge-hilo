@@ -13,7 +13,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "codegen": "graphql-codegen --config codegen.ts",
     "codegen:watch": "npm run codegen -- --watch",
-    "tsc": "npm run codegen && tsc"
+    "tsc": "npm run codegen && tsc",
+    "preversion": "npm run build",
+    "postversion": "git push --follow-tags"
   },
   "repository": {
     "type": "git",
@@ -39,7 +41,6 @@
     "@parcel/watcher": "^2.5.1",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.3",
-    "auto": "^11.3.6",
     "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
@@ -59,12 +60,6 @@
     "graphql-ws": "^6.0.4",
     "jsonwebtoken": "^9.0.3",
     "ws": "^8.18.2"
-  },
-  "auto": {
-    "plugins": [
-      ["npm", { "setRcToken": false }],
-      "released"
-    ]
   },
   "funding": [
     {
