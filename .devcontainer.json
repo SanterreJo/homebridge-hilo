@@ -1,5 +1,5 @@
 {
-  "image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:22-bookworm",
+  "image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:24-bookworm",
   "mounts": [
     "source=homebridge-hilo-extensions,target=/root/.vscode-server/extensions,type=volume"
   ],
@@ -12,8 +12,8 @@
           "source.fixAll": "always"
         },
         "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-        "typescript.tsdk": "node_modules/typescript/lib",
-        "typescript.enablePromptUseWorkspaceTsdk": true
+        "js/ts.tsdk.path": "node_modules/typescript/lib",
+        "js/ts.tsdk.promptToUseWorkspaceVersion": true
       }
     }
   }
