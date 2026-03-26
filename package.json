@@ -62,7 +62,7 @@
   },
   "auto": {
     "plugins": [
-      ["npm", { "provenance": true }],
+      "npm",
       "released"
     ]
   },
