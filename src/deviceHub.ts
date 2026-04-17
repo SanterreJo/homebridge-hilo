@@ -13,6 +13,11 @@ export type SignalRDevice = {
   identifier?: string;
 };
 
+export type DeviceHubResult = {
+  devices: SignalRDevice[];
+  connected: boolean;
+};
+
 let hubConnection: signalR.HubConnection | null = null;
 let webSocketRetries = 0;
 const MAX_RETRIES = 8;
@@ -20,7 +25,7 @@ const BASE_RETRY_DELAY = 30_000;
 
 export async function connectToDeviceHub(
   locationId: number,
-): Promise<SignalRDevice[]> {
+): Promise<DeviceHubResult> {
   const logger = getLogger();
 
   let url: string;
@@ -32,7 +37,7 @@ export async function connectToDeviceHub(
       "Unable to negotiate websocket connection",
       error instanceof Error ? error.message : error,
     );
-    return [];
+    return { devices: [], connected: false };
   }
 
   hubConnection = new signalR.HubConnectionBuilder()
@@ -40,22 +45,20 @@ export async function connectToDeviceHub(
     .configureLogging(signalR.LogLevel.Warning)
     .build();
 
-  const deviceListPromise = new Promise<SignalRDevice[]>((resolve) => {
+  const deviceListPromise = new Promise<DeviceHubResult>((resolve) => {
     const timeout = setTimeout(() => {
       logger.error(
         "Timed out waiting for DeviceListInitialValuesReceived (30s)",
       );
-      resolve([]);
+      resolve({ devices: [], connected: false });
     }, 30_000);
 
     hubConnection!.on(
       "DeviceListInitialValuesReceived",
       (devices: SignalRDevice[]) => {
         clearTimeout(timeout);
-        logger.debug(
-          `Received ${devices.length} devices from DeviceHub`,
-        );
-        resolve(devices);
+        logger.debug(`Received ${devices.length} devices from DeviceHub`);
+        resolve({ devices, connected: true });
       },
     );
   });
@@ -80,7 +83,7 @@ export async function connectToDeviceHub(
       "Failed to start DeviceHub connection",
       error instanceof Error ? error.message : error,
     );
-    return [];
+    return { devices: [], connected: false };
   }
 
   return deviceListPromise;
@@ -89,9 +92,7 @@ export async function connectToDeviceHub(
 function retryConnection(locationId: number) {
   const logger = getLogger();
   if (webSocketRetries >= MAX_RETRIES) {
-    logger.error(
-      `DeviceHub reconnection failed after ${MAX_RETRIES} attempts`,
-    );
+    logger.error(`DeviceHub reconnection failed after ${MAX_RETRIES} attempts`);
     return;
   }
   const delay = BASE_RETRY_DELAY * Math.pow(2, webSocketRetries);

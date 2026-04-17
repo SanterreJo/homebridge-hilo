@@ -59,15 +59,33 @@ class Hilo implements DynamicPlatformPlugin {
 
       const allSignalRDevices: SignalRDevice[] = [];
       const allGraphqlDevices: Device[] = [];
+      let signalRConnected = true;
 
       for (const location of this.locations) {
-        const [signalRDevices, graphqlDevices] = await Promise.all([
+        const [hubResult, graphqlDevices] = await Promise.all([
           connectToDeviceHub(location.id),
           fetchDevicesForLocation(location.locationHiloId),
         ]);
-        signalRDevices.forEach((d) => (d.locationId = location.id));
-        allSignalRDevices.push(...signalRDevices);
+        if (!hubResult.connected) {
+          signalRConnected = false;
+          log.warn(
+            `DeviceHub connection failed for location ${location.id}, will use cached devices`,
+          );
+        }
+        hubResult.devices.forEach((d) => (d.locationId = location.id));
+        allSignalRDevices.push(...hubResult.devices);
         allGraphqlDevices.push(...graphqlDevices);
+      }
+
+      // When SignalR failed, recover cached SignalR device data from accessories
+      if (!signalRConnected && allSignalRDevices.length === 0) {
+        const cachedDevices = Object.values(this.accessories)
+          .map((a) => a.context.device)
+          .filter((d): d is SignalRDevice => !!d?.hiloId);
+        if (cachedDevices.length > 0) {
+          log.info(`Recovering ${cachedDevices.length} cached SignalR devices`);
+          allSignalRDevices.push(...cachedDevices);
+        }
       }
 
       const supportedDevices = allGraphqlDevices.filter((device) =>
@@ -89,9 +107,15 @@ class Hilo implements DynamicPlatformPlugin {
         this.log.debug("Initializing device", device);
         const signalRDevice = signalRByHiloId.get(device.hiloId);
         if (!signalRDevice) {
-          this.log.error(
-            `No SignalR device found for hiloId ${device.hiloId}`,
-          );
+          if (signalRConnected) {
+            this.log.error(
+              `No SignalR device found for hiloId ${device.hiloId}`,
+            );
+          } else {
+            this.log.warn(
+              `No SignalR device found for hiloId ${device.hiloId} (SignalR disconnected, device may appear after reconnection)`,
+            );
+          }
           return;
         }
         let accessory = this.accessories[device.hiloId];
@@ -113,20 +137,27 @@ class Hilo implements DynamicPlatformPlugin {
         this.pluginAccessories[device.hiloId] = pluginAccessory;
       });
 
-      const currentHiloIds = new Set(signalRByHiloId.keys());
-      this.staleAccessories = this.staleAccessories.concat(
-        Object.values(this.accessories).filter((accessory) => {
-          return !currentHiloIds.has(accessory.context.device.hiloId);
-        }),
-      );
-      this.log.debug(
-        `Found ${this.staleAccessories.length} stale accessories removing...`,
-      );
-      if (this.staleAccessories.length > 0) {
-        this.api.unregisterPlatformAccessories(
-          PLUGIN_NAME,
-          PLATFORM_NAME,
-          this.staleAccessories,
+      // Only remove stale accessories when SignalR is connected and authoritative
+      if (signalRConnected) {
+        const currentHiloIds = new Set(signalRByHiloId.keys());
+        this.staleAccessories = this.staleAccessories.concat(
+          Object.values(this.accessories).filter((accessory) => {
+            return !currentHiloIds.has(accessory.context.device.hiloId);
+          }),
+        );
+        this.log.debug(
+          `Found ${this.staleAccessories.length} stale accessories removing...`,
+        );
+        if (this.staleAccessories.length > 0) {
+          this.api.unregisterPlatformAccessories(
+            PLUGIN_NAME,
+            PLATFORM_NAME,
+            this.staleAccessories,
+          );
+        }
+      } else {
+        log.warn(
+          "Skipping stale accessory removal because SignalR connection failed",
         );
       }
 
