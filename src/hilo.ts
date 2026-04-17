@@ -89,9 +89,7 @@ class Hilo implements DynamicPlatformPlugin {
         this.log.debug("Initializing device", device);
         const signalRDevice = signalRByHiloId.get(device.hiloId);
         if (!signalRDevice) {
-          this.log.error(
-            `No SignalR device found for hiloId ${device.hiloId}`,
-          );
+          this.log.error(`No SignalR device found for hiloId ${device.hiloId}`);
           return;
         }
         let accessory = this.accessories[device.hiloId];

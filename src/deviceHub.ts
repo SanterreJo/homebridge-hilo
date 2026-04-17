@@ -52,9 +52,7 @@ export async function connectToDeviceHub(
       "DeviceListInitialValuesReceived",
       (devices: SignalRDevice[]) => {
         clearTimeout(timeout);
-        logger.debug(
-          `Received ${devices.length} devices from DeviceHub`,
-        );
+        logger.debug(`Received ${devices.length} devices from DeviceHub`);
         resolve(devices);
       },
     );
@@ -89,9 +87,7 @@ export async function connectToDeviceHub(
 function retryConnection(locationId: number) {
   const logger = getLogger();
   if (webSocketRetries >= MAX_RETRIES) {
-    logger.error(
-      `DeviceHub reconnection failed after ${MAX_RETRIES} attempts`,
-    );
+    logger.error(`DeviceHub reconnection failed after ${MAX_RETRIES} attempts`);
     return;
   }
   const delay = BASE_RETRY_DELAY * Math.pow(2, webSocketRetries);
