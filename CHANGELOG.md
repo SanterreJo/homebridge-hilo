@@ -1,3 +1,51 @@
+# v7.0.1 (Fri Apr 24 2026)
+
+#### 🐛 Bug Fix
+
+- Refactor DeviceHub connection handling and improve stale accessory management [#119](https://github.com/SanterreJo/homebridge-hilo/pull/119) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### 🏠 Internal
+
+- Add CI workflow for pull requests to main branch [#120](https://github.com/SanterreJo/homebridge-hilo/pull/120) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### 🔩 Dependency Updates
+
+- Bump homebridge from 2.0.0-beta.68 to 2.0.0-beta.83 [#117](https://github.com/SanterreJo/homebridge-hilo/pull/117) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump typescript from 5.9.3 to 6.0.2 [#116](https://github.com/SanterreJo/homebridge-hilo/pull/116) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump @eslint/js from 9.39.2 to 10.0.1 [#115](https://github.com/SanterreJo/homebridge-hilo/pull/115) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump eslint from 9.39.2 to 10.1.0 [#114](https://github.com/SanterreJo/homebridge-hilo/pull/114) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the patch_minor group with 14 updates [#113](https://github.com/SanterreJo/homebridge-hilo/pull/113) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
+# v7.0.0 (Thu Mar 26 2026)
+
+#### 💥 Breaking Change
+
+- Migrate to DeviceHub SignalR API [#112](https://github.com/SanterreJo/homebridge-hilo/pull/112) ([@SanterreJo](https://github.com/SanterreJo))
+
+#### 🔩 Dependency Updates
+
+- Bump homebridge from 2.0.0-beta.30 to 2.0.0-beta.68 [#108](https://github.com/SanterreJo/homebridge-hilo/pull/108) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump @types/node from 24.6.1 to 25.0.3 [#107](https://github.com/SanterreJo/homebridge-hilo/pull/107) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump globals from 16.4.0 to 17.0.0 [#106](https://github.com/SanterreJo/homebridge-hilo/pull/106) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the patch_minor group with 11 updates [#105](https://github.com/SanterreJo/homebridge-hilo/pull/105) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/checkout from 5 to 6 [#104](https://github.com/SanterreJo/homebridge-hilo/pull/104) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/setup-node from 5 to 6 [#103](https://github.com/SanterreJo/homebridge-hilo/pull/103) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/cache from 4 to 5 [#102](https://github.com/SanterreJo/homebridge-hilo/pull/102) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Jonathan Santerre ([@SanterreJo](https://github.com/SanterreJo))
+
+---
+
 # v6.0.0 (Fri Nov 21 2025)
 
 #### 💥 Breaking Change

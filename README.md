@@ -53,7 +53,7 @@ permet de contrôler vos appareils Hilo par le biais de HomeKit et de l'app [Dom
    - Redémarrez votre serveur Homebridge
 
 ## Défis Hilo
-⚠️ Depuis la version 6.0.0 les défis Hilo ne sont plus supporté par le plugin ⚠️
+Les défis Hilo ne sont plus supportés par le plugin.
 
 ## Appareils supportés
 
@@ -133,7 +133,7 @@ enabling control of your Hilo devices via HomeKit and the [Apple Home App](https
    - Restart your Homebridge server
 
 ## Hilo Events (Challenges)
-⚠️ As of 6.0.0 Hilo challenge are no longer supported by the plugin ⚠️
+Hilo challenges are no longer supported by the plugin.
 
 ## Supported Devices
 
