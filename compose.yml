@@ -1,0 +1,15 @@
+services:
+  homebridge:
+    image: homebridge/homebridge:latest
+    #network_mode: host
+    ports:
+      - 8581:8581
+      - 8880:8880
+    volumes:
+      - ./volumes/homebridge:/homebridge
+      - .:/homebridge/node_modules/homebridge-hilo
+    logging:
+      driver: json-file
+      options:
+        max-size: "10mb"
+        max-file: "1"
