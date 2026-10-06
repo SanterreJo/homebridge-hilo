@@ -13,6 +13,11 @@ updates:
       - "skip-release"
     schedule:
       interval: "quarterly"
+    # graphqlsp and typescript-eslint currently require TypeScript 6 or earlier.
+    ignore:
+      - dependency-name: "typescript"
+        update-types:
+          - "version-update:semver-major"
     groups:
       patch_minor:
         patterns:
